@@ -74,7 +74,7 @@ def login():
                     user, remember=remember
                 )
                 flaskapp.logger.info(
-                    f"Logged in user f{user.username}."
+                    f"Logged in user {user.username}."
                 )
                 return {"response": "Logged in."}, 200
             else:
@@ -98,6 +98,6 @@ def login():
     else:
         flask_login.login_user(user, remember=remember)
         flaskapp.logger.info(
-            f"Logged in user f{user.username}."
+            f"Logged in user {user.username}."
         )
         return {"response": "Logged in."}, 200

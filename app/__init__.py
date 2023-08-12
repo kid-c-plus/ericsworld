@@ -32,40 +32,40 @@ if flaskapp.config["USE_TWILIO"]:
 else:
     twilio_client = None
 
+loginmanager = LoginManager()
+loginmanager.init_app(flaskapp)
+loginmanager.login_view = "login"
+
 # Create and start task scheduler
 scheduler = BackgroundScheduler()
 from app import startup, shutdown
 startup.startup()
 atexit.register(shutdown.shutdown)
 
-loginmanager = LoginManager()
-loginmanager.init_app(flaskapp)
-loginmanager.login_view = "login"
-
 from app.models import *
 from app.views import *
 
 # Convenience methods for Pytest
-if "pytest" in sys.modules:
-    from multiprocessing import Process
-    server = Process(target=flaskapp.run)
+# if "pytest" in sys.modules:
+from multiprocessing import Process
+server = Process(target=flaskapp.run)
 
-    def start_server():
-        """
-        Start function, invoked only in testing. Starts task in separate
-            thread.
-        """
-        try:
-            server.start()
-        except NameError:
-            print("Must be invoked with pytest")
+def start_server():
+    """
+    Start function, invoked only in testing. Starts task in separate
+        thread.
+    """
+    try:
+        server.start()
+    except NameError:
+        print("Must be invoked with pytest")
 
-    def stop_server():
-        """
-        Stop function, invoked only in testing. Stops task thread.
-        """
-        try:
-            server.terminate()
-            server.join()
-        except NameError:
-            print("Must be invoked with pytest")
+def stop_server():
+    """
+    Stop function, invoked only in testing. Stops task thread.
+    """
+    try:
+        server.terminate()
+        server.join()
+    except NameError:
+        print("Must be invoked with pytest")

@@ -8,18 +8,21 @@ from app import constants as appconstants
 BASE_URL = "http://127.0.0.1:5000"
 TEST_NEW_USER = {
     "user_id": uuid.uuid1().hex,
+    "login_id": uuid.uuid1().hex,
     "phone_number": "+15555551234",
     "recovery_email": "testuser@ericsworld.net",
 }
 
 TEST_NEW_USER_2 = {
     "user_id": uuid.uuid1().hex,
+    "login_id": uuid.uuid1().hex,
     "phone_number": "+15555555678",
     "recovery_email": "testuser@ericsworld.net",
 }
 
 TEST_USER = {
     "user_id": uuid.uuid1().hex,
+    "login_id": uuid.uuid1().hex,
     "phone_number": "+15555550910",
     "recovery_email": "testuser@ericsworld.net",
     "username": "test user",
@@ -29,6 +32,7 @@ TEST_USER = {
 
 TEST_USER_2 = {
     "user_id": uuid.uuid1().hex,
+    "login_id": uuid.uuid1().hex,
     "phone_number": "+15555551112",
     "recovery_email": "testuser2@ericsworld.net",
     "username": "test user 2",

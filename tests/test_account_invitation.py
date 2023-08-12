@@ -58,8 +58,15 @@ def test_existing_user_invite(user_sess):
         ).first().account_status == appconstants.ACTIVE_ACCOUNT)
 
 def test_max_invites(db_resource, test_user, user_sess):
-    test_user.invited_users = appconfig["MAX_INVITES"]
-    test_user._sa_instance_state.session.commit()
+    for i in range(appconfig["MAX_INVITES"]):
+        number = "+1" + ("0" * 12 + str(i))[-12:]
+        resp = user_sess.post(
+            f"{BASE_URL}/invite-account",
+            data={
+                "invited_number": number
+            }
+        )
+        assert resp.status_code == 200
     number = TEST_NEW_USER["phone_number"]
     resp = user_sess.post(
         f"{BASE_URL}/invite-account",

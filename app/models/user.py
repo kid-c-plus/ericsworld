@@ -187,7 +187,7 @@ class User(UserMixin, db.Model):
 
 @loginmanager.user_loader
 def load_user(login_id: str) -> User:
-    return db.session.filter(db.select(User).filter_by(
+    return db.session.execute(db.select(User).filter_by(
         login_id=login_id
     )).scalar()
 

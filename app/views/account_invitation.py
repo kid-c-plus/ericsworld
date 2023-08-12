@@ -66,10 +66,9 @@ def invite_account():
                 user_id=uuid.uuid1().hex,
                 login_id=uuid.uuid1().hex,
                 phone_number=invited_number,
-                invited_by=curr_user
+                inviting_user=curr_user
             )
             db.session.add(new_user)
-            curr_user.invited_users += 1
             db.session.commit()
             user_added=True
         except IntegrityError:

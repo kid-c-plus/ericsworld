@@ -14,6 +14,7 @@ def account_info():
     :return: 200 and {"username", "profile_uri", "heartscore"} response
         dict if there exists a currently authenticated user, else 401
     """
+    flaskapp.logger.info(flask_login.current_user) 
     if flask_login.current_user.is_authenticated:
         curr_user = flask_login.current_user
         return {"response": {

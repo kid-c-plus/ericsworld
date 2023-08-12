@@ -10,9 +10,9 @@ from app.models import *
 
 def get_wisps_for_user(user: flask_login.UserMixin, 
                        offset: int = 0,
-                       limit: int = constants.WISPS_PER_PAGE,
+                       limit: int = appconfig['WISPS_PER_PAGE'],
                        descending: bool = True,
-                       **filters) -> sqlalchemy.Response:
+                       **filters) -> sqlalchemy.engine.Result:
     """
     Helper method to get all wisps visible to a given user.
         Accounts for blocklist and blockerlist.
@@ -80,7 +80,7 @@ def get_wisp_position(user: flask_login.UserMixin,
     return next(
         index for index, wisp in enumerate(
            simultaneous_wisps
-       ) if wisp.wisp_id = wisp_id
+        ) if wisp.wisp_id == wisp_id)
 
 @flaskapp.route("/get-wisps", methods=["GET"])
 def get_wisps(first_wisp_id: str = None, last_wisp_id: str = None):
