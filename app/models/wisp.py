@@ -2,6 +2,7 @@
 Python SQLAlchemy model file defining Wisp.
 """
 from sqlalchemy.sql import func 
+import json
 
 from app import flaskapp, db, appconfig, constants
 
@@ -56,3 +57,21 @@ class Wisp(db.Model):
         return "\n".join(
                 f"{k}:\t{v}" for k, v in self.__dict__.items()
             )
+
+    def to_dict(self):
+        """
+        Dictionary conversion method, allowing for easy JSON
+            serialization by Flask. Contains only the fields that
+            would be necessary to send to the frontend
+        :return: simple dictionary representation of Wisp
+        """
+        return {
+            "wisp_id":          self.wisp_id,
+            "user_id":          self.user_id,
+            "user_username":    self.user.username,
+            "user_profile_uri": self.user.profile_uri,
+            "status":           self.status,
+            "created_time":     self.created_time,
+            "text":             self.text,
+            "gif_uri":          self.gif_uri
+        }

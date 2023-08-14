@@ -3,7 +3,6 @@ Test suite for account_creation view.
 """
 import os
 import sys
-import copy
 
 # allow for relative imports from "app"
 sys.path.append(os.getcwd())

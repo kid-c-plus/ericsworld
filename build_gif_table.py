@@ -67,9 +67,9 @@ class GifCitiesFetcher(GifFetcher):
     """
     GIFCITIES_BASE_URL = "https://gifcities.org"
     GIF_ARCHIVE_BASE_URL = "https://web.archive.org/web"
-    GIFS_PER_PAGE = 20
+    GIFS_PER_PAGE = 10
     PAGE_LOAD_SLEEP = 15
-    REQUEST_SLEEP = 0.25
+    REQUEST_SLEEP = 0.5
 
     def __init__(self, search_file: typing.TextIO):
         """
@@ -178,12 +178,12 @@ class DatabaseBuilder:
                         gif=gif_obj
                     )
                     self.db_resource.session.add(association_obj)
+        self.db_resource.session.commit()
 
-start_server()
+thread = start_server()
 with open("test-gif-set.txt") as searchfile:
     fetcher = GifCitiesFetcher(searchfile)
     flaskapp.app_context().push()
-#    db.metadata.create_all(db.engine)
     builder = DatabaseBuilder(fetcher, db)
     builder.build(verbose=True)
-stop_server()
+stop_server(thread)

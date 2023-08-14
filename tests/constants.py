@@ -42,3 +42,9 @@ TEST_USER_2 = {
 
 TEST_PASSWORD = "Pa$$word1234"
 TEST_PASSWORD_2 = "password5678"
+
+TEST_WISP = {
+    "text": "haiii :3",
+    "gif_uri": "01309eb8d523ea5ac65fc888400e631a" + 
+               "546fbd2af53e1f233f86be864d622fc4"
+}

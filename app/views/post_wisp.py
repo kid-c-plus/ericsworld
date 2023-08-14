@@ -6,10 +6,11 @@ from flask import request
 import flask_login
 import bleach
 from werkzeug.utils import secure_filename
+import uuid
 
 from app import flaskapp, appconfig, db, constants
 from app.core import remove_excess_wisps
-from app.models import User, Wisp
+from app.models import *
 
 @flaskapp.route("/post-wisp", methods=["POST"])
 @flask_login.login_required
@@ -19,6 +20,7 @@ def post_wisp():
         session.
     :jsonparam text: text of Wisp to post
     :jsonparam gif_uri: URI of GIF to add to post
+        (URI is also the SHA value of the GIF file)
     :return: 201 if post is created, 401 if unautorized, 403
         if over maximum number of Wisps, 400 if Wisp has too many 
         characters or GIF does not exist
@@ -33,10 +35,6 @@ def post_wisp():
     if len(curr_user.wisps) >= appconfig["MAX_WISPS_PER_USER"]:
         return {"error": 
             "Account has reached maximum number of Wisps."}, 403
-    
-    text, gif_uri = (request.values.get(key) for key in (
-        "text", "gif_uri"
-    ))
     text = bleach.clean(request.values.get("text", ""))
     gif_uri = secure_filename(
         request.values.get("gif_uri", "")
@@ -47,7 +45,7 @@ def post_wisp():
         return {"error": "Malformed request."}, 400
 
     # Theoretically, two wisps added at the exact same epoch time 
-    # could  have duplicate uuids, so I'll keep trying on collision
+    # could have duplicate uuids, so I'll keep trying on collision
     wisp_added = False
     tries = 0
     while not wisp_added:
@@ -67,14 +65,47 @@ def post_wisp():
             if tries >= 3:
                 flaskapp.logger.error(
                     "Unable to post wisp for user " +
-                    f"{curr_user.user_id} after too many Login " +
+                    f"{curr_user.user_id} after too many " +
                     "UUID collisions."
                 )
                 return {
                     "error": "Unable to create wisp."
-                }, 400
+                }, 500
 
     return {"response":  "Wisp posted."}, 201
 
+@flaskapp.route("/gif-search", methods=["GET"])
+@flask_login.login_required
+def gif_search():
+    """
+    GET endpoint for searching the GIF corpus for a provided set of terms. 
+        Will not return more than the configured maximum.
+    :queryparam term_string: space-deliminated string of search terms
+    :return: 200 and {"gifs"} dict, where "gifs" is a list of matched
+        GIF URIs, sorted in descending order of relevance, 400 if 
+        term string not provided
+    """
+    curr_user = flask_login.current_user
+    if not curr_user.is_authenticated:
+        return {"error": "No authenticated user."}, 401
+    term_string = request.args.get("term_string")
+    if not term_string:
+        return {"error": "Search terms not provided."}, 400
+    gifs = {}
+    terms = term_string.split()
+    for value in terms:
+        associations = db.session.execute(
+            db.select(SearchAssociation)
+            .filter_by(
+               term_value=value
+            )
+        ).scalars()
+        for association in associations:
+            if association.gif_sha in gifs:
+                gifs[association.gif_sha] += association.weight
+            else:
+                gifs[association.gif_sha] = association.weight
+    return sorted(
+        gifs.keys(), key=lambda sha: gifs[sha], reverse=True
+    )[:appconfig["GIFS_PER_SEARCH"]]
 
-# TODO: Add GIF Search

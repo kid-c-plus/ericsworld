@@ -32,13 +32,13 @@ def server():
     Run module-level server instance for testing.
     """
     # Setup
-    start_server()
+    thread = start_server()
 
     # Resource (none needed)
     yield None
 
     # Teardown
-    stop_server()
+    stop_server(thread)
 
 @pytest.fixture
 def db_resource():
@@ -97,8 +97,7 @@ def test_user(db_resource):
 
 @pytest.fixture
 def user_sess(test_user, req_sess):
-    # Set up
-    
+    # Setup
     response = req_sess.post(f"{testconstants.BASE_URL}/login", data={
         "phone_number": test_user.phone_number,
         "password": testconstants.TEST_PASSWORD
@@ -107,6 +106,19 @@ def user_sess(test_user, req_sess):
     
     # Resource
     yield req_sess
+
+    # No teardown
+
+@pytest.fixture
+def test_wisp(user_sess):
+    # Setup
+    response = user_sess.post(
+        f"{testconstants.BASE_URL}/post-wisp",
+        data=testconstants.TEST_WISP
+    )
+
+    # Resource
+    yield testconstants.TEST_WISP
 
     # No teardown
 

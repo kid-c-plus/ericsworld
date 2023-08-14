@@ -4,6 +4,8 @@ App views for viewing Wisps.
 from flask import request
 import flask_login
 import sqlalchemy
+import sys
+import linecache
 
 from app import flaskapp, appconfig, db, constants
 from app.models import *
@@ -38,10 +40,10 @@ def get_wisps_for_user(user: flask_login.UserMixin,
         ]
     else:
         blocklist = blockerlist = []
-    order = (User.created_time.desc() if descending
-        else User.created_time.asc())
+    order = (Wisp.created_time.desc() if descending
+        else Wisp.created_time.asc())
 
-    return db.session.execute(
+    return db.session.scalars(
         db.select(Wisp).filter(
             Wisp.user_id.not_in(blocklist),
             Wisp.user_id.not_in(blockerlist)
@@ -67,7 +69,7 @@ def get_wisp_position(user: flask_login.UserMixin,
     :return: integer index of database row containing Wisp, or -1
         if not found
     """
-    wisp = get_wisps_for_user(user, wisp_id=wisp_id).scalar()
+    wisp = get_wisps_for_user(user, wisp_id=wisp_id).one()
     if not wisp:
         return -1
     
@@ -77,20 +79,22 @@ def get_wisp_position(user: flask_login.UserMixin,
         status=constants.LIVE_WISP,
         created_time=wisp.created_time
     ).all()
+
     return next(
         index for index, wisp in enumerate(
            simultaneous_wisps
         ) if wisp.wisp_id == wisp_id)
 
+
 @flaskapp.route("/get-wisps", methods=["GET"])
-def get_wisps(first_wisp_id: str = None, last_wisp_id: str = None):
+def get_wisps():
     """
     GET endpoint for getting a page of Wisps. Does not require a
         valid login session. At most one of (first_wisp_id,
         last_wisp_id) should be present.
-    :param first_wisp_id: ID of first seen Wisp (to load newer
+    :queryparam first_wisp_id: ID of first seen Wisp (to load newer
         Wisps)
-    :param last_wisp_id: ID of last seen Wisp (to load older
+    :queryparam last_wisp_id: ID of last seen Wisp (to load older
         Wisps)
     :return: 200 and {"wisps"} dict if successful, 404 if provided
         Wisp isn't found (indicating a block, deletion, or removal).
@@ -104,7 +108,8 @@ def get_wisps(first_wisp_id: str = None, last_wisp_id: str = None):
     # deterministically by timestamp asc/desc as the case may be.
     # Then, I can use that position as the offset in the actual
     # call to get the next WISPS_PER_PAGE Wisps
-
+    first_wisp_id, last_wisp_id = (request.args.get(key) for key in (
+        "first_wisp_id", "last_wisp_id"))
     user = flask_login.current_user
     wisp_id = first_wisp_id or last_wisp_id
     if wisp_id:
@@ -112,29 +117,37 @@ def get_wisps(first_wisp_id: str = None, last_wisp_id: str = None):
         offset = get_wisp_position(user, wisp_id, descending)
         if offset == -1:
             return {"error": "Wisp not found."}, 404
-        return get_wisps_for_user(
-            user, offset=offset, 
-            descending=descending, status=LIVE_WISP
-        ).all(), 200
+        return [
+            wisp.to_dict() for wisp in get_wisps_for_user(
+                user, offset=offset, 
+                descending=descending, status=LIVE_WISP
+            ).all() 
+        ], 200
 
     else:
-        return get_wisps_for_user(
-            user, status=constants.LIVE_WISP
-        ).all(), 200
+        return [
+            wisp.to_dict() for wisp in get_wisps_for_user(
+                user, status=constants.LIVE_WISP
+            ).all()
+        ], 200
+    
 
 @flaskapp.route("/check-newest-wisp", methods=["GET"])
-def check_newest_wisp(wisp_id: str):
+def check_newest_wisp():
     """
-    GET endpoint for checking to see if newer Wisps are present.
-    :param wisp_id: ID of newest Wisp on browser
+    GET endpoint for checking to see if newer Wisps are present
+    :queryparam wisp_id: ID of newest Wisp on browser
     :return: 200 and {"newest": boolean} dict if successful, 404
-        if no Wisps are found. 
+        if no Wisps are found
     """
+    wisp_id = request.args.get("wisp_id")
     user = flask_login.current_user
     first_wisp = get_wisps_for_user(
         user, limit=1, status=constants.LIVE_WISP
-    ).scalar()
+    ).one()
     if first_wisp:
         return {"newest": first_wisp.wisp_id == wisp_id}, 200
     else:
         return {"error": "No Wisps found."}, 404
+
+

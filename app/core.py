@@ -16,7 +16,7 @@ def promote_or_remove_wisp(wisp: Wisp):
     remembrances = sorted(db.session.execute(
         db.select(Wisp).filter_by(
             status=constants.REMEMBRANCE_WISP
-        )).all(), 
+        )).scalars(), 
         key=lambda wisp: len(wisp.hearted_users)
     )
     
@@ -35,9 +35,11 @@ def remove_excess_wisps():
         necessary to keep total number below maximum set in config.
     """
     
-    excess = db.session.execute(db.select(Wisp).filter_by(
-        status=constants.LIVE_WISP
-    )).count() - appconfig["MAX_WISPS"]
+    excess = db.session.execute(
+        db.select(db.func.count()).select_from(
+            db.select(Wisp).filter_by(
+                status=constants.LIVE_WISP
+    ))).scalar() - appconfig["MAX_WISPS"]
 
     if excess > 0:
         excess_wisps = db.session.execute(

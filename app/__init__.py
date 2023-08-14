@@ -9,6 +9,7 @@ import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 import sys
 from twilio.rest import Client
+from multiprocessing import Process
 
 flaskapp = Flask(__name__)
 # Load basic config if production,
@@ -47,25 +48,27 @@ from app.views import *
 
 # Convenience methods for Pytest
 # if "pytest" in sys.modules:
-from multiprocessing import Process
-server = Process(target=flaskapp.run)
 
-def start_server():
+def start_server() -> Process:
     """
     Start function, invoked only in testing. Starts task in separate
         thread.
+    :return: Server process thread
     """
+    server = Process(target=flaskapp.run)
     try:
         server.start()
     except NameError:
         print("Must be invoked with pytest")
+    return server
 
-def stop_server():
+def stop_server(server_thread: Process):
     """
     Stop function, invoked only in testing. Stops task thread.
+    :param server_thread: Server process thread to stop
     """
     try:
-        server.terminate()
-        server.join()
+        server_thread.terminate()
+        server_thread.join()
     except NameError:
         print("Must be invoked with pytest")
