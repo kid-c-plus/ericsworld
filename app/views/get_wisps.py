@@ -11,24 +11,21 @@ from app import flaskapp, appconfig, db, constants
 from app.models import *
 
 def get_wisps_for_user(user: flask_login.UserMixin, 
-                       offset: int = 0,
                        limit: int = appconfig['WISPS_PER_PAGE'],
-                       descending: bool = True,
-                       **filters) -> sqlalchemy.engine.Result:
+                       complex_filters: list = [],
+                       **equality_filters) -> sqlalchemy.engine.Result:
     """
     Helper method to get all wisps visible to a given user.
         Accounts for blocklist and blockerlist.
     :param User: User object for which to get Wisps. Can be
         AnonymousUserMixin for anonymous access
-    :param offset: Offset from which to start reading Wisps.
-        Default: 0
     :param limit: Maximum number of wisps to return.
         Default: constants.WISPS_PER_PAGE
-    :param descending: Whether to sort Wisps in descending order
-        by time
-        Default: True
-    :param filters: Keyword dictionary of additional filters
-        to pass to SQLAlchemy query
+    :param complex_filters: list of filters operating on
+        conditions more complex than equality to pass to SQLAlchemy 
+        query. Equality conditions should be passed as keyword 
+        arguments
+    :param equality_filters: additional filters for equality
     :return: sqlalchemy.Result object containing Wisps
     """
     if isinstance(user, User):
@@ -40,50 +37,43 @@ def get_wisps_for_user(user: flask_login.UserMixin,
         ]
     else:
         blocklist = blockerlist = []
-    order = (Wisp.created_time.desc() if descending
-        else Wisp.created_time.asc())
-
     return db.session.scalars(
         db.select(Wisp).filter(
             Wisp.user_id.not_in(blocklist),
-            Wisp.user_id.not_in(blockerlist)
+            Wisp.user_id.not_in(blockerlist),
+            *complex_filters
         ).filter_by(
-            **filters
-        ).offset(offset).limit(limit).order_by(order)
+            **equality_filters
+        ).limit(limit).order_by(
+            Wisp.created_time.desc()
+        )
     )
 
 def get_wisp_position(user: flask_login.UserMixin, 
-                      wisp_id: str, 
-                      descending: bool = True) -> int:
+                      wisp: Wisp) -> 0:
     """
-    Helper method to get the database position of the Wisp with
-        the provided ID, in the list of Wisps made at that exact
-        time. Even among identical values, this order will be 
+    Helper method to get the number of Wisps simultaneous with the 
+        given Wisp, and the position of the given Wisp within that
+        list. Even among identical values, this order will be 
         deterministic when sorted.
     :param user: currently authenticated user object. Can be 
         AnonymousUserMixin for unauthenticated access
-    :param wisp_id: ID of Wisp to locate
-    :param descending: Whether to sort Wisps in descending order
-        by time
-        Default: True
-    :return: integer index of database row containing Wisp, or -1
-        if not found
+    :param wisp: Wisp to locate
+    :return: (no_simultaneous_wisps, wisp_position) tuple where 
+        "no_simultaneous_wisps" is the total number of wisps at the 
+        given instant and wisp_position is integer index of the given
+        Wisp in that total
     """
-    wisp = get_wisps_for_user(user, wisp_id=wisp_id).one()
-    if not wisp:
-        return -1
-    
     simultaneous_wisps = get_wisps_for_user(
         user,
-        descending=descending,
         status=constants.LIVE_WISP,
         created_time=wisp.created_time
     ).all()
 
-    return next(
-        index for index, wisp in enumerate(
+    return (len(simultaneous_wisps), next(
+        index for index, i_wisp in enumerate(
            simultaneous_wisps
-        ) if wisp.wisp_id == wisp_id)
+        ) if wisp.wisp_id == i_wisp.wisp_id))
 
 
 @flaskapp.route("/get-wisps", methods=["GET"])
@@ -92,44 +82,82 @@ def get_wisps():
     GET endpoint for getting a page of Wisps. Does not require a
         valid login session. At most one of (first_wisp_id,
         last_wisp_id) should be present.
-    :queryparam first_wisp_id: ID of first seen Wisp (to load newer
+    :queryparam newest_wisp_id: ID of newest seen Wisp (to load newer
         Wisps)
-    :queryparam last_wisp_id: ID of last seen Wisp (to load older
+    :queryparam oldest_wisp_id: ID of oldest seen Wisp (to load older
         Wisps)
     :return: 200 and {"wisps"} dict if successful, 404 if provided
         Wisp isn't found (indicating a block, deletion, or removal).
         In this case, the browser will remove it and submit the 
         previous/next Wisp depending on load direction.
     """
-    # I have to do something fairly complex here, where I want to
-    # query all Wisps made at the exact timestamp of the 
-    # first/last_wisp_id, and then I have to calculate the 
-    # position of the Wisp itself in that list ordered 
-    # deterministically by timestamp asc/desc as the case may be.
-    # Then, I can use that position as the offset in the actual
-    # call to get the next WISPS_PER_PAGE Wisps
-    first_wisp_id, last_wisp_id = (request.args.get(key) for key in (
-        "first_wisp_id", "last_wisp_id"))
+    newest_wisp_id, oldest_wisp_id = (request.args.get(key) for key in (
+        "newest_wisp_id", "oldest_wisp_id"))
+    
     user = flask_login.current_user
-    wisp_id = first_wisp_id or last_wisp_id
+    wisp_time_filter = None
+    wisp_id = newest_wisp_id or oldest_wisp_id
+
     if wisp_id:
-        descending = True if last_wisp_id else False
-        offset = get_wisp_position(user, wisp_id, descending)
-        if offset == -1:
+        wisp = get_wisps_for_user(user, wisp_id=wisp_id).one()
+        if not wisp:
             return {"error": "Wisp not found."}, 404
-        return [
-            wisp.to_dict() for wisp in get_wisps_for_user(
-                user, offset=offset, 
-                descending=descending, status=LIVE_WISP
-            ).all() 
-        ], 200
+
+        # I have to do something fairly complex here, where I want to
+        # query all Wisps made at the exact timestamp of the 
+        # newest/oldest_wisp_id, and then I have to calculate the 
+        # position of the Wisp itself in that list, and change sign
+        # depending on which direction (newer or older) I'm
+        # querying for. When I sort results by timestamp, the order
+        # for Wisps with identical timestamps is deterministic.
+        # I have to find where the provided Wisp falls in that order.
+        # If I'm looking for all older wisps, it's simple. I get
+        # the position of the given Wisp in the set of simultaneous 
+        # Wisps (ordered from newest to oldest), and then return all 
+        # Wisps past that position in the array of wisps older than
+        # the Wisp's timestamp. So, the expression is just 
+        # API_RESULT[offset + 1:], where the "+ 1" is the given Wisp 
+        # itself. If looking for all the newer Wisps, I'll have to get
+        # both the position of the given Wisp in the set of
+        # simultaneous Wisps, and the total length of that set.
+        # Then, I'll take the difference of the two, and trim that 
+        # number of Wisps off the end, i.e. API_RESULT[:offset - length]
+        # Note that in the overwhelming majority of cases, there's only
+        # one Wisp per timestamp, so offset is 0 and size is one, and 
+        # the list slices are [1:] and [:-1] respectively.
+
+        no_simultaneous_wisps, wisp_position = get_wisp_position(
+            user, wisp
+        )
+        if newest_wisp_id:
+            offset = (wisp_position - no_simultaneous_wisps)
+            wisp_time_filter = Wisp.created_time >= wisp.created_time
+        else:
+            offset = 1 + wisp_position
+            wisp_time_filter = Wisp.created_time <= wisp.created_time
+
+        Default: 0
+
+        wisps = get_wisps_for_user(
+            user, limit = appconfig["WISPS_PER_PAGE"] + abs(offset), 
+            complex_filters=[wisp_time_filter],
+            status=constants.LIVE_WISP
+        ).all() 
+        if offset < 0:
+            wisps = wisps[:offset]
+        else:
+            wisps = wisps[offset:]
+
+        return {
+            "wisps": [wisp.to_dict() for wisp in wisps]
+        }, 200
 
     else:
-        return [
+        return {"wisps": [
             wisp.to_dict() for wisp in get_wisps_for_user(
                 user, status=constants.LIVE_WISP
             ).all()
-        ], 200
+        ]}, 200
     
 
 @flaskapp.route("/check-newest-wisp", methods=["GET"])

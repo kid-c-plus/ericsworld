@@ -2,6 +2,8 @@
 Python SQLAlchemy model file defining Wisp.
 """
 from sqlalchemy.sql import func 
+from sqlalchemy.dialects.sqlite import DATETIME
+from datetime import datetime
 import json
 
 from app import flaskapp, db, appconfig, constants
@@ -34,7 +36,7 @@ class Wisp(db.Model):
     # refer to constants.py for list of Wisp status integers
     status = db.Column(db.Integer, 
             default=constants.LIVE_WISP, nullable=False)
-    created_time = db.Column(db.DateTime, server_default=func.now())
+    created_time = db.Column(db.DateTime, default=datetime.utcnow)
 
     text = db.Column(db.String(appconfig["MAX_WISP_LENGTH"]))
     gif_uri = db.Column(db.UnicodeText)
