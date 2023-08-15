@@ -96,16 +96,20 @@ def test_user(db_resource):
     # No teardown
 
 @pytest.fixture
-def user_sess(test_user, req_sess):
+def user_sess(test_user):
     # Setup
-    response = req_sess.post(f"{testconstants.BASE_URL}/login", data={
+    s = requests.Session()
+    s.get(f"{testconstants.BASE_URL}/hai")
+    s.headers["X-CSRFToken"] = s.cookies["csrftoken"]
+
+    response = s.post(f"{testconstants.BASE_URL}/login", data={
         "phone_number": test_user.phone_number,
         "password": testconstants.TEST_PASSWORD
     })
     assert response.status_code == 200
     
     # Resource
-    yield req_sess
+    yield s
 
     # No teardown
 
@@ -142,16 +146,19 @@ def test_user_2(db_resource):
     # No teardown
 
 @pytest.fixture
-def user_2_sess(test_user_2, req_sess):
-    # Set up
-    response = req_sess.post(f"{testconstants.BASE_URL}/login", data={
+def user_2_sess(test_user_2):
+    # Setup
+    s = requests.Session()
+    s.get(f"{testconstants.BASE_URL}/hai")
+    s.headers["X-CSRFToken"] = s.cookies["csrftoken"]
+
+    response = s.post(f"{testconstants.BASE_URL}/login", data={
         "phone_number": test_user_2.phone_number,
         "password": testconstants.TEST_PASSWORD
     })
     assert response.status_code == 200
     
     # Resource
-    yield req_sess
+    yield s
 
     # No teardown
-

@@ -13,19 +13,20 @@ def promote_or_remove_wisp(wisp: Wisp):
         or it has more Hearts than the lowest of them, or to remove it.
     :param wisp: wisp to promote or remove
     """
-    remembrances = sorted(db.session.execute(
+    remembrances = sorted(db.session.scalars(
         db.select(Wisp).filter_by(
             status=constants.REMEMBRANCE_WISP
-        )).scalars(), 
+        )).all(),
         key=lambda wisp: len(wisp.hearted_users)
     )
     
-    wisp.delete_hearts()
+    wisp.remove_hearts()
     if (len(remembrances) < appconfig["MAX_REMEMBRANCES"] or
             (len(remembrances) and len(wisp.hearted_users) > 
             len(remembrances[0].hearted_users))):
-        wisp.status = REMEMBRANCE_WISP
-        db.session.delete(remembrances[0])
+        wisp.status = constants.REMEMBRANCE_WISP
+        if len(remembrances) == appconfig["MAX_REMEMBRANCES"]:
+            db.session.delete(remembrances[0])
     else:
         db.session.delete(wisp)
 
@@ -42,13 +43,13 @@ def remove_excess_wisps():
     ))).scalar() - appconfig["MAX_WISPS"]
 
     if excess > 0:
-        excess_wisps = db.session.execute(
+        excess_wisps = db.session.scalars(
             db.select(Wisp).filter_by(
                 status=constants.LIVE_WISP
             ).order_by(
                 Wisp.created_time.asc()
             ).limit(excess)
-        )
+        ).all()
         for wisp in excess_wisps:
             promote_or_remove_wisp(wisp)
 

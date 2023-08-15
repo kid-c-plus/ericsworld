@@ -172,10 +172,8 @@ def check_newest_wisp():
     user = flask_login.current_user
     first_wisp = get_wisps_for_user(
         user, limit=1, status=constants.LIVE_WISP
-    ).one()
+    ).first()
     if first_wisp:
         return {"newest": first_wisp.wisp_id == wisp_id}, 200
     else:
         return {"error": "No Wisps found."}, 404
-
-

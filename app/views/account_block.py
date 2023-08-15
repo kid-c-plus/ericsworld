@@ -42,7 +42,10 @@ def block_account():
         return {"error": "Wisp not found."}, 404
 
     blocked_user = wisp.user
-    curr_user.blocked_user.append(blocked_user)
+    if blocked_user == curr_user:
+        return {"error": "Users cannot block themselves."}, 400
+
+    curr_user.blocked_users.append(blocked_user)
     # if number of blocks is above threshold, disable user
     if len(blocked_user.blocked_by_users) >= appconfig["BLOCKS_TO_BAN"]:
         blocked_user.update_status(constants.DISABLED_ACCOUNT)

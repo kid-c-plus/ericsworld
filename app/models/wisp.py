@@ -53,7 +53,7 @@ class Wisp(db.Model):
         Deinitialization actions on Wisp. Does not remove self from
             database, but subtracts Hearts from poster's HeartScore
         """
-        self.user.heartscore -= len(hearted_users)
+        self.user.heartscore -= len(self.hearted_users)
 
     def __repr__(self):
         return "\n".join(

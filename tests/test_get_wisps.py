@@ -29,6 +29,13 @@ def test_get_wisps(user_sess, test_wisp):
     assert wisps[0]["text"] == test_wisp["text"]
 
 def test_many_wisps(user_sess):
+    response = user_sess.get(
+        f"{BASE_URL}/get-wisps"
+    )
+    assert response.status_code == 200
+    wisps = response.json()["wisps"]
+    assert len(wisps) == 0
+    
     NUM_TEST_WISPS = 10
     wisp_texts = [f"TEST WISP {i}" for i in range(NUM_TEST_WISPS)]
     for text in wisp_texts:
@@ -43,7 +50,7 @@ def test_many_wisps(user_sess):
     )
     assert response.status_code == 200
     wisps = response.json()["wisps"]
-    assert (len(wisps) == appconfig["MAX_WISPS_PER_USER"] and
+    assert (len(wisps) == NUM_TEST_WISPS and
         wisps[0]["text"] == wisp_texts[-1])
     
     for i in range(NUM_TEST_WISPS):
@@ -110,7 +117,52 @@ def test_simultaneous_wisps(db_resource, test_user, user_sess):
         if len(older_wisps):
             assert older_wisps[0] == wisps[i + 1]
         
+def test_anonymous_wisp(user_sess, req_sess):
+    NUM_TEST_WISPS = 10
+    wisp_texts = [f"TEST WISP {i}" for i in range(NUM_TEST_WISPS)]
+    for text in wisp_texts:
+        response = user_sess.post(
+            f"{BASE_URL}/post-wisp",
+            data={"text": text}
+        )
+        assert response.status_code == 201
+
+    response = req_sess.get(
+        f"{BASE_URL}/get-wisps"
+    )
+    assert response.status_code == 200
+    wisps = response.json()["wisps"]
+    assert (len(wisps) == appconfig["MAX_WISPS_PER_USER"] and
+        wisps[0]["text"] == wisp_texts[-1])
+    
+    for i in range(NUM_TEST_WISPS):
+        response = req_sess.get(
+            f"{BASE_URL}/get-wisps",
+            params={"newest_wisp_id": wisps[i]["wisp_id"]}
+        )
+        assert response.status_code == 200
+        newer_wisps = response.json()["wisps"]
+        assert len(newer_wisps) == i
+        if len(newer_wisps):
+            assert newer_wisps[0] == wisps[0]
+        
+        response = req_sess.get(
+            f"{BASE_URL}/get-wisps",
+            params={"oldest_wisp_id": wisps[i]["wisp_id"]}
+        )
+        assert response.status_code == 200
+        older_wisps = response.json()["wisps"]
+        assert len(older_wisps) == NUM_TEST_WISPS - 1 - i
+        if len(older_wisps):
+            assert older_wisps[0] == wisps[i + 1]
+        
 def test_check_newest_wisp(user_sess):
+    response = user_sess.get(
+        f"{BASE_URL}/check-newest-wisp",
+        params={"wisp_id": "abcd" * 8}
+    )
+    assert response.status_code == 404
+
     NUM_TEST_WISPS = 10
     wisp_texts = [f"TEST WISP {i}" for i in range(NUM_TEST_WISPS)]
     for text in wisp_texts:
@@ -130,22 +182,23 @@ def test_check_newest_wisp(user_sess):
     
     for i in range(NUM_TEST_WISPS):
         response = user_sess.get(
-            f"{BASE_URL}/get-wisps",
-            params={"newest_wisp_id": wisps[i]["wisp_id"]}
+            f"{BASE_URL}/check-newest-wisp",
+            params={"wisp_id": wisps[i]["wisp_id"]}
         )
         assert response.status_code == 200
-        newer_wisps = response.json()["wisps"]
-        assert len(newer_wisps) == i
-        if len(newer_wisps):
-            assert newer_wisps[0] == wisps[0]
-        
-        response = user_sess.get(
-            f"{BASE_URL}/get-wisps",
-            params={"oldest_wisp_id": wisps[i]["wisp_id"]}
-        )
-        assert response.status_code == 200
-        older_wisps = response.json()["wisps"]
-        assert len(older_wisps) == NUM_TEST_WISPS - 1 - i
-        if len(older_wisps):
-            assert older_wisps[0] == wisps[i + 1]
-        
+        assert response.json()["newest"] == (i == 0)
+
+def test_purge_old_wisps(user_sess, test_wisp):
+    response = user_sess.get(
+        f"{BASE_URL}/get-wisps"
+    )
+    assert (response.status_code == 200 and
+        len(response.json()["wisps"]) == 1)
+
+    time.sleep(7)
+
+    response = user_sess.get(
+        f"{BASE_URL}/get-wisps"
+    )
+    assert (response.status_code == 200 and
+        len(response.json()["wisps"]) == 0)

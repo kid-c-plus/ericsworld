@@ -4,6 +4,7 @@ Scheduled database maintenance tasks, such as the removal of
     in __init__.py.
 """
 from datetime import datetime
+from sqlalchemy.orm import sessionmaker
 
 from app import scheduler, db, appconfig
 from app.core import promote_or_remove_wisp
@@ -32,13 +33,15 @@ def purge_wisps():
     Remove wisps (or classify them as remembrances)
         after the expiry period has elapsed.
     """
+    flaskapp.app_context().push()
     expiry = datetime.utcnow() - appconfig["WISP_LIFESPAN"]
-    expired_wisps = db.session.execute(
-        db.select(Wisp).filter_by(
-            created_time <= expiry
-    ))
+    expired_wisps = db.session.scalars(
+        db.select(Wisp).filter(
+            Wisp.created_time <= expiry
+    )).all()
     for wisp in expired_wisps:
         promote_or_remove_wisp(wisp)
+    db.session.commit()
 
 def purge_songs():
     """
