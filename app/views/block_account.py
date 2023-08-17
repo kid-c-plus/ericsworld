@@ -45,15 +45,17 @@ def block_account():
         return {"error": "Users cannot block themselves."}, 400
     
     # UnHeart wisps reciprocally between blocker and blocked
-    blocker_hearted_wisps = 
-        [wisp for wisp in blocked_user.wisps
-        if curr_user in wisp.hearted_users]
+    blocker_hearted_wisps = [
+        wisp for wisp in blocked_user.wisps
+        if curr_user in wisp.hearted_users
+    ]
     for hearted_wisp in blocker_hearted_wisps:
         curr_user.unheart_wisp(hearted_wisp)
 
-    blocked_hearted_wisps = 
-        [wisp for wisp in curr_user.wisps
-        if blocked_user in wisp.hearted_users]
+    blocked_hearted_wisps = [
+        wisp for wisp in curr_user.wisps
+        if blocked_user in wisp.hearted_users
+    ]
     for hearted_wisp in blocked_hearted_wisps:
         blocked_user.unheart_wisp(hearted_wisp)
 
@@ -62,6 +64,7 @@ def block_account():
     if len(blocked_user.blocked_by_users) >= appconfig["BLOCKS_TO_BAN"]:
         blocked_user.update_status(constants.DISABLED_ACCOUNT)
         delete_user_content(blocked_user)
+        db.session.commit()
 
         login_id_changed = False
         tries = 0
@@ -76,14 +79,11 @@ def block_account():
                 login_id_changed = True
             except IntegrityError:
                 tries += 1
-                if tries >= 3:
+                if tries >= 10:
                     flaskapp.logger.error(
                         f"Unable to ban user {blocked_user.user_id} " +
                         f"after too many Login UUID collisions."
                     )
-                    return {
-                        "error": "Unable to block user."
-                    }, 500
     else:
         db.session.commit()
     return {"response": "User blocked."}, 200

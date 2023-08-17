@@ -13,7 +13,7 @@ def account_info():
     """
     GET endpoint for fetching information on the curent user.
     :return: 200 and {"username", "profile_uri", "heartscore"} response
-        dict
+        dict, or 401 as always if not authenticated
     """
     curr_user = flask_login.current_user
     return {"response": {

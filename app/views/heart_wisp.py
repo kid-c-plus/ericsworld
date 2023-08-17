@@ -70,4 +70,3 @@ def get_hearted_wisps():
     return {"wisp_ids": [
         wisp.wisp_id for wisp in curr_user.hearted_wisps
     ]}, 200
-    
