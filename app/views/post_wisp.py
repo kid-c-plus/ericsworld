@@ -21,17 +21,11 @@ def post_wisp():
     :jsonparam text: text of Wisp to post
     :jsonparam gif_uri: URI of GIF to add to post
         (URI is also the SHA value of the GIF file)
-    :return: 201 if post is created, 401 if unautorized, 403
-        if over maximum number of Wisps, 400 if Wisp has too many 
-        characters or GIF does not exist
+    :return: 201 if post is created, 403 if over maximum number of 
+        Wisps, 400 if Wisp too long or GIF does not exist
     """
     curr_user = flask_login.current_user
-    if not curr_user.is_authenticated:
-        return {"error": "No authenticated user."}, 401
-    # It shouldn't be possible for an inactive user to have a 
-    # valid login session, but still
-    if curr_user.account_status != constants.ACTIVE_ACCOUNT:
-        return {"error": "Account not active."}, 403
+
     if len(curr_user.wisps) >= appconfig["MAX_WISPS_PER_USER"]:
         return {"error": 
             "Account has reached maximum number of Wisps."}, 403
@@ -86,8 +80,7 @@ def gif_search():
         term string not provided
     """
     curr_user = flask_login.current_user
-    if not curr_user.is_authenticated:
-        return {"error": "No authenticated user."}, 401
+
     term_string = request.args.get("term_string")
     if not term_string:
         return {"error": "Search terms not provided."}, 400

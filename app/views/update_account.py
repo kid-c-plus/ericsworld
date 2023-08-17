@@ -11,11 +11,12 @@ import bleach
 
 from app import flaskapp, appconfig, db, constants, twilio_client
 from app.models import User
-from app.views.account_creation import check_username
+from app.views.create_account import check_username
  
 from tests.constants import *
 
 @flaskapp.route("/update-number", methods=["POST"])
+@flask_login.login_required
 def update_number():
     """
     POST endpoint for changing the phone number associated with
@@ -28,8 +29,6 @@ def update_number():
         has been sent, 403 if bad password/auth, 400 if bad request.
     """
     curr_user = flask_login.current_user
-    if not curr_user.is_authenticated:
-        return {"error": "No authenticated user."}, 401
     
     new_number, password, auth_code = (
         flask.request.values.get(key) for key in (
@@ -79,6 +78,7 @@ def update_number():
         return {"response": "Auth code sent."}, 204
 
 @flaskapp.route("/update-recovery-email", methods=["POST"])
+@flask_login.login_required
 def update_recovery_email():
     """
     POST endpoint for changing a user's recovery email.
@@ -89,8 +89,6 @@ def update_recovery_email():
         is invalid, 400 if email is bad or request invalid
     """
     curr_user = flask_login.current_user
-    if not curr_user.is_authenticated:
-        return {"error": "No authenticated user."}, 401
 
     new_email, password = (
         flask.request.values.get(key) for key in (
@@ -108,6 +106,7 @@ def update_recovery_email():
     return {"message": "Recovery email updated."}, 200
 
 @flaskapp.route("/update-password", methods=["POST"])
+@flask_login.login_required
 def update_password():
     """
     POST endpoint for changing a user's password. Must, of course,
@@ -118,8 +117,6 @@ def update_password():
         invalid, 400 if new password is malformed
     """
     curr_user = flask_login.current_user
-    if not curr_user.is_authenticated:
-        return {"error": "No authenticated user."}, 401
     
     current_password, new_password = (
         flask.request.values.get(key) for key in (
@@ -138,6 +135,7 @@ def update_password():
     return {"message": "Password updated."}, 200
 
 @flaskapp.route("/update-username", methods=["POST"])
+@flask_login.login_required
 def update_username():
     """
     POST endpoint for changing a user's password.
@@ -147,8 +145,6 @@ def update_username():
         invalid
     """
     curr_user = flask_login.current_user
-    if not curr_user.is_authenticated:
-        return {"error": "No authenticated user."}, 401
     
     new_username = bleach.clean(
         flask.request.values.get("new_username", "")
@@ -163,6 +159,7 @@ def update_username():
     return {"message": "Username changed."}, 200
     
 @flaskapp.route("/update-profile", methods=["POST"])
+@flask_login.login_required
 def update_profile():
     """
     POST endpoint for changing a user's profile picture..
@@ -172,8 +169,6 @@ def update_profile():
         invalid
     """
     curr_user = flask_login.current_user
-    if not curr_user.is_authenticated:
-        return {"error": "No authenticated user."}, 401
     
     new_profile = secure_filename(
         flask.request.values.get("new_profile", "")

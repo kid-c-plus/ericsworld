@@ -8,14 +8,11 @@ from app import flaskapp, db, constants
 from app.models import User
 
 @flaskapp.route("/logout", methods=["POST"])
+@flask_login.login_required
 def logout():
     """
     POST endpoint for logging out the current account.
-    :return: 200 if user logged out, 401 if no authenticated user
-        account.
+    :return: 200 if user logged out
     """
-    if flask_login.current_user.is_authenticated:
-        flask_login.logout_user()
-        return {"response": "Logged out."}, 200
-    else:
-        return {"error": "No authenticated user."}, 401
+    flask_login.logout_user()
+    return {"response": "Logged out."}, 200

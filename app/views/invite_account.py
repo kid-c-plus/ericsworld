@@ -11,6 +11,7 @@ from app import flaskapp, appconfig, db, constants, twilio_client
 from app.models import User
 
 @flaskapp.route("/invite-account", methods=["POST"])
+@flask_login.login_required
 def invite_account():
     """
     POST endpoint for inviting a new account. Checks current user
@@ -18,13 +19,12 @@ def invite_account():
         checks invited number with Twilio for validity, and sends
         invite and adds number to users database as an invited account.
     :jsonparam invited_number: number of account to invite.
-    :return: 200 if invited, 401 if unauthenticated, 403 if limit
-        reached, 400 if number not valid, already in database,
-        or not provided.
+    :return: 200 if invited, 403 if limit reached, 400 if number not 
+        valid, or not provided. 200 also if user already present in
+        database.
     """
     curr_user = flask_login.current_user
-    if not curr_user.is_authenticated:
-        return {"error": "No authenticated user."}, 401
+
     if len(curr_user.invited_users) >= appconfig["MAX_INVITES"]:
         return {"error": "Maximum invites used."}, 403
 

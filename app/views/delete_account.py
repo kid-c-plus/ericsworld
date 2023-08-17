@@ -12,17 +12,16 @@ from app.core import *
 from tests.constants import *
 
 @flaskapp.route("/delete-account", methods=["POST"])
+@flask_login.login_required
 def delete_account():
     """
     POST method for deleting the currently authenticated account
         and all its Wisps. Requires password confirmation.
     :jsonparam password: password for confirmation
-    :return: 200 if account deleted, 401 if no account authenticated,
-        403 if password invalid, 400 if request malformed
+    :return: 200 if account deleted, 403 if password invalid, 
+        400 if request malformed
     """
     curr_user = flask_login.current_user
-    if not curr_user.is_authenticated:
-        return {"error": "No authenticated user."}, 401
 
     password = request.values.get("password")
     if not password:

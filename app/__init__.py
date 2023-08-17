@@ -35,7 +35,9 @@ else:
 
 loginmanager = LoginManager()
 loginmanager.init_app(flaskapp)
-loginmanager.login_view = "login"
+loginmanager.unauthorized_handler(
+    lambda : ({"error": "No authenticated user."}, 401)
+)
 
 # Create and start task scheduler
 scheduler = BackgroundScheduler()

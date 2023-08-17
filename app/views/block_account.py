@@ -12,6 +12,7 @@ from app.core import *
 from tests.constants import *
 
 @flaskapp.route("/block-account", methods=["POST"])
+@flask_login.login_required
 def block_account():
     """
     POST endpoint for blocking an account using the ID of one of
@@ -21,12 +22,10 @@ def block_account():
         the context of that.
     :jsonparam wisp_id: unique ID of offending Wisp, the posting User
         of which will be blocke
-    :return: 200 if user has been blocked, 401 if no active user,
+    :return: 200 if user has been blocked
         404 if Wisp not found, 400 if request is malformed
     """
     curr_user = flask_login.current_user
-    if not curr_user.is_authenticated:
-        return {"error": "No authenticated user."}, 401
 
     wisp_id = flask.request.values.get("wisp_id")
     if not wisp_id:
@@ -44,6 +43,19 @@ def block_account():
     blocked_user = wisp.user
     if blocked_user == curr_user:
         return {"error": "Users cannot block themselves."}, 400
+    
+    # UnHeart wisps reciprocally between blocker and blocked
+    blocker_hearted_wisps = 
+        [wisp for wisp in blocked_user.wisps
+        if curr_user in wisp.hearted_users]
+    for hearted_wisp in blocker_hearted_wisps:
+        curr_user.unheart_wisp(hearted_wisp)
+
+    blocked_hearted_wisps = 
+        [wisp for wisp in curr_user.wisps
+        if blocked_user in wisp.hearted_users]
+    for hearted_wisp in blocked_hearted_wisps:
+        blocked_user.unheart_wisp(hearted_wisp)
 
     curr_user.blocked_users.append(blocked_user)
     # if number of blocks is above threshold, disable user

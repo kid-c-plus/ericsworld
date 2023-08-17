@@ -58,9 +58,7 @@ def test_unauthenticated_wisp(req_sess):
         f"{BASE_URL}/post-wisp",
         data=TEST_WISP
     )
-    assert response.status_code == 405 and response.url.startswith(
-        f"{BASE_URL}/login"
-    )
+    assert response.status_code == 401
 
 def test_sanitize_wisps(user_sess):
     response = user_sess.post(

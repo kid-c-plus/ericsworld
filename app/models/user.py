@@ -161,6 +161,27 @@ class User(UserMixin, db.Model):
         else:
             return False
     
+    def heart_wisp(self, wisp: Wisp):
+        """
+        Helper method for Hearting the provided Wisp. Increments
+            poster's HeartScore
+        :param wisp: Wisp to Heart
+        """
+        if wisp.user != self and wisp not in self.hearted_wisps:
+            self.hearted_wisps.append(wisp)
+            wisp.user.heartscore += 1
+
+    def unheart_wisp(self, wisp: Wisp):
+        """
+        Helper method for UnHearting the provided Wisp. Decrements 
+            poster's HeartScore
+        :param wisp: Wisp to UnHeart
+        """
+        if wisp.user != self and wisp in self.hearted_wisps:
+            self.hearted_wisps.remove(wisp)
+            wisp.user.heartscore -= 1
+
+       
     def __repr__(self):
         return "\n".join(
                 f"{k}:\t{v}" for k, v in self.__dict__.items()
