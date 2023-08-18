@@ -1,7 +1,7 @@
 """
 App views for deleting a user account
 """
-import flask
+from flask import request
 import flask_login
 import uuid
 
@@ -30,8 +30,8 @@ def delete_account():
     if not curr_user.check_password(password):
         return {"error": "Invalid password."}, 403
 
-    delete_user_content(user)
-    db.session.delete(user)
+    delete_user_content(curr_user)
+    db.session.delete(curr_user)
     db.session.commit()
 
     return {"response": "User deleted."}, 200

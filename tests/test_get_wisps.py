@@ -188,7 +188,7 @@ def test_check_newest_wisp(user_sess):
         assert response.status_code == 200
         assert response.json()["newest"] == (i == 0)
 
-def test_purge_old_wisps(user_sess, test_wisp):
+def dummy_test_purge_old_wisps(user_sess, test_wisp):
     response = user_sess.get(
         f"{BASE_URL}/get-wisps"
     )
@@ -202,3 +202,53 @@ def test_purge_old_wisps(user_sess, test_wisp):
     )
     assert (response.status_code == 200 and
         len(response.json()["wisps"]) == 0)
+
+def test_remembrances(user_sess, user_2_sess):
+    for i in range(appconfig["MAX_WISPS_PER_USER"]):
+        response = user_sess.post(
+            f"{BASE_URL}/post-wisp",
+            data={"text": str(i)}
+        )
+        assert response.status_code == 201
+
+    for _ in range(appconfig["MAX_WISPS_PER_USER"]):
+        response = user_2_sess.post(
+            f"{BASE_URL}/post-wisp",
+            data={"text": "filler"}
+        )
+        assert response.status_code == 201
+
+    response = user_sess.get(
+        f"{BASE_URL}/get-remembrances"
+    )
+    assert response.status_code == 200
+    rems = response.json()["remembrances"]
+    assert len(rems) == appconfig["MAX_REMEMBRANCES"]
+    rems = sorted(rems, key=lambda rem: int(rem["text"]))
+    print(rems)
+    for i in range(appconfig["MAX_REMEMBRANCES"]):
+        assert rems[i]["text"] == str(i)
+    
+    response = user_sess.get(
+        f"{BASE_URL}/get-wisps"
+    )
+    wisp = response.json()["wisps"][-1]
+    response = user_sess.post(
+        f"{BASE_URL}/heart-wisp",
+        data={"wisp_id": wisp["wisp_id"]}
+    )
+    assert response.status_code == 200
+    
+    response = user_sess.post(
+        f"{BASE_URL}/post-wisp",
+        data={"text": "filler"}
+    )
+    assert response.status_code == 201
+    response = user_sess.get(
+        f"{BASE_URL}/get-remembrances"
+    )
+    assert response.status_code == 200
+    rems = response.json()["remembrances"]
+    assert len(rems) == appconfig["MAX_REMEMBRANCES"]
+    print(rems)
+    

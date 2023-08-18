@@ -42,9 +42,6 @@ def server():
 
 @pytest.fixture
 def db_resource():
-    """
-    Set up Flask db context and create db fixture.
-    """
     # Setup
     flaskapp.app_context().push()
     # Just verify that this is the test database
@@ -62,9 +59,6 @@ def db_resource():
 
 @pytest.fixture
 def req_sess():
-    """
-    Set up Requests session with CSRF Token.
-    """
     # Setup
     s = requests.Session()
     s.get(f"{testconstants.BASE_URL}/hai")
@@ -78,9 +72,6 @@ def req_sess():
 
 @pytest.fixture
 def test_user(db_resource):
-    """
-    Set up active test user.
-    """
     # Setup
     session = sessionmaker(
             bind=db_resource.engine,
@@ -116,21 +107,23 @@ def user_sess(test_user):
 @pytest.fixture
 def test_wisp(user_sess):
     # Setup
-    response = user_sess.post(
+    user_sess.post(
         f"{testconstants.BASE_URL}/post-wisp",
         data=testconstants.TEST_WISP
     )
+    response = user_sess.get(
+        f"{testconstants.BASE_URL}/get-wisps"
+    )
+    assert response.status_code == 200
+    wisps = response.json()["wisps"]
 
     # Resource
-    yield testconstants.TEST_WISP
+    yield wisps[0]
 
     # No teardown
 
 @pytest.fixture
 def test_user_2(db_resource):
-    """
-    Set up second active test user.
-    """
     # Setup
     session = sessionmaker(
             bind=db_resource.engine,
@@ -154,6 +147,58 @@ def user_2_sess(test_user_2):
 
     response = s.post(f"{testconstants.BASE_URL}/login", data={
         "phone_number": test_user_2.phone_number,
+        "password": testconstants.TEST_PASSWORD
+    })
+    assert response.status_code == 200
+    
+    # Resource
+    yield s
+
+    # No teardown
+
+@pytest.fixture
+def test_wisp_2(user_2_sess):
+    # Setup
+    user_2_sess.post(
+        f"{testconstants.BASE_URL}/post-wisp",
+        data=testconstants.TEST_WISP
+    )
+    response = user_2_sess.get(
+        f"{testconstants.BASE_URL}/get-wisps"
+    )
+    assert response.status_code == 200
+    wisps = response.json()["wisps"]
+
+    # Resource
+    yield wisps[0]
+
+    # No teardown
+
+@pytest.fixture
+def test_user_3(db_resource):
+    # Setup
+    session = sessionmaker(
+            bind=db_resource.engine,
+            expire_on_commit=True)()
+    user = User(**testconstants.TEST_USER_3)
+    user.set_password(testconstants.TEST_PASSWORD)
+    session.add(user)
+    session.commit()
+    
+    # Resource
+    yield user
+
+    # No teardown
+
+@pytest.fixture
+def user_3_sess(test_user_3):
+    # Setup
+    s = requests.Session()
+    s.get(f"{testconstants.BASE_URL}/hai")
+    s.headers["X-CSRFToken"] = s.cookies["csrftoken"]
+
+    response = s.post(f"{testconstants.BASE_URL}/login", data={
+        "phone_number": test_user_3.phone_number,
         "password": testconstants.TEST_PASSWORD
     })
     assert response.status_code == 200

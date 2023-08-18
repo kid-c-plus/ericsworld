@@ -58,9 +58,9 @@ def delete_user_content(user: User):
     Helper method to remove all Wisps and Songs from a deleted
         or banned user.
     """
-    for wisp in blocked_user.wisps:
+    for wisp in user.wisps:
         wisp.remove_hearts()
         db.session.delete(wisp)
-    for song in blocked_user.songs:
-        song.remove_hearts()
-        db.session.delete(song)
+    #for song in blocked_user.songs:
+    #    song.remove_hearts()
+    #    db.session.delete(song)

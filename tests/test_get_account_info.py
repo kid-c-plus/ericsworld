@@ -15,7 +15,7 @@ from tests.constants import *
 
 def test_account_info(test_user, user_sess):
     response = user_sess.get(
-        f"{BASE_URL}/account-info"
+        f"{BASE_URL}/get-account-info"
     )
     assert response.status_code == 200 
     resp_obj = response.json()["response"]
@@ -25,6 +25,6 @@ def test_account_info(test_user, user_sess):
 
 def test_account_unauthenticated(test_user, req_sess):
     response = req_sess.get(
-        f"{BASE_URL}/account-info"
+        f"{BASE_URL}/get-account-info"
     )
     assert response.status_code == 401

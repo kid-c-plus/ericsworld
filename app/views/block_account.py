@@ -1,7 +1,7 @@
 """
 App views for blocking a user account
 """
-import flask
+from flask import request
 import flask_login
 import uuid
 
@@ -27,7 +27,7 @@ def block_account():
     """
     curr_user = flask_login.current_user
 
-    wisp_id = flask.request.values.get("wisp_id")
+    wisp_id = request.values.get("wisp_id")
     if not wisp_id:
         return {"error": "Malformed request."}, 400
 
@@ -35,7 +35,7 @@ def block_account():
     if not wisp:
         flaskapp.logger.info(
             f"User {curr_user.user_id} from IP " +
-            f"{flask.request.remote_addr}attempted block with " +
+            f"{request.remote_addr}attempted block with " +
             f"nonexistent Wisp ID {wisp_id}"
         )
         return {"error": "Wisp not found."}, 404

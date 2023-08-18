@@ -167,7 +167,8 @@ class User(UserMixin, db.Model):
             poster's HeartScore
         :param wisp: Wisp to Heart
         """
-        if wisp.user != self and wisp not in self.hearted_wisps:
+        if (wisp.user != self and wisp not in self.hearted_wisps
+                and wisp.status == constants.LIVE_WISP):
             self.hearted_wisps.append(wisp)
             wisp.user.heartscore += 1
 
@@ -177,7 +178,8 @@ class User(UserMixin, db.Model):
             poster's HeartScore
         :param wisp: Wisp to UnHeart
         """
-        if wisp.user != self and wisp in self.hearted_wisps:
+        if (wisp.user != self and wisp in self.hearted_wisps
+                and wisp.status == constants.LIVE_WISP):
             self.hearted_wisps.remove(wisp)
             wisp.user.heartscore -= 1
 

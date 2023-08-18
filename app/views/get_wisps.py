@@ -159,6 +159,21 @@ def get_wisps():
             ).all()
         ]}, 200
     
+@flaskapp.route("/get-remembrances", methods=["GET"])
+def get_remembrances():
+    """
+    GET endpoint for getting all Remembrances, Wisps with sufficient
+        quantities of Hearts to be saved at the time of their
+        passing
+    :return: 200 and a {"remembrances"} list of all Remembrances
+        visible to the User
+    """
+    return {"remembrances": [
+        remembrance.to_dict() for remembrance in get_wisps_for_user(
+            user, limit=appconfig["MAX_REMEMBRANCES"],
+            status=constants.REMEMBRANCE_WISP
+        ).all()
+    ]}, 200
 
 @flaskapp.route("/check-newest-wisp", methods=["GET"])
 def check_newest_wisp():

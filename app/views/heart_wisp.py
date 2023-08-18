@@ -17,19 +17,21 @@ def heart_wisp():
     :jsonparam: wisp_id: ID of Wisp to Heart
     :return: 200 if Wisp Hearted, 404 if Wisp not found, 400 if 
         Wisp ID not provided. Returns 200 even if Wisp already
-        Hearted
+        Hearted, or Wisp from current user, though the User.heart_wisp
+        helper method catches those things
     """
     curr_user = flask_login.current_user
 
-    wisp_id = request.args.get("wisp_id")
+    wisp_id = request.values.get("wisp_id")
     if not wisp_id:
         return {"error": "Wisp ID not provided."}, 400
 
-    wisp = get_wisps_for_user(user, wisp_id=wisp_id)
+    wisp = get_wisps_for_user(user, wisp_id=wisp_id).one()
     if not wisp:
         return {"error": "Wisp not found."}, 404
 
     curr_user.heart_wisp(wisp)
+    db.session.commit()
     return {"response": "Wisp Hearted."}, 200
 
 @flaskapp.route("/unheart-wisp", methods=["POST"])
@@ -45,20 +47,21 @@ def unheart_wisp():
     """
     curr_user = flask_login.current_user
 
-    wisp_id = request.args.get("wisp_id")
+    wisp_id = request.values.get("wisp_id")
     if not wisp_id:
         return {"error": "Wisp ID not provided."}, 400
 
-    wisp = get_wisps_for_user(curr_user, wisp_id=wisp_id)
+    wisp = get_wisps_for_user(curr_user, wisp_id=wisp_id).one()
     if not wisp:
         return {"error": "Wisp not found."}, 404
 
     curr_user.unheart_wisp(wisp)
+    db.session.commit()
     return {"response": "Wisp UnHearted."}, 200
 
-@flaskapp.route("/get-hearted-wisps", methods=["GET"])
+@flaskapp.route("/hearted-wisps", methods=["GET"])
 @flask_login.login_required
-def get_hearted_wisps():
+def hearted_wisps():
     """
     GET endpoint for recieving a complete list of IDs of Wisps 
         Hearted by the current user. This could return a fairly

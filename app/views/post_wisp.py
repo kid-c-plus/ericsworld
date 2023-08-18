@@ -26,7 +26,9 @@ def post_wisp():
     """
     curr_user = flask_login.current_user
 
-    if len(curr_user.wisps) >= appconfig["MAX_WISPS_PER_USER"]:
+    if (len([wisp for wisp in curr_user.wisps 
+            if wisp.status == constants.LIVE_WISP]) >= 
+            appconfig["MAX_WISPS_PER_USER"]):
         return {"error": 
             "Account has reached maximum number of Wisps."}, 403
     text = bleach.clean(request.values.get("text", ""))

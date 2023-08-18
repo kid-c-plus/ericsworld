@@ -72,7 +72,7 @@ class Wisp(db.Model):
             "user_id":          self.user_id,
             "user_username":    self.user.username,
             "user_profile_uri": self.user.profile_uri,
-            "user_heartscore":  self.user.heartscore
+            "user_heartscore":  self.user.heartscore,
             "status":           self.status,
             "created_time":     self.created_time,
             "text":             self.text,

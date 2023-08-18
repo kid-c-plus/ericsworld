@@ -4,7 +4,7 @@ App views for updating information for an existing account.
     password, username, and profile_uri, the first 3 of which require
     the entry of a user's current password.
 """
-import flask
+from flask import request
 import flask_login
 from werkzeug.utils import secure_filename
 import bleach
@@ -31,7 +31,7 @@ def update_number():
     curr_user = flask_login.current_user
     
     new_number, password, auth_code = (
-        flask.request.values.get(key) for key in (
+        request.values.get(key) for key in (
             "new_number", "password", "auth_code"
         )
     )
@@ -91,7 +91,7 @@ def update_recovery_email():
     curr_user = flask_login.current_user
 
     new_email, password = (
-        flask.request.values.get(key) for key in (
+        request.values.get(key) for key in (
             "new_email", "password"
         )
     )
@@ -103,7 +103,7 @@ def update_recovery_email():
     
     curr_user.recovery_email = new_email
     db.session.commit()
-    return {"message": "Recovery email updated."}, 200
+    return {"response": "Recovery email updated."}, 200
 
 @flaskapp.route("/update-password", methods=["POST"])
 @flask_login.login_required
@@ -119,7 +119,7 @@ def update_password():
     curr_user = flask_login.current_user
     
     current_password, new_password = (
-        flask.request.values.get(key) for key in (
+        request.values.get(key) for key in (
             "current_password", "new_password"
         )
     )
@@ -132,7 +132,7 @@ def update_password():
     curr_user.set_password(new_password)
     #db.session.add(curr_user)
     db.session.commit()
-    return {"message": "Password updated."}, 200
+    return {"response": "Password updated."}, 200
 
 @flaskapp.route("/update-username", methods=["POST"])
 @flask_login.login_required
@@ -147,7 +147,7 @@ def update_username():
     curr_user = flask_login.current_user
     
     new_username = bleach.clean(
-        flask.request.values.get("new_username", "")
+        request.values.get("new_username", "")
     )
     if not (appconfig["USERNAME_CHECK"](new_username) and
             check_username(new_username)[0]["unique"]):
@@ -156,7 +156,7 @@ def update_username():
     curr_user.username = new_username
     #db.session.add(curr_user)
     db.session.commit()
-    return {"message": "Username changed."}, 200
+    return {"response": "Username changed."}, 200
     
 @flaskapp.route("/update-profile", methods=["POST"])
 @flask_login.login_required
@@ -171,7 +171,7 @@ def update_profile():
     curr_user = flask_login.current_user
     
     new_profile = secure_filename(
-        flask.request.values.get("new_profile", "")
+        request.values.get("new_profile", "")
     )
     if not appconfig["PROFILE_URI_CHECK"](new_profile):
         return {"error": "Malformed request."}, 400
@@ -179,4 +179,4 @@ def update_profile():
     curr_user.profile_uri = new_profile
     #db.session.add(curr_user)
     db.session.commit()
-    return {"message": "Profile changed."}, 200
+    return {"response": "Profile changed."}, 200

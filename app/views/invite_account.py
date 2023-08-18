@@ -1,7 +1,7 @@
 """
 App views for account invitation.
 """
-import flask
+from flask import request
 import flask_login
 from twilio.base.exceptions import TwilioRestException
 from sqlalchemy.exc import IntegrityError
@@ -28,7 +28,7 @@ def invite_account():
     if len(curr_user.invited_users) >= appconfig["MAX_INVITES"]:
         return {"error": "Maximum invites used."}, 403
 
-    invited_number = flask.request.values.get("invited_number")
+    invited_number = request.values.get("invited_number")
     invited_user = db.session.execute(db.select(User).filter_by(
         phone_number=invited_number
     )).scalar() 

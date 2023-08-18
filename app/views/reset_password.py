@@ -57,7 +57,7 @@ def request_password_reset():
         if new_token:
             db.session.commit()
             send_password_reset_email(user, new_token)
-    return {"message": "Request recieved."}, 202
+    return {"response": "Request recieved."}, 202
 
 @flaskapp.route("/reset-password", methods=["POST"])
 def reset_password():

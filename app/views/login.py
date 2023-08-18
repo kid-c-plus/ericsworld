@@ -1,7 +1,7 @@
 """
 App views for account login.
 """
-import flask
+from flask import request
 import flask_login
 from werkzeug.security import check_password_hash
 
@@ -22,7 +22,7 @@ def login():
         403 if unsuccessful, 400 if lacking required fields
     """
     phone_number, password, remember, auth_code = (
-        flask.request.values.get(key) for key in (
+        request.values.get(key) for key in (
             "phone_number", "password", "remember", "auth_code"
         )
     )
@@ -51,7 +51,7 @@ def login():
     if fail_reason:
         flaskapp.logger.info(
             f"User {phone_number} failed to log in from " +
-            f"IP {flask.request.remote_addr}. Reason: " +
+            f"IP {request.remote_addr}. Reason: " +
             f"{fail_reason}."
         )
         return {"error": "Invalid login."}, 403
@@ -82,7 +82,7 @@ def login():
                 flaskapp.logger.info(
                     f"User {phone_number} " +
                     "failed to log in from " +
-                    f"IP {flask.request.remote_addr}." +
+                    f"IP {request.remote_addr}." +
                     "Reason: 2FA Failed."
                 )
                 return {"error": "Invalid login."}, 403
