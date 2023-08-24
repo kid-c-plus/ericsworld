@@ -18,7 +18,7 @@ def test_account_info(test_user, user_sess):
         f"{BASE_URL}/get-account-info"
     )
     assert response.status_code == 200 
-    resp_obj = response.json()["response"]
+    resp_obj = response.json()
     assert all([
         resp_obj[key] == TEST_USER.get(key, 0)
         for key in resp_obj.keys()])

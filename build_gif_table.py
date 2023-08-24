@@ -13,7 +13,7 @@ import shutil
 import os
 import hashlib
 import time
-#import pytest
+import json
 
 from app import *
 
@@ -67,9 +67,10 @@ class GifCitiesFetcher(GifFetcher):
     """
     GIFCITIES_BASE_URL = "https://gifcities.org"
     GIF_ARCHIVE_BASE_URL = "https://web.archive.org/web"
-    GIFS_PER_PAGE = 10
+    GIFS_PER_PAGE = 5
     PAGE_LOAD_SLEEP = 15
     REQUEST_SLEEP = 0.5
+    REQUEST_TIMEOUT = 60
 
     def __init__(self, search_file: typing.TextIO):
         """
@@ -101,13 +102,39 @@ class GifCitiesFetcher(GifFetcher):
                         self.GIF_ARCHIVE_BASE_URL) and term_string
                         and term_string != 
                         "Donate to the Internet Archive"):
-                    response = requests.get(
-                        gif_uri, stream=True)
-                    sha = self.save_image_stream(
-                        response.raw
-                    )
-                    yield (term_string, sha)
-                    time.sleep(self.REQUEST_SLEEP)
+                    try:
+                        response = requests.get(
+                            gif_uri, stream=True, 
+                            timeout=self.REQUEST_TIMEOUT
+                        )
+                        sha = self.save_image_stream(
+                            response.raw
+                        )
+                        yield (term_string, sha)
+                        time.sleep(self.REQUEST_SLEEP)
+                    except Exception:
+                        continue
+
+class ManifestFetcher:
+    """
+    Subclass of GifFetcher for building database using a manifest of 
+        locally stored GIFs and their search terms
+    """
+    def __init__(self, manifest_file: typing.TextIO):
+        """
+        Constructor for manifest fetcher
+        :param manifest_file: File object containing JSON manifest
+            list of (term string, SHA) tuples
+        """
+        self.manifest = json.load(manifest_file)
+
+    def iterate_gifs(self):
+        """
+        Iterator generator wrapper for manifest list
+        :yield: (search terms string, image SHA256 filename) tuple
+        """
+        for entry in self.manifest:
+            yield entry
 
 class DatabaseBuilder:
     """
@@ -125,7 +152,8 @@ class DatabaseBuilder:
 
     def build(self, spell_check: bool = True, 
               split_words: bool = True,
-              verbose: bool = False):
+              verbose: bool = False,
+              manifest_path: str = None):
         """
         Iteratively adds GIFs and search terms to the database.
         :param spell_check: Whether to perform spell checking and
@@ -133,11 +161,15 @@ class DatabaseBuilder:
         :param split_words: Whether to attempt to split 
             undelimeted strings into constituent words
         :param verbose: Whether to print progress
+        :param manifest_path: If path provided, store a manifest
+            JSON file mapping term strings to SHAs 
         """
         if spell_check:
             sc = SpellChecker()
         iterator = 0
+        manifest = []
         for term_string, sha in self.fetcher.iterate_gifs():
+            manifest.append((term_string, sha))
             if iterator % 10 == 0 and verbose:
                 print(f"Processing GIF with SHA {sha} and " +
                       f"terms {term_string}...")
@@ -179,11 +211,19 @@ class DatabaseBuilder:
                     )
                     self.db_resource.session.add(association_obj)
         self.db_resource.session.commit()
+        if manifest_path:
+            with open(manifest_path, "w") as mp:
+                json.dump(manifest, mp)
 
-thread = start_server()
-with open("test-gif-set.txt") as searchfile:
-    fetcher = GifCitiesFetcher(searchfile)
-    flaskapp.app_context().push()
-    builder = DatabaseBuilder(fetcher, db)
-    builder.build(verbose=True)
-stop_server(thread)
+if __name__ == "__main__":
+    thread = start_server()
+    with open("test-gif-set.txt") as searchfile:
+        fetcher = GifCitiesFetcher(searchfile)
+        flaskapp.app_context().push()
+        builder = DatabaseBuilder(
+            fetcher, db
+        )
+        builder.build(
+            verbose=True, manifest_path="gif_manifest.json"
+        )
+    stop_server(thread)

@@ -5,6 +5,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
+from flask_cors import CORS
+
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 import sys
@@ -20,6 +23,9 @@ else:
     from config import Config
 flaskapp.config.from_object(Config)
 appconfig = flaskapp.config
+
+CSRFProtect(flaskapp)
+CORS(flaskapp)
 
 db = SQLAlchemy(flaskapp)
 migrate = Migrate(flaskapp, db, render_as_batch=True)

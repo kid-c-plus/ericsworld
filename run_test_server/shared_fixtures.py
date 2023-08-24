@@ -2,7 +2,7 @@
 Fixtures shared between multiple test suites.
 """
 import shutil
-shutil.copy("unit_test_config.py", "test_config.py")
+shutil.copy("run_test_config.py", "test_config.py")
 
 import pytest
 import os
@@ -11,7 +11,7 @@ import requests
 from sqlalchemy.orm import sessionmaker
 
 from test_config import Config
-from tests import constants as testconstants
+from run_test_server import constants as testconstants
 
 # delete all previous content from testing Logfile
 if os.path.exists(Config.LOGFILE):
@@ -20,6 +20,7 @@ if os.path.exists(Config.LOGFILE):
      f.truncate()
 
 from app import *
+from build_gif_table import *
 
 @pytest.fixture(autouse=True)
 def remove_reset_token():
@@ -52,7 +53,12 @@ def db_resource():
         "test_app.db"
     )
     db.metadata.create_all(db.engine)
-
+    
+    with open("gif_manifest.json") as manifest_file:
+        fetcher = ManifestFetcher(manifest_file)
+        builder = DatabaseBuilder(fetcher, db)
+        builder.build()
+    
     # Resource
     yield db
 
