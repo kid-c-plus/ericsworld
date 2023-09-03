@@ -45,7 +45,7 @@ def request_password_reset():
     if flask_login.current_user.is_authenticated:
         return {"error": "User already authenticated."}, 400
 
-    phone_number = request.values.get("phone_number")
+    phone_number = request.json.get("phone_number")
     if not appconfig["PHONE_NUMBER_CHECK"](phone_number):
         return {"error": "Malformed request."}, 400
 
@@ -82,7 +82,7 @@ def reset_password():
         return {"error": "User already authenticated."}, 400
     
     phone_number, reset_token, auth_code, new_password = (
-        request.values.get(key) for key in (
+        request.json.get(key) for key in (
             "phone_number", "reset_token", "auth_code", "new_password"
         )
     )

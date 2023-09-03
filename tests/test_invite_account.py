@@ -24,7 +24,7 @@ def test_successful_invite(user_sess):
     number = TEST_NEW_USER["phone_number"]
     resp = user_sess.post(
         f"{BASE_URL}/invite-account",
-        data={
+        json={
             "invited_number": number
         }
     )
@@ -35,7 +35,7 @@ def test_unauthorized_invite(req_sess, test_user):
     number = TEST_NEW_USER["phone_number"]
     resp = req_sess.post(
         f"{BASE_URL}/invite-account",
-        data={
+        json={
             "invited_number": number
         }
     )
@@ -49,7 +49,7 @@ def test_existing_user_invite(user_sess):
     db.session.commit()
     resp = user_sess.post(
         f"{BASE_URL}/invite-account",
-        data={
+        json={
             "invited_number": user_2.phone_number
         }
     )
@@ -62,7 +62,7 @@ def test_max_invites(db_resource, test_user, user_sess):
         number = "+1" + ("0" * 12 + str(i))[-12:]
         resp = user_sess.post(
             f"{BASE_URL}/invite-account",
-            data={
+            json={
                 "invited_number": number
             }
         )
@@ -70,7 +70,7 @@ def test_max_invites(db_resource, test_user, user_sess):
     number = TEST_NEW_USER["phone_number"]
     resp = user_sess.post(
         f"{BASE_URL}/invite-account",
-        data={
+        json={
             "invited_number": number
         }
     )
@@ -82,7 +82,7 @@ def test_bad_number(user_sess):
     number = "123456789"
     resp = user_sess.post(
         f"{BASE_URL}/invite-account",
-        data={
+        json={
             "invited_number": number
         }
     )

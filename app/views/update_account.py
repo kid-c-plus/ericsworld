@@ -8,6 +8,7 @@ from flask import request
 import flask_login
 from werkzeug.utils import secure_filename
 import bleach
+import os
 
 from app import flaskapp, appconfig, db, constants, twilio_client
 from app.models import User
@@ -31,7 +32,7 @@ def update_number():
     curr_user = flask_login.current_user
     
     new_number, password, auth_code = (
-        request.values.get(key) for key in (
+        request.json.get(key) for key in (
             "new_number", "password", "auth_code"
         )
     )
@@ -62,7 +63,6 @@ def update_number():
             )
 
             curr_user.phone_number = new_number
-            #db.session.add(curr_user)
             db.session.commit()
             return {"response": "Number updated."}, 200
         else:
@@ -91,7 +91,7 @@ def update_recovery_email():
     curr_user = flask_login.current_user
 
     new_email, password = (
-        request.values.get(key) for key in (
+        request.json.get(key) for key in (
             "new_email", "password"
         )
     )
@@ -119,7 +119,7 @@ def update_password():
     curr_user = flask_login.current_user
     
     current_password, new_password = (
-        request.values.get(key) for key in (
+        request.json.get(key) for key in (
             "current_password", "new_password"
         )
     )
@@ -130,7 +130,6 @@ def update_password():
         return {"error": "Invalid password."}, 403
 
     curr_user.set_password(new_password)
-    #db.session.add(curr_user)
     db.session.commit()
     return {"response": "Password updated."}, 200
 
@@ -147,14 +146,13 @@ def update_username():
     curr_user = flask_login.current_user
     
     new_username = bleach.clean(
-        request.values.get("new_username", "")
+        request.json.get("new_username", "")
     )
     if not (appconfig["USERNAME_CHECK"](new_username) and
             check_username(new_username)[0]["unique"]):
         return {"error": "Malformed request."}, 400
     
     curr_user.username = new_username
-    #db.session.add(curr_user)
     db.session.commit()
     return {"response": "Username changed."}, 200
     
@@ -162,7 +160,7 @@ def update_username():
 @flask_login.login_required
 def update_profile():
     """
-    POST endpoint for changing a user's profile picture..
+    POST endpoint for changing a user's profile picture.
     :jsonparam new_profile: new profile URI. must pass
         PROFILE_CHECK
     :return: 200 if profile has been changed, 400 if profile URI is
@@ -171,12 +169,36 @@ def update_profile():
     curr_user = flask_login.current_user
     
     new_profile = secure_filename(
-        request.values.get("new_profile", "")
+        request.json.get("new_profile", "")
     )
     if not appconfig["PROFILE_URI_CHECK"](new_profile):
         return {"error": "Malformed request."}, 400
     
     curr_user.profile_uri = new_profile
-    #db.session.add(curr_user)
     db.session.commit()
     return {"response": "Profile changed."}, 200
+
+@flaskapp.route("/get-profiles", methods=["GET"])
+@flask_login.login_required
+def get_profiles():
+    """
+    GET endpoint for providing URIs for the profile GIFs in the
+        provided category, or the list of profile categories if none
+        is provided.
+    :queryparam category: category for which to return GIF URIs
+    :return: 200 and {"gifs"} dict, where "gifs" is a list of
+        filenames, or 400 if category not found
+    """
+    category = secure_filename(
+        request.params.get("category", ""))
+
+    if category:
+        category_path = os.path.join(
+            appconfig["PROFILE_DIR"], category
+        )
+        if os.path.exists(category_path):
+            return {"gifs": os.listdir(category_path)}, 200
+        else:
+            return {"error": "Malformed request."}, 400
+    else:
+        return {"gifs": os.listdir(appconfig["PROFILE_DIR"])}

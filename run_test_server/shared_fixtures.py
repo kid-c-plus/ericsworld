@@ -70,8 +70,8 @@ def db_resource():
 def req_sess():
     # Setup
     s = requests.Session()
-    s.get(f"{testconstants.BASE_URL}/hai")
-    s.headers["X-CSRFToken"] = s.cookies["csrftoken"]
+    token = s.get(f"{testconstants.BASE_URL}/hai", verify=False).json()["csrftoken"]
+    s.headers["X-CSRFToken"] = token
 
     # Resource
     yield s
@@ -99,13 +99,14 @@ def test_user(db_resource):
 def user_sess(test_user):
     # Setup
     s = requests.Session()
-    s.get(f"{testconstants.BASE_URL}/hai")
-    s.headers["X-CSRFToken"] = s.cookies["csrftoken"]
+    token = s.get(f"{testconstants.BASE_URL}/hai", verify=False).json()["csrftoken"]
+    s.headers["X-CSRFToken"] = token
 
-    response = s.post(f"{testconstants.BASE_URL}/login", data={
+    response = s.post(f"{testconstants.BASE_URL}/login", json={
         "phone_number": test_user.phone_number,
         "password": testconstants.TEST_PASSWORD
-    })
+    }, verify=False)
+    print(response.text)
     assert response.status_code == 200
     
     # Resource
@@ -118,10 +119,12 @@ def test_wisp(user_sess):
     # Setup
     user_sess.post(
         f"{testconstants.BASE_URL}/post-wisp",
-        data=testconstants.TEST_WISP
+        data=testconstants.TEST_WISP,
+        verify=False
     )
     response = user_sess.get(
-        f"{testconstants.BASE_URL}/get-wisps"
+        f"{testconstants.BASE_URL}/get-wisps",
+        verify=False
     )
     assert response.status_code == 200
     wisps = response.json()["wisps"]
@@ -151,13 +154,13 @@ def test_user_2(db_resource):
 def user_2_sess(test_user_2):
     # Setup
     s = requests.Session()
-    s.get(f"{testconstants.BASE_URL}/hai")
-    s.headers["X-CSRFToken"] = s.cookies["csrftoken"]
+    token = s.get(f"{testconstants.BASE_URL}/hai", verify=False).json()["csrftoken"]
+    s.headers["X-CSRFToken"] = token
 
-    response = s.post(f"{testconstants.BASE_URL}/login", data={
+    response = s.post(f"{testconstants.BASE_URL}/login", json={
         "phone_number": test_user_2.phone_number,
         "password": testconstants.TEST_PASSWORD
-    })
+    }, verify=False)
     assert response.status_code == 200
     
     # Resource
@@ -170,10 +173,12 @@ def test_wisp_2(user_2_sess):
     # Setup
     user_2_sess.post(
         f"{testconstants.BASE_URL}/post-wisp",
-        data=testconstants.TEST_WISP
+        data=testconstants.TEST_WISP,
+        verify=False
     )
     response = user_2_sess.get(
-        f"{testconstants.BASE_URL}/get-wisps"
+        f"{testconstants.BASE_URL}/get-wisps",
+        verify=False
     )
     assert response.status_code == 200
     wisps = response.json()["wisps"]
@@ -203,13 +208,13 @@ def test_user_3(db_resource):
 def user_3_sess(test_user_3):
     # Setup
     s = requests.Session()
-    s.get(f"{testconstants.BASE_URL}/hai")
-    s.headers["X-CSRFToken"] = s.cookies["csrftoken"]
+    token = s.get(f"{testconstants.BASE_URL}/hai", verify=False).json()["csrftoken"]
+    s.headers["X-CSRFToken"] = token
 
-    response = s.post(f"{testconstants.BASE_URL}/login", data={
+    response = s.post(f"{testconstants.BASE_URL}/login", json={
         "phone_number": test_user_3.phone_number,
         "password": testconstants.TEST_PASSWORD
-    })
+    }, verify=False)
     assert response.status_code == 200
     
     # Resource

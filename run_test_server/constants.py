@@ -5,7 +5,7 @@ import uuid
 
 from app import constants as appconstants
 
-BASE_URL = "http://127.0.0.1:5000"
+BASE_URL = "https://127.0.0.1:5000"
 TEST_NEW_USER = {
     "user_id": uuid.uuid1().hex,
     "login_id": uuid.uuid1().hex,
@@ -23,11 +23,11 @@ TEST_NEW_USER_2 = {
 TEST_USER = {
     "user_id": uuid.uuid1().hex,
     "login_id": uuid.uuid1().hex,
-    "phone_number": "+15555550910",
+    "phone_number": "+11234567890",
     "recovery_email": "testuser@ericsworld.net",
     "username": "test user",
     "account_status": appconstants.ACTIVE_ACCOUNT,
-    "profile_uri": "airline-to-heaven.jpeg"
+    "profile_uri": "BUILDNGS/MARBARCH.GIF"
 }
 
 TEST_USER_2 = {
@@ -37,7 +37,7 @@ TEST_USER_2 = {
     "recovery_email": "testuser2@ericsworld.net",
     "username": "test user 2",
     "account_status": appconstants.ACTIVE_ACCOUNT,
-    "profile_uri": "cubes.jpeg"
+    "profile_uri": "CATS/BINKY.GIF"
 }
 
 TEST_USER_3 = {
@@ -47,11 +47,11 @@ TEST_USER_3 = {
     "recovery_email": "testuser3@ericsworld.net",
     "username": "test user 3",
     "account_status": appconstants.ACTIVE_ACCOUNT,
-    "profile_uri": "hollow_earth_color.jpeg"
+    "profile_uri": "ABSTRACT/ALIENSEA.GIF"
 }
 
 
-TEST_PASSWORD = "Pa$$word1234"
+TEST_PASSWORD = "hai"
 TEST_PASSWORD_2 = "password5678"
 TEST_PASSWORD_3 = "passW0RD9101"
 

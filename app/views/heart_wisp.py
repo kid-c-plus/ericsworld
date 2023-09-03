@@ -22,7 +22,7 @@ def heart_wisp():
     """
     curr_user = flask_login.current_user
 
-    wisp_id = request.values.get("wisp_id")
+    wisp_id = request.json.get("wisp_id")
     if not wisp_id:
         return {"error": "Wisp ID not provided."}, 400
 
@@ -47,7 +47,7 @@ def unheart_wisp():
     """
     curr_user = flask_login.current_user
 
-    wisp_id = request.values.get("wisp_id")
+    wisp_id = request.json.get("wisp_id")
     if not wisp_id:
         return {"error": "Wisp ID not provided."}, 400
 

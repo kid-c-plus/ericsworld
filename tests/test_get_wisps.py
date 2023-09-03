@@ -41,7 +41,7 @@ def test_many_wisps(user_sess):
     for text in wisp_texts:
         response = user_sess.post(
             f"{BASE_URL}/post-wisp",
-            data={"text": text}
+            json={"text": text}
         )
         assert response.status_code == 201
 
@@ -123,7 +123,7 @@ def test_anonymous_wisp(user_sess, req_sess):
     for text in wisp_texts:
         response = user_sess.post(
             f"{BASE_URL}/post-wisp",
-            data={"text": text}
+            json={"text": text}
         )
         assert response.status_code == 201
 
@@ -168,7 +168,7 @@ def test_check_newest_wisp(user_sess):
     for text in wisp_texts:
         response = user_sess.post(
             f"{BASE_URL}/post-wisp",
-            data={"text": text}
+            json={"text": text}
         )
         assert response.status_code == 201
 
@@ -207,14 +207,14 @@ def test_remembrances(user_sess, user_2_sess):
     for i in range(appconfig["MAX_WISPS_PER_USER"]):
         response = user_sess.post(
             f"{BASE_URL}/post-wisp",
-            data={"text": str(i)}
+            json={"text": str(i)}
         )
         assert response.status_code == 201
 
     for _ in range(appconfig["MAX_WISPS_PER_USER"]):
         response = user_2_sess.post(
             f"{BASE_URL}/post-wisp",
-            data={"text": "filler"}
+            json={"text": "filler"}
         )
         assert response.status_code == 201
 
@@ -235,13 +235,13 @@ def test_remembrances(user_sess, user_2_sess):
     wisp = response.json()["wisps"][-1]
     response = user_sess.post(
         f"{BASE_URL}/heart-wisp",
-        data={"wisp_id": wisp["wisp_id"]}
+        json={"wisp_id": wisp["wisp_id"]}
     )
     assert response.status_code == 200
     
     response = user_sess.post(
         f"{BASE_URL}/post-wisp",
-        data={"text": "filler"}
+        json={"text": "filler"}
     )
     assert response.status_code == 201
     response = user_sess.get(

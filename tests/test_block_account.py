@@ -28,13 +28,13 @@ def test_block_wisps(user_sess, user_2_sess):
     for i in range(NUM_TEST_WISPS):
         response = user_sess.post(
             f"{BASE_URL}/post-wisp",
-            data={"text": user_1_wisps[i]}
+            json={"text": user_1_wisps[i]}
         )
         assert response.status_code == 201
 
         response = user_2_sess.post(
             f"{BASE_URL}/post-wisp",
-            data={"text": user_2_wisps[i]}
+            json={"text": user_2_wisps[i]}
         )
         assert response.status_code == 201
     
@@ -70,7 +70,7 @@ def test_block_wisps(user_sess, user_2_sess):
 
     response = user_sess.post(
         f"{BASE_URL}/block-account",
-        data={"wisp_id": wisps[0]["wisp_id"]}
+        json={"wisp_id": wisps[0]["wisp_id"]}
     )
     assert response.status_code == 200
 
@@ -86,7 +86,7 @@ def test_block_wisps(user_sess, user_2_sess):
 def test_self_block(user_sess, test_wisp):
     response = user_sess.post(
         f"{BASE_URL}/block-account",
-        data={"wisp_id": test_wisp["wisp_id"]}
+        json={"wisp_id": test_wisp["wisp_id"]}
     )
     assert (response.status_code == 400 and 
         response.json()["error"] == "Users cannot block themselves.")
@@ -94,7 +94,7 @@ def test_self_block(user_sess, test_wisp):
 def test_unauthenticated_block(req_sess, test_wisp):
     response = req_sess.post(
         f"{BASE_URL}/block-account",
-        data={"wisp_id": test_wisp["wisp_id"]}
+        json={"wisp_id": test_wisp["wisp_id"]}
     )
     assert response.status_code == 401
 
@@ -102,12 +102,12 @@ def test_block_to_ban(req_sess, user_sess, test_wisp,
                       user_2_sess, user_3_sess):
     response = user_2_sess.post(
         f"{BASE_URL}/block-account",
-        data={"wisp_id": test_wisp["wisp_id"]}
+        json={"wisp_id": test_wisp["wisp_id"]}
     )
     assert response.status_code == 200
     response = user_3_sess.post(
         f"{BASE_URL}/block-account",
-        data={"wisp_id": test_wisp["wisp_id"]}
+        json={"wisp_id": test_wisp["wisp_id"]}
     )
     assert response.status_code == 200
 
@@ -118,7 +118,7 @@ def test_block_to_ban(req_sess, user_sess, test_wisp,
 
     response = user_sess.post(
         f"{BASE_URL}/post-wisp",
-        data=TEST_WISP
+        json=TEST_WISP
     )
     assert response.status_code == 401
 
@@ -130,12 +130,12 @@ def test_block_to_ban(req_sess, user_sess, test_wisp,
 def test_mutual_block(user_sess, test_wisp, user_2_sess, test_wisp_2):
     response = user_2_sess.post(
         f"{BASE_URL}/block-account",
-        data={"wisp_id": test_wisp["wisp_id"]}
+        json={"wisp_id": test_wisp["wisp_id"]}
     )
     assert response.status_code == 200
     
     response = user_sess.post(
         f"{BASE_URL}/block-account",
-        data={"wisp_id": test_wisp_2["wisp_id"]}
+        json={"wisp_id": test_wisp_2["wisp_id"]}
     )
     assert response.status_code == 200

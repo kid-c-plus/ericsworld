@@ -23,7 +23,5 @@ def startup():
     flaskapp.logger.addHandler(file_handler)
     wz_logger = logging.getLogger('werkzeug')
     wz_logger.addHandler(file_handler)
-
-    CSRFProtect(flaskapp)
     
     scheduled_tasks.schedule()

@@ -22,7 +22,7 @@ def login():
         403 if unsuccessful, 400 if lacking required fields
     """
     phone_number, password, remember, auth_code = (
-        request.values.get(key) for key in (
+        request.json.get(key) for key in (
             "phone_number", "password", "remember", "auth_code"
         )
     )

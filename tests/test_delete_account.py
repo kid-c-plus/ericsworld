@@ -20,7 +20,7 @@ from tests.constants import *
 def test_delete_account(user_sess, test_wisp, user_2_sess):
     response = user_sess.post(
         f"{BASE_URL}/delete-account",
-        data={"password": TEST_PASSWORD}
+        json={"password": TEST_PASSWORD}
     )
     assert response.status_code == 200
     response = user_sess.get(

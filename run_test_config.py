@@ -11,6 +11,10 @@ class Config:
     """
     Class containing all configuration items.
     """
+    FLASK_RUN_ARGS = {
+        "host": "0.0.0.0", 
+        "ssl_context": "adhoc"
+    }
 
     # SQLAlchemy Settings
     basedir = os.path.abspath(os.path.dirname(__file__))
@@ -21,6 +25,7 @@ class Config:
     # Flask-WTF Settings
     # CSRF Protection enabled
     WTF_CSRF_ENABLED = True
+    WTF_CSRF_SSL_STRICT = False
 
     # Flask-CORS Settings
     CORS_ORIGINS = "http://localhost:3000"
@@ -38,8 +43,8 @@ class Config:
 
     # App Behavior Settings
 
-    PROFILE_PATH = os.path.join(basedir, "static", "profiles")
-    GIF_PATH = os.path.join(basedir, "static", "gifs")
+    PROFILE_PATH = os.path.join(basedir, "app", "static", "profiles")
+    GIF_PATH = os.path.join(basedir, "app", "static", "gifs")
 
     # Duration for which a password reset token is valid
     RESET_TOKEN_LIFESPAN = timedelta(seconds=5)

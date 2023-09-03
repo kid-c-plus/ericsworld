@@ -1,8 +1,16 @@
 import React from "react";
+
 import WispScreen from "./WispScreen.js";
+import ScrollBar from "./ScrollBar.js";
+import Button from "./Button.js";
+import AccountPane from "./AccountPane.js";
+
 import Constants from "./constants.js";
 import calculateViewportOffsets from "./onLoad.js";
+
 import "./World.css";
+import "./WispScreen.css";
+import "./Pane.css";
 
 // Root component for Eric's World app. Handles basic window sizing
 // actions and polls backend
@@ -11,7 +19,14 @@ class World extends React.Component {
         super(props);
 
         this.state = {
-            csrfToken: ""
+            csrfToken: "",
+
+            thumbPercent: 0.0,
+
+            selectedPane: "home",
+            paneDeactivated: false,
+
+            accountInfo: null,
         }
         
         calculateViewportOffsets();
@@ -21,7 +36,6 @@ class World extends React.Component {
     // Callback invoked after component mount
     componentDidMount() {
         this.getCSRFToken();
-        console.log(document.cookie);
     }
 
     // Gets CSRF token from "/hai" endpoint and saves to "csrfToken"
@@ -30,32 +44,126 @@ class World extends React.Component {
         fetch(Constants.CSRF_ENDPOINT, {
             credentials: "include"
         })
-        .then(response => response.text())
-        .then(text =>
+        .then(response => response.json())
+        .then(csrfResp =>
             this.setState({
-                csrfToken: text
+                csrfToken: csrfResp["csrftoken"]
             })
         );
     }
 
+    // Backend Query Methods
+    // Any backend data needed by multiple children
+    // is done by the World component
+
     // helper method for fetch calls including CSRF token
+    // also adds Content-Type: "application/json" header,
+    // though that can be overridden by provided headers
     // endpoint - URL to query
     // params - query parameter dict to pass to fetch
     csrfFetch(endpoint, params) {
-        if ("headers" in params) {
-            params["headers"]["X-CSRFToken"] = this.state.csrfToken;
-        } else {
-            params["headers"] = {
-                "X-CSRFToken": this.state.csrfToken
-            };
+        let addedHeaders = {
+            "X-CSRFToken": this.state.csrfToken,
+            "Content-Type": "application/json"
+        };
+        params["headers"] = {
+            ...addedHeaders,
+            ...("headers" in params ? params["headers"] : {})
         }
         return fetch(endpoint, params);
     }
-  
+
+    // query backend for currently logged in account information
+    getAccountInfo() {
+        fetch(Constants.ACCOUNT_INFO_ENDPOINT)
+        .then(response => response.json())
+        .then(accountInfoResp => this.setState({
+            accountInfo: accountInfoResp
+        }));
+    }
+    
+    // callback method for updating Wisp screen scroll percentage
+    // newThumbPercent - scroll thumb percent, expressed as scrollTop / 
+    //      (scrollHeight - clientHeight), thus has value 1 at bottom
+    //      of scroll
+    scrollCallback(newThumbPercent) {
+        if (this.state.thumbPercent !== newThumbPercent) {
+            this.setState({
+                thumbPercent: newThumbPercent
+            });
+            document.documentElement.style.setProperty(
+                "--scrollthumbpercent", newThumbPercent
+            );
+        }
+    }
+
+    // callback for all pane selection Button children (i.e. About,
+    // Account/Login, & Post). Sets state. should be bound with
+    // appropriate state string. Can be bound with "home" to provide
+    // panes themselves a graceful way of deactivating themselves
+    paneButtonCallback(paneName) {
+        if (paneName !== this.state.selectedPane) {
+            if (this.state.selectedPane === "home") {
+                this.setState({selectedPane: paneName});
+            } else {
+                this.setState({paneDeactivated: true});
+                setTimeout(() => this.setState({
+                        selectedPane:       paneName,
+                        paneDeactivated:    false
+                    }), 500
+                );
+            }
+        }
+    }
+
+    renderSelectedPane() {
+        switch (this.state.selectedPane) {
+            case "account":
+                return (
+                    <AccountPane 
+                        csrfFetch={this.csrfFetch.bind(this)}
+                        accountUpdateCallback={
+                            this.getAccountInfo.bind(this)}
+                        profileEditorCallback={
+                            this.paneButtonCallback.bind(
+                                this, "profile")}
+                        deactivateCallback={
+                            this.paneButtonCallback.bind(this, "home")}
+                        deactivated={this.state.paneDeactivated}
+                    />
+                );
+            default:
+                return <>< />;
+        }
+    }
+
     render() {
         return (
-            <div id="World">
-                <WispScreen />
+            <div id="World" className="ImageForeground">
+                <Button elemId="HomeButton" pressCallback={
+                    this.paneButtonCallback.bind(this, "home")} />
+                <Button elemId="AboutButton" pressCallback={
+                    this.paneButtonCallback.bind(this, "about")} />
+                <Button elemId="AccountButton" pressCallback={
+                    this.paneButtonCallback.bind(this, "account")} />
+                <Button elemId="PostButton" pressCallback={
+                    this.paneButtonCallback.bind(this, "post")} />
+
+                <WispScreen thumbPercent={
+                        this.state.thumbPercent
+                    } scrollCallback={
+                        this.scrollCallback.bind(this)
+                    } 
+                />
+
+                {this.renderSelectedPane()}
+
+                <ScrollBar thumbPercent={
+                        this.state.thumbPercent
+                    } scrollCallback={
+                        this.scrollCallback.bind(this)
+                    }
+               />
             </div>
         );
     }

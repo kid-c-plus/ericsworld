@@ -23,7 +23,7 @@ from tests.constants import *
 def test_password_reset(db_resource, test_user, req_sess):
     response = req_sess.post(
         f"{BASE_URL}/request-password-reset",
-        data={
+        json={
             "phone_number": test_user.phone_number
         }
     )
@@ -34,7 +34,7 @@ def test_password_reset(db_resource, test_user, req_sess):
     new_password = "new_password"
     response = req_sess.post(
         f"{BASE_URL}/reset-password",
-        data={
+        json={
             "phone_number": test_user.phone_number,
             "reset_token": reset_token,
             "new_password": new_password
@@ -44,7 +44,7 @@ def test_password_reset(db_resource, test_user, req_sess):
     
     response = req_sess.post(
         f"{BASE_URL}/reset-password",
-        data={
+        json={
             "phone_number": test_user.phone_number,
             "reset_token": reset_token,
             "auth_code": appconstants.TEST_AUTH_CODE,
@@ -60,7 +60,7 @@ def test_password_reset(db_resource, test_user, req_sess):
 def test_password_reset_too_frequent(db_resource, test_user, req_sess):
     response = req_sess.post(
         f"{BASE_URL}/request-password-reset",
-        data={
+        json={
             "phone_number": test_user.phone_number
         }
     )
@@ -70,7 +70,7 @@ def test_password_reset_too_frequent(db_resource, test_user, req_sess):
 
     response = req_sess.post(
         f"{BASE_URL}/request-password-reset",
-        data={
+        json={
             "phone_number": test_user.phone_number
         }
     )
@@ -80,7 +80,7 @@ def test_password_reset_too_frequent(db_resource, test_user, req_sess):
 def test_password_reset_timeout(db_resource, test_user, req_sess):
     response = req_sess.post(
         f"{BASE_URL}/request-password-reset",
-        data={
+        json={
             "phone_number": test_user.phone_number
         }
     )
@@ -92,7 +92,7 @@ def test_password_reset_timeout(db_resource, test_user, req_sess):
     new_password = "new_password"
     response = req_sess.post(
         f"{BASE_URL}/reset-password",
-        data={
+        json={
             "phone_number": test_user.phone_number,
             "reset_token": reset_token,
             "new_password": new_password
@@ -103,7 +103,7 @@ def test_password_reset_timeout(db_resource, test_user, req_sess):
 def test_password_reset_bad_password(db_resource, test_user, req_sess):
     response = req_sess.post(
         f"{BASE_URL}/request-password-reset",
-        data={
+        json={
             "phone_number": test_user.phone_number
         }
     )
@@ -114,7 +114,7 @@ def test_password_reset_bad_password(db_resource, test_user, req_sess):
     new_password = "new_password"
     response = req_sess.post(
         f"{BASE_URL}/reset-password",
-        data={
+        json={
             "phone_number": test_user.phone_number,
             "reset_token": reset_token,
             "new_password": new_password
@@ -124,7 +124,7 @@ def test_password_reset_bad_password(db_resource, test_user, req_sess):
     
     response = req_sess.post(
         f"{BASE_URL}/reset-password",
-        data={
+        json={
             "phone_number": test_user.phone_number,
             "reset_token": reset_token,
             "auth_code": appconstants.TEST_AUTH_CODE,
@@ -140,7 +140,7 @@ def test_password_reset_bad_password(db_resource, test_user, req_sess):
 def test_password_reset_bad_auth(db_resource, test_user, req_sess):
     response = req_sess.post(
         f"{BASE_URL}/request-password-reset",
-        data={
+        json={
             "phone_number": test_user.phone_number
         }
     )
@@ -151,7 +151,7 @@ def test_password_reset_bad_auth(db_resource, test_user, req_sess):
     new_password = "new_password"
     response = req_sess.post(
         f"{BASE_URL}/reset-password",
-        data={
+        json={
             "phone_number": test_user.phone_number,
             "reset_token": reset_token,
             "new_password": new_password
@@ -161,7 +161,7 @@ def test_password_reset_bad_auth(db_resource, test_user, req_sess):
     
     response = req_sess.post(
         f"{BASE_URL}/reset-password",
-        data={
+        json={
             "phone_number": test_user.phone_number,
             "reset_token": reset_token,
             "auth_code": "8989",
@@ -178,7 +178,7 @@ def test_password_reset_inactive_user(db_resource, test_user, req_sess):
     test_user._sa_instance_state.session.commit()
     response = req_sess.post(
         f"{BASE_URL}/request-password-reset",
-        data={
+        json={
             "phone_number": test_user.phone_number
         }
     )

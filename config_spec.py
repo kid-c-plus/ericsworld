@@ -10,6 +10,7 @@ class Config:
     """
     Class containing all configuration items.
     """
+    FLASK_RUN_ARGS = {}
 
     # SQLAlchemy Settings
     basedir = os.path.abspath(os.path.dirname(__file__))

@@ -27,7 +27,7 @@ def block_account():
     """
     curr_user = flask_login.current_user
 
-    wisp_id = request.values.get("wisp_id")
+    wisp_id = request.json.get("wisp_id")
     if not wisp_id:
         return {"error": "Malformed request."}, 400
 

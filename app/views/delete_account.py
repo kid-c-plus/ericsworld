@@ -23,7 +23,7 @@ def delete_account():
     """
     curr_user = flask_login.current_user
 
-    password = request.values.get("password")
+    password = request.json.get("password")
     if not password:
         return {"error": "Malformed request."}, 400
 

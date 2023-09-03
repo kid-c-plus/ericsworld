@@ -23,7 +23,7 @@ from tests.constants import *
 def test_heart_wisp(test_wisp, user_sess, user_2_sess):
     response = user_2_sess.post(
         f"{BASE_URL}/heart-wisp",
-        data={"wisp_id": test_wisp["wisp_id"]}
+        json={"wisp_id": test_wisp["wisp_id"]}
     )
     assert response.status_code == 200
     response = user_2_sess.get(
@@ -38,7 +38,7 @@ def test_heart_wisp(test_wisp, user_sess, user_2_sess):
 def test_unheart_wisp(test_wisp, user_sess, user_2_sess):
     response = user_2_sess.post(
         f"{BASE_URL}/heart-wisp",
-        data={"wisp_id": test_wisp["wisp_id"]}
+        json={"wisp_id": test_wisp["wisp_id"]}
     )
     assert response.status_code == 200
     response = user_2_sess.get(
@@ -48,7 +48,7 @@ def test_unheart_wisp(test_wisp, user_sess, user_2_sess):
     
     response = user_2_sess.post(
         f"{BASE_URL}/unheart-wisp",
-        data={"wisp_id": test_wisp["wisp_id"]}
+        json={"wisp_id": test_wisp["wisp_id"]}
     )
     assert response.status_code == 200
     response = user_2_sess.get(
@@ -64,7 +64,7 @@ def test_unheart_wisp(test_wisp, user_sess, user_2_sess):
 def test_blocked_user_heart(test_wisp, test_wisp_2, user_sess, user_2_sess):
     response = user_2_sess.post(
         f"{BASE_URL}/heart-wisp",
-        data={"wisp_id": test_wisp["wisp_id"]}
+        json={"wisp_id": test_wisp["wisp_id"]}
     )
     assert response.status_code == 200
     response = user_2_sess.get(
@@ -74,7 +74,7 @@ def test_blocked_user_heart(test_wisp, test_wisp_2, user_sess, user_2_sess):
     
     response = user_sess.post(
         f"{BASE_URL}/heart-wisp",
-        data={"wisp_id": test_wisp_2["wisp_id"]}
+        json={"wisp_id": test_wisp_2["wisp_id"]}
     )
     assert response.status_code == 200
     response = user_sess.get(
@@ -84,7 +84,7 @@ def test_blocked_user_heart(test_wisp, test_wisp_2, user_sess, user_2_sess):
     
     response = user_sess.post(
         f"{BASE_URL}/block-account",
-        data={"wisp_id": test_wisp_2["wisp_id"]}
+        json={"wisp_id": test_wisp_2["wisp_id"]}
     )
     assert response.status_code == 200
     

@@ -31,10 +31,10 @@ db = SQLAlchemy(flaskapp)
 migrate = Migrate(flaskapp, db, render_as_batch=True)
 
 # Twilio is disabled for pytest
-if flaskapp.config["USE_TWILIO"]:
+if appconfig["USE_TWILIO"]:
     twilio_client = Client(
-        flaskapp.config["TWILIO_ACCOUNT_SID"],
-        flaskapp.config["TWILIO_AUTH_TOKEN"]
+        appconfig["TWILIO_ACCOUNT_SID"],
+        appconfig["TWILIO_AUTH_TOKEN"]
     )
 else:
     twilio_client = None
@@ -63,7 +63,9 @@ def start_server() -> Process:
         thread.
     :return: Server process thread
     """
-    server = Process(target=flaskapp.run)
+    server = Process(target=lambda : flaskapp.run(
+        **appconfig["FLASK_RUN_ARGS"]
+    ))
     try:
         server.start()
     except NameError:

@@ -38,7 +38,7 @@ def create_account():
 
     (phone_number, recovery_email, username, password, 
         profile_uri, auth_code) = (
-        request.values.get(key) for key in (
+        request.json.get(key) for key in (
             "phone_number", "recovery_email", "username", 
             "password", "profile_uri", "auth_code"
         )
@@ -55,13 +55,7 @@ def create_account():
             check_username(username)[0].get("unique") and
             appconfig["PASSWORD_CHECK"](password) and
             appconfig["PROFILE_URI_CHECK"](profile_uri)):
-        return {"error": "Malformed request.",
-                "pnc": bool(appconfig["PHONE_NUMBER_CHECK"](phone_number)),
-                "email": bool(appconfig["EMAIL_CHECK"](recovery_email)),
-                "un": bool(appconfig["USERNAME_CHECK"](username)),
-                "unu": check_username(username)[0].get("unique"),
-                "pw": bool(appconfig["PASSWORD_CHECK"](password)),
-                "prof": bool(appconfig["PROFILE_URI_CHECK"](profile_uri))}, 400
+        return {"error": "Malformed request."}, 400
 
     user = db.session.execute(db.select(User).filter_by(
         phone_number=phone_number
@@ -129,7 +123,7 @@ def check_username(username: str = None):
         valid username, 400 otherwise
     """
     if not username:
-        username = request.values.get("username")
+        username = request.json.get("username")
     if appconfig["USERNAME_CHECK"](username):
         user = db.session.execute(db.select(User).filter_by(
             username=username 

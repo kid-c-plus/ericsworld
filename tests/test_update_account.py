@@ -22,7 +22,7 @@ from tests.constants import *
 def test_update_number(user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-number",
-            data={
+            json={
                 "new_number": TEST_USER_2["phone_number"],
                 "password": TEST_PASSWORD
             }
@@ -31,7 +31,7 @@ def test_update_number(user_sess):
 
     response = user_sess.post(
             f"{BASE_URL}/update-number",
-            data={
+            json={
                 "new_number": TEST_USER_2["phone_number"],
                 "password": TEST_PASSWORD,
                 "auth_code": appconstants.TEST_AUTH_CODE
@@ -45,7 +45,7 @@ def test_bad_number(user_sess):
     bad_number = "123456abcdef"
     response = user_sess.post(
             f"{BASE_URL}/update-number",
-            data={
+            json={
                 "new_number": bad_number,
                 "password": TEST_PASSWORD
             }
@@ -57,7 +57,7 @@ def test_bad_number(user_sess):
 def test_number_bad_password(user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-number",
-            data={
+            json={
                 "new_number": TEST_USER_2["phone_number"],
                 "password": "bad_password"
             }
@@ -69,7 +69,7 @@ def test_number_bad_password(user_sess):
 def test_number_bad_auth(user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-number",
-            data={
+            json={
                 "new_number": TEST_USER_2["phone_number"],
                 "password": TEST_PASSWORD
             }
@@ -78,7 +78,7 @@ def test_number_bad_auth(user_sess):
 
     response = user_sess.post(
             f"{BASE_URL}/update-number",
-            data={
+            json={
                 "new_number": TEST_USER_2["phone_number"],
                 "password": TEST_PASSWORD,
                 "auth_code": "9999"
@@ -91,7 +91,7 @@ def test_number_bad_auth(user_sess):
 def test_number_in_use(user_sess, test_user_2):
     response = user_sess.post(
                 f"{BASE_URL}/update-number",
-                data={
+                json={
                     "new_number": TEST_USER_2["phone_number"],
                     "password": TEST_PASSWORD
                 }
@@ -101,7 +101,7 @@ def test_number_in_use(user_sess, test_user_2):
 def test_update_email(test_user, db_resource, user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-recovery-email",
-            data={
+            json={
                 "new_email": TEST_USER_2["recovery_email"],
                 "password": TEST_PASSWORD
             }
@@ -113,7 +113,7 @@ def test_update_email(test_user, db_resource, user_sess):
 def test_bad_email(user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-recovery-email",
-            data={
+            json={
                 "new_email": "bad_email",
                 "password": TEST_PASSWORD
             }
@@ -125,7 +125,7 @@ def test_bad_email(user_sess):
 def test_email_bad_password(user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-recovery-email",
-            data={
+            json={
                 "new_email": TEST_USER_2["recovery_email"],
                 "password": "bad_password"
             }
@@ -137,7 +137,7 @@ def test_email_bad_password(user_sess):
 def test_update_password(db_resource, user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-password",
-            data={
+            json={
                 "current_password": TEST_PASSWORD,
                 "new_password": TEST_PASSWORD_2
             }
@@ -150,7 +150,7 @@ def test_update_password(db_resource, user_sess):
 def test_update_bad_old_password(db_resource, user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-password",
-            data={
+            json={
                 "current_password": "bad_pass",
                 "new_password": TEST_PASSWORD_2
             }
@@ -163,7 +163,7 @@ def test_update_bad_old_password(db_resource, user_sess):
 def test_update_bad_new_password(db_resource, user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-password",
-            data={
+            json={
                 "current_password": TEST_PASSWORD,
                 "new_password": "bad_pass"
             }
@@ -177,7 +177,7 @@ def test_update_username(db_resource, user_sess):
     new_username = "new user :~)"
     response = user_sess.post(
             f"{BASE_URL}/update-username",
-            data={
+            json={
                 "new_username": new_username
             }
     )
@@ -189,7 +189,7 @@ def test_update_username(db_resource, user_sess):
 def test_bad_username(db_resource, user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-username",
-            data={
+            json={
                 "new_username": "long username " * 2
             }
     )
@@ -201,7 +201,7 @@ def test_bad_username(db_resource, user_sess):
 
     response = user_sess.post(
             f"{BASE_URL}/update-username",
-            data={
+            json={
                 "new_username": "s"
             }
     )
@@ -213,7 +213,7 @@ def test_bad_username(db_resource, user_sess):
 def test_non_unique_username(db_resource, user_sess, test_user_2):
     response = user_sess.post(
             f"{BASE_URL}/update-username",
-            data={
+            json={
                 "new_username": TEST_USER_2["username"]
             }
     )
@@ -226,7 +226,7 @@ def test_update_profile(db_resource, user_sess):
     new_profile = "default2"
     response = user_sess.post(
             f"{BASE_URL}/update-profile",
-            data={
+            json={
                 "new_profile": new_profile
             }
     )
@@ -238,7 +238,7 @@ def test_update_profile(db_resource, user_sess):
 def test_nonexistent_profile(db_resource, user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-profile",
-            data={
+            json={
                 "new_profile": "nonexistent_profile"
             }
     )
@@ -249,7 +249,7 @@ def test_nonexistent_profile(db_resource, user_sess):
 
     response = user_sess.post(
             f"{BASE_URL}/update-profile",
-            data={
+            json={
                 "new_profile": "../../config.py"
             }
     )

@@ -31,9 +31,9 @@ def post_wisp():
             appconfig["MAX_WISPS_PER_USER"]):
         return {"error": 
             "Account has reached maximum number of Wisps."}, 403
-    text = bleach.clean(request.values.get("text", ""))
+    text = bleach.clean(request.json.get("text", ""))
     gif_uri = secure_filename(
-        request.values.get("gif_uri", "")
+        request.json.get("gif_uri", "")
     )
     if (not appconfig["WISP_TEXT_CHECK"](text) or 
             (gif_uri and not 
@@ -100,7 +100,8 @@ def gif_search():
                 gifs[association.gif_sha] += association.weight
             else:
                 gifs[association.gif_sha] = association.weight
-    return sorted(
-        gifs.keys(), key=lambda sha: gifs[sha], reverse=True
-    )[:appconfig["GIFS_PER_SEARCH"]]
+    return {"gifs": sorted(
+            gifs.keys(), key=lambda sha: gifs[sha], reverse=True
+        )[:appconfig["GIFS_PER_SEARCH"]]
+    }, 200
 
