@@ -24,7 +24,7 @@ class LoginPane extends React.Component {
 
     login(domEvent) {
         // on clicks and Enter keypress
-        if (domEvent._reactName === "onClick" || 
+        if (domEvent === null || domEvent._reactName === "onClick" || 
                 domEvent.keyCode === 13) {
             let body = {
                 phone_number:   `+${this.state.phoneNumber}`,
@@ -43,8 +43,13 @@ class LoginPane extends React.Component {
                 })
             .then(response => {
                 if (response.status === 200) {
-                    this.props.updateCallback();
                     this.props.deactivateCallback();
+                    // prevent the account update pane from showing
+                    // while the login pane is deactivating
+                    setTimeout(
+                        () => this.props.updateCallback(),
+                        500
+                    );
                 } else if (response.status === 204) {
                     this.setState({enteringAuthCode: true});
                 }
@@ -53,6 +58,7 @@ class LoginPane extends React.Component {
                 if ("error" in errorResp) {
                     this.setState({errorMsg: errorResp["error"]});
                 }
+                console.log(errorResp);
             }).catch(error => {
                 console.log(`Error logging in: ${error.message}`);
             })

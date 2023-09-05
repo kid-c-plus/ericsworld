@@ -36,6 +36,7 @@ class World extends React.Component {
     // Callback invoked after component mount
     componentDidMount() {
         this.getCSRFToken();
+        this.getAccountInfo();
     }
 
     // Gets CSRF token from "/hai" endpoint and saves to "csrfToken"
@@ -74,12 +75,25 @@ class World extends React.Component {
     }
 
     // query backend for currently logged in account information
+    // conditions on presence of "error" key in response, indicating
+    // an unauthenticated user and 401 response. seems like a simpler
+    // control flow than conditioning on status code
     getAccountInfo() {
-        fetch(Constants.ACCOUNT_INFO_ENDPOINT)
+        fetch(Constants.ACCOUNT_INFO_ENDPOINT, {
+            credentials: "include"
+        })
         .then(response => response.json())
-        .then(accountInfoResp => this.setState({
-            accountInfo: accountInfoResp
-        }));
+        .then(accountInfoResp => {
+            if ("error" in accountInfoResp) {
+                this.setState({
+                    accountInfo: null
+                });
+            } else {
+                this.setState({
+                    accountInfo: accountInfoResp
+                });
+            }
+        })
     }
     
     // callback method for updating Wisp screen scroll percentage
@@ -102,38 +116,66 @@ class World extends React.Component {
     // appropriate state string. Can be bound with "home" to provide
     // panes themselves a graceful way of deactivating themselves
     paneButtonCallback(paneName) {
-        if (paneName !== this.state.selectedPane) {
-            if (this.state.selectedPane === "home") {
-                this.setState({selectedPane: paneName});
-            } else {
-                this.setState({paneDeactivated: true});
-                setTimeout(() => this.setState({
-                        selectedPane:       paneName,
-                        paneDeactivated:    false
-                    }), 500
-                );
-            }
+        if (paneName === this.state.selectedPane) {
+            paneName = "home";
+        }
+        if (this.state.selectedPane === "home") {
+            this.setState({selectedPane: paneName});
+        } else {
+            this.setState({paneDeactivated: true});
+            setTimeout(() => this.setState({
+                    selectedPane:       paneName,
+                    paneDeactivated:    false
+                }), 500
+            );
         }
     }
 
+    // renders selected pane inside of PaneContainer allowing for
+    // pane closure on clicks outside pane window
+    renderPane() {
+        // prevents propogated clicks on children from closing
+        // pane view
+        let handleClick = (clickEvent) => {
+            if (clickEvent.target.id === "PaneContainer") {
+                this.paneButtonCallback("home");
+            }
+        }
+
+        if (this.state.selectedPane === "home") {
+            return <> < />;
+        } else {
+            return (
+                <div id="PaneContainer" onClick={
+                        handleClick}>
+                    {this.renderSelectedPane()}
+                </div>
+            );
+        }
+    }
+
+    // renderPane helper method, renders the currently selected pane
     renderSelectedPane() {
         switch (this.state.selectedPane) {
             case "account":
                 return (
                     <AccountPane 
                         csrfFetch={this.csrfFetch.bind(this)}
+                        accountInfo={
+                            this.state.accountInfo}
                         accountUpdateCallback={
                             this.getAccountInfo.bind(this)}
                         profileEditorCallback={
                             this.paneButtonCallback.bind(
                                 this, "profile")}
                         deactivateCallback={
-                            this.paneButtonCallback.bind(this, "home")}
+                            this.paneButtonCallback.bind(
+                                this, "home")}
                         deactivated={this.state.paneDeactivated}
                     />
                 );
             default:
-                return <>< />;
+                return <> < />;
         }
     }
 
@@ -156,7 +198,7 @@ class World extends React.Component {
                     } 
                 />
 
-                {this.renderSelectedPane()}
+                {this.renderPane()}
 
                 <ScrollBar thumbPercent={
                         this.state.thumbPercent

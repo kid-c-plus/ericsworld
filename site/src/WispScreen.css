@@ -16,6 +16,15 @@
 
     background: url("screen.png");
 
+    content: "";
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;    
+
+    pointer-events: none;
+
     /* Foreground Glass Screen before Wisps but after Device
      */
     z-index: 2;

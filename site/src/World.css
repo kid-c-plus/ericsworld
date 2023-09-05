@@ -84,7 +84,7 @@ html {
     user-select: none;
 }
 
-#root, #World::before, #WispScreen::before {
+#root, #World::before {
     position: fixed;
 
     top: 0;
@@ -95,18 +95,14 @@ html {
     width: calc(var(--pvpratio) * 1000);
     height: calc(var(--pvpratio) * 1000);
     margin: var(--voffset) var(--hoffset);
-
 }
 
 #World::before {
-    background: url("device.png");
-}
-
-.ImageForeground:first-child {
-    /* For elements with this class, that have background image 
-     * ::before pseudo-elems, rRender images as foreground elements 
-     * without capturing any click events from them
+    /* For ::before pseudo-elem, render images as foreground element
+     * without capturing any click events
      */
+    background: url("device.png");
+
     content: "";
 
     -webkit-background-size: cover;

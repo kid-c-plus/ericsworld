@@ -2,6 +2,18 @@
  * account/login, about, and post)
  */
 
+ #PaneContainer {
+    position: fixed;
+    
+    left: calc(var(--hoffset) + var(--pvpratio) * 150);
+    top: calc(var(--voffset) + var(--pvpratio) * 150);
+
+    width: calc(var(--pvpratio) * 700);
+    height: calc(var(--pvpratio) * 700);
+
+    z-index: 4;
+}
+
 .Pane {
     border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
     border-radius: calc(var(--pvpratio) * 50);
@@ -16,8 +28,6 @@
     left: calc(var(--hoffset) + var(--pvpratio) * 250);
     top: calc(var(--voffset) + var(--pvpratio) * 250);
 
-    z-index: 4;
-
     animation: PowerOn .25s;
 }
 
@@ -27,7 +37,6 @@
 
 #LoginPane {
     display: grid;
-    grid-template-rows: repeat(3, 33%);
 }
 
 .FormElement {
@@ -64,7 +73,8 @@ input[type="pwd"] {
 .TextInput {
     border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
     border-radius: calc(var(--pvpratio) * 10);
-    padding: 0 calc(var(--pvpratio) * 10);
+
+    padding: 0 calc(var(--pvpratio) * 25);
 
     background: calc(var(--backgroundcolor));
     color: calc(var(--displaycolor));
@@ -136,6 +146,50 @@ input[type="pwd"] {
         calc(var(--pvpratio) * 5) var(--backgroundcolor) inset;
 }
 
-.FormButton .Mini {
+.FormElement.Half {
+    margin: calc(var(--pvpratio) * 12);
+}
+
+.FormButton.Fit {
+    border-radius: calc(var(--pvpratio) * 25);
+
+    width: 100%;
+    height: calc(var(--pvpratio) * 90);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.FormButton.Mini {
     width: calc(var(--pvpratio) * 75);
+}
+
+#AccountUpdatePane {
+    padding: calc(var(--pvpratio) * 12);
+}
+
+.Subpane {
+    width: 100%;
+    height: 100%;
+
+    display: grid;
+}
+
+#UpdateOptionsSubpane {
+    grid-template-columns: repeat(2, 50%);
+    grid-template-rows: repeat(3, 33%);
+}
+
+#UpdateUsernameSubpane {
+    grid-template-columns: 100%;
+    grid-template-rows: auto;
+}
+
+.Status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: calc(var(--pvpratio) * 30);
 }

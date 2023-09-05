@@ -147,7 +147,7 @@ def update_username():
     
     new_username = bleach.clean(
         request.json.get("new_username", "")
-    )
+    ).strip()
     if not (appconfig["USERNAME_CHECK"](new_username) and
             check_username(new_username)[0]["unique"]):
         return {"error": "Malformed request."}, 400

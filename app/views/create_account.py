@@ -45,7 +45,7 @@ def create_account():
     )
     # Input file sanitization
     if username:
-        username = bleach.clean(username)
+        username = bleach.clean(username).strip()
     if profile_uri:
         profile_uri = secure_filename(profile_uri)
 
@@ -112,18 +112,17 @@ def create_account():
             )
         return {"response": "Auth code sent."}, 204
 
-@flaskapp.route("/check-username", methods=["POST"])
+@flaskapp.route("/check-username", methods=["GET"])
 def check_username(username: str = None):
     """
-    POST endpoint for checking the uniqueness of a provided username.
+    GET endpoint for checking the uniqueness of a provided username.
         Used as a backend helper when creating or changing a username.
-    :param username: prospective new username to check for 
+    :queryparam username: prospective new username to check for 
         uniqueness. Can be passed as an argument or in request JSON
     :return: 200 and "unique" dict containing boolean if synactically
         valid username, 400 otherwise
     """
-    if not username:
-        username = request.json.get("username")
+    username = username or request.args.get("username")
     if appconfig["USERNAME_CHECK"](username):
         user = db.session.execute(db.select(User).filter_by(
             username=username 

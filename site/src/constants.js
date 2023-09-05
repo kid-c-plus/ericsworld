@@ -16,17 +16,20 @@ class Constants {
     static ACCOUNT_INFO_ENDPOINT    = (
         `${Constants.BACKEND_URL}/get-account-info`);
 
-    static UPDATE_NUMBER_INPUT          = (
+    static UPDATE_NUMBER_ENDPOINT          = (
         `${Constants.BACKEND_URL}/update-number`);
-    static UPDATE_RECOVERY_EMAIL_INPUT  = (
+    static UPDATE_RECOVERY_EMAIL_ENDPOINT  = (
         `${Constants.BACKEND_URL}/update-recovery-email`);
-    static UPDATE_PASSWORD_INPUT        = (
+    static UPDATE_PASSWORD_ENDPOINT        = (
         `${Constants.BACKEND_URL}/update-password`);
-    static UPDATE_USERNAME_INPUT        = (
+    static UPDATE_USERNAME_ENDPOINT        = (
         `${Constants.BACKEND_URL}/update-username`);
-    static UPDATE_PROFILE_INPUT         = (
+    static UPDATE_PROFILE_ENDPOINT         = (
         `${Constants.BACKEND_URL}/update-profile`);
 
+    static CHECK_USERNAME_ENDPOINT  = (
+        `${Constants.BACKEND_URL}/check-username`);
+    
     static GET_WISPS_ENDPOINT   = `${Constants.BACKEND_URL}/get-wisps`;
 
     // width and height of virtual grid
@@ -34,6 +37,9 @@ class Constants {
     // static VGRID_HEIGHT = 1000; 
 
     static AUTH_CODE_LENGTH = 6;
+
+    static MIN_USERNAME_LENGTH  = 3;
+    static MAX_USERNAME_LENGTH  = 12;
 }
 
 export default Constants;

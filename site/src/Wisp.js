@@ -3,6 +3,14 @@ import Constants from "./constants.js";
 
 // React component for individual Wisp
 class Wisp extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            hearted: false
+        };
+    }
+
     render() {
         return (
             <div className="Wisp BoxShadow">
@@ -33,6 +41,10 @@ class Wisp extends React.Component {
                             } />
                         </div>
                     : <></> }
+                </div>
+                <div className="WispHeartBox">
+                    <div className="WispHeart">
+                    </div>
                 </div>
             </div>
         );
