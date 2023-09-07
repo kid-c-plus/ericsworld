@@ -70,7 +70,7 @@ def invite_account():
             )
             db.session.add(new_user)
             db.session.commit()
-            user_added=True
+            user_added = True
         except IntegrityError:
             tries += 1
             if tries >= 3:

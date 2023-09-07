@@ -13,8 +13,6 @@ import os
 from app import flaskapp, appconfig, db, constants, twilio_client
 from app.models import User
 from app.views.create_account import check_username
- 
-from tests.constants import *
 
 @flaskapp.route("/update-number", methods=["POST"])
 @flask_login.login_required

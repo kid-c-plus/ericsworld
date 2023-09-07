@@ -39,6 +39,13 @@ class Config:
     LOGFILE = "<LOG FILE PATH>"
     LOGLEVEL = logging.DEBUG
 
+    # Icecast Server Settings
+    ICECAST_URL = "<ICECAST URL>"
+    ICECAST_PORT = 8000
+    ICECAST_MOUNTPOINT = "/stream"
+    ICECAST_USERNAME = "source"
+    ICECAST_PASSWORD = "<SOURCE PASSWORD>"
+
     # App Behavior Settings
 
     PROFILE_PATH = os.path.join(basedir, "static", "profiles")
@@ -148,3 +155,15 @@ class Config:
         return gif_uri and os.path.exists(os.path.join(
             Config.GIF_PATH, gif_uri
         ))
+
+    # UI Settings
+    # lists of permitted fonts, device uris, and color palettes
+    FONTS = ["jgs"]
+    DEVICES = ["rubyred"]
+    COLOR_PALETTES = ["valentine"]
+
+    DEFAULT_UICONFIG = {
+        "font": FONTS[0],
+        "device": DEVICES[0],
+        "color_palette": COLOR_PALETTES[0]
+    }

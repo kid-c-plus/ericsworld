@@ -3,7 +3,6 @@ Python SQLAlchemy file defining User. This is also the UserMixin for
     the Flask-Login module.
 """
 from datetime import datetime
-from sqlalchemy.sql import func
 from werkzeug.security import (generate_password_hash, 
     check_password_hash)
 from flask_login import UserMixin
@@ -38,9 +37,9 @@ class User(UserMixin, db.Model):
     # refer to constants.py for list of account status integers
     account_status = db.Column(db.Integer, 
             default=constants.INVITED_ACCOUNT, nullable=False)
-    created_time = db.Column(db.DateTime, server_default=func.now())
+    created_time = db.Column(db.DateTime, default=datetime.utcnow)
     status_updated_time = db.Column(
-        db.DateTime, server_default=func.now()
+        db.DateTime, default=datetime.utcnow
     )
 
     # Phone number includes + and 1 to 3-digit country code

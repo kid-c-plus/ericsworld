@@ -20,6 +20,14 @@ from app.models import *
 
 from tests.constants import *
 
+def test_no_wisps(user_sess):
+    response = user_sess.get(
+        f"{BASE_URL}/get-wisps"
+    )
+    assert response.status_code == 200
+    wisps = response.json()["wisps"]
+    assert len(wisps) == 0
+
 def test_get_wisps(user_sess, test_wisp):
     response = user_sess.get(
         f"{BASE_URL}/get-wisps"

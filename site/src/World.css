@@ -13,10 +13,12 @@
 
     /* currently set display color and font, set by HeartMax
      */
-    --backgroundcolor: #FFD8D8;
-    --displaycolor: #F52424;
     --fontfamily: "jgs";
     --fontweight: 10;
+    --deviceuri: url("device.png");
+    --backgroundcolor: #FFD8D8;
+    --displaycolor: #F52424;
+
 
     /* position of scroll thumb on bar - 0.0 at top, 1.0 at bottom
      */
@@ -101,7 +103,7 @@ html {
     /* For ::before pseudo-elem, render images as foreground element
      * without capturing any click events
      */
-    background: url("device.png");
+    background: var(--deviceuri);
 
     content: "";
 

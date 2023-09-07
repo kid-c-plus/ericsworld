@@ -2,11 +2,10 @@
 Python SQLAlchemy model file defining Wisp.
 """
 from sqlalchemy.sql import func 
-from sqlalchemy.dialects.sqlite import DATETIME
 from datetime import datetime
 import json
 
-from app import flaskapp, db, appconfig, constants
+from app import db, appconfig, constants
 
 wisp_heart_association_table = db.Table(
     "wisp_heart_association_table",

@@ -52,6 +52,7 @@ def db_resource():
         "test_app.db"
     )
     db.metadata.create_all(db.engine)
+    db.create_all()
 
     # Resource
     yield db
@@ -61,7 +62,7 @@ def db_resource():
     db.drop_all()
 
 @pytest.fixture
-def req_sess():
+def req_sess(db_resource):
     # Setup
     s = requests.Session()
     token = s.get(f"{testconstants.BASE_URL}/hai").json()["csrftoken"]

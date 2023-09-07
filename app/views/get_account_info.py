@@ -18,7 +18,7 @@ def get_account_info():
     curr_user = flask_login.current_user
     return {
         "username": curr_user.username,
-        "profileUri": curr_user.profile_uri,
+        "profile_uri": curr_user.profile_uri,
         "heartscore": curr_user.heartscore
     }, 200
 
