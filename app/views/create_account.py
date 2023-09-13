@@ -60,7 +60,7 @@ def create_account():
     user = db.session.execute(db.select(User).filter_by(
         phone_number=phone_number
     )).scalar()
-    if user is None or user.account_status != constants.INVITED_ACCOUNT:
+    if user is None or user.status != constants.INVITED_USER:
         if user is None:
             flaskapp.logger.info(
                 f"IP {request.remote_addr} attempted to create user " +
@@ -86,7 +86,7 @@ def create_account():
         if check:
             user.recovery_email = recovery_email
             user.username = username
-            user.update_status(constants.ACTIVE_ACCOUNT)
+            user.update_status(constants.ACTIVE_USER)
             user.set_password(password)
             user.profile_uri = profile_uri
             db.session.commit()

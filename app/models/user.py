@@ -10,8 +10,7 @@ from typing import Union
 import secrets
 
 from app import flaskapp, appconfig, db, constants, loginmanager
-from app.models.wisp import *
-from app.models.song import *
+from app.models import Wisp, Song
 
 block_association_table = db.Table(
     "block_association_table",
@@ -35,8 +34,8 @@ class User(UserMixin, db.Model):
     login_id = db.Column(db.String(32), unique=True)
     
     # refer to constants.py for list of account status integers
-    account_status = db.Column(db.Integer, 
-            default=constants.INVITED_ACCOUNT, nullable=False)
+    status = db.Column(db.Integer, 
+            default=constants.INVITED_USER, nullable=False)
     created_time = db.Column(db.DateTime, default=datetime.utcnow)
     status_updated_time = db.Column(
         db.DateTime, default=datetime.utcnow
@@ -95,11 +94,11 @@ class User(UserMixin, db.Model):
         lazy=True,
         back_populates="hearted_users"
     )
-    broken_hearted_songs = db.relationship(
+    brokenhearted_songs = db.relationship(
         "Song",
-        secondary=song_broken_heart_association_table,
+        secondary=song_brokenheart_association_table,
         lazy=True,
-        back_populates="broken_hearted_users"
+        back_populates="brokenhearted_users"
     )
     
     def update_status(self, new_status: int):
@@ -108,7 +107,7 @@ class User(UserMixin, db.Model):
         :param new_status: new account status, from values in
             constants.py
         """
-        self.account_status = new_status
+        self.status = new_status
         self.status_updated_time = func.now()
     
     def set_password(self, password: str):
@@ -182,7 +181,66 @@ class User(UserMixin, db.Model):
             self.hearted_wisps.remove(wisp)
             wisp.user.heartscore -= 1
 
-       
+    def heart_song(self, song: Song):
+        """
+        Helper method for Hearting the provided Song. Can be
+            an autoplay song.
+        :param song: Song to Heart
+        """
+        if (song.user != self and song not in self.hearted_songs
+                and song.status == constants.PLAYING_SONG):
+            if song in self.brokenhearted_songs:
+                self.unbrokenheart_song(song)
+            self.hearted_songs.append(song)
+            if song.user:
+                song.user.heartscore += 1
+
+    def unheart_song(self, song: Song):
+        """
+        Helper method for UnHearting the provided Song. Can be an
+            autplay song. Checks to see if skip threshold reached.
+        :param song: Song to UnHeart
+        """
+        if (song.user != self and song in self.hearted_songs
+                and song.status == constants.PLAYING_SONG):
+            self.hearted_songs.remove(song)
+            if song.user:
+                song.user.heartscore -= 1
+            if (len(song.brokenhearted_users) - 
+                    len(song.hearted_users) >=
+                    appconfig["BROKENHEARTS_TO_SKIP"]):
+                radiocontroller.skip_song()
+    
+    def brokenheart_song(self, song: Song):
+        """
+        Helper method for BrokenHearting the provided Song. Can be
+            an autoplay song.
+        :param song: Song to BrokenHeart
+        """
+        if (song.user != self and song not in self.brokenhearted_songs
+                and song.status == constants.PLAYING_SONG):
+            if song in self.hearted_songs:
+                self.unheart_song(song)
+            self.brokenhearted_songs.append(song)
+            if song.user:
+                song.user.heartscore -= 1
+            if (len(song.brokenhearted_users) - 
+                    len(song.hearted_users) >=
+                    appconfig["BROKENHEARTS_TO_SKIP"]):
+                radiocontroller.skip_song()
+
+    def unbrokenheart_song(self, song: Song):
+        """
+        Helper method for UnBrokenHearting the provided Song. Can be an
+            autplay song. Checks to see if skip threshold reached.
+        :param song: Song to UnBrokenHeart
+        """
+        if (song.user != self and song in self.brokenhearted_songs
+                and song.status == constants.PLAYING_SONG):
+            self.brokenhearted_songs.remove(song)
+            if song.user:
+                song.user.heartscore += 1
+    
     def __repr__(self):
         return "\n".join(
                 f"{k}:\t{v}" for k, v in self.__dict__.items()
@@ -192,9 +250,9 @@ class User(UserMixin, db.Model):
     def is_authenticated(self) -> bool:
         """
         Check if this user is an active account with authentication
-        return: True if account status is ACTIVE_ACCOUNT
+        return: True if account status is ACTIVE_USER
         """
-        return self.account_status == constants.ACTIVE_ACCOUNT
+        return self.status == constants.ACTIVE_USER
     
     is_active = is_authenticated
 

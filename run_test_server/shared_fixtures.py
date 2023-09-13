@@ -4,9 +4,17 @@ Fixtures shared between multiple test suites.
 import shutil
 shutil.copy("run_test_config.py", "test_config.py")
 
+import signal
+
 import pytest
+import sys
 import os
 import requests
+
+try:
+    os.remove("test_app.db")
+except Exception:
+    pass
 
 from sqlalchemy.orm import sessionmaker
 
@@ -37,7 +45,7 @@ def server():
     """
     # Setup
     thread = start_server()
-
+    
     # Resource (none needed)
     yield None
 
@@ -52,6 +60,7 @@ def db_resource():
     assert (db.engine.url.database.split(os.path.sep)[-1] == 
         "test_app.db"
     )
+
     db.metadata.create_all(db.engine)
     
     with open("gif_manifest.json") as manifest_file:

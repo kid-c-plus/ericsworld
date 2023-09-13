@@ -6,7 +6,7 @@ Scheduled database maintenance tasks, such as the removal of
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 
-from app import scheduler, db, appconfig
+from app import flaskapp, scheduler, db, appconfig
 from app.core import promote_or_remove_wisp
 from app.models import *
 

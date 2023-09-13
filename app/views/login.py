@@ -42,7 +42,7 @@ def login():
         # engage in a dummy hash in order to keep return time
         # consistent
         check_password_hash(constants.DUMMY_HASH, password)
-    elif user.account_status != constants.ACTIVE_ACCOUNT:
+    elif user.status != constants.ACTIVE_USER:
         fail_reason = "Non-active user"
         check_password_hash(constants.DUMMY_HASH, password)
     elif not user.check_password(password):

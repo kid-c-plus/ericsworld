@@ -45,6 +45,9 @@ loginmanager.unauthorized_handler(
     lambda : ({"error": "No authenticated user."}, 401)
 )
 
+from app.radio_controller import RadioController
+radiocontroller = RadioController()
+
 # Create and start task scheduler
 scheduler = BackgroundScheduler()
 from app import startup, shutdown

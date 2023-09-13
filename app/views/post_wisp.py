@@ -1,5 +1,5 @@
 """
-App views for posting wisps - includes GIF listing and searching
+App views for posting wisps. Includes GIF listing and searching
     functionality.
 """
 from flask import request
@@ -62,7 +62,9 @@ def post_wisp():
                 flaskapp.logger.error(
                     "Unable to post wisp for user " +
                     f"{curr_user.user_id} after too many " +
-                    "UUID collisions."
+                    "uuid conflicts. This is statistically " +
+                    "impossible. If you're reading this, go " +
+                    "buy a lottery ticket."
                 )
                 return {
                     "error": "Unable to create wisp."
@@ -74,7 +76,7 @@ def post_wisp():
 @flask_login.login_required
 def gif_search():
     """
-    GET endpoint for searching the GIF corpus for a provided set of terms. 
+    GET endpoint for searching the GIF corpus for a provided term set. 
         Will not return more than the configured maximum.
     :queryparam term_string: space-deliminated string of search terms
     :return: 200 and {"gifs"} dict, where "gifs" is a list of matched

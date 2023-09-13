@@ -62,7 +62,7 @@ def block_account():
     curr_user.blocked_users.append(blocked_user)
     # if number of blocks is above threshold, disable user
     if len(blocked_user.blocked_by_users) >= appconfig["BLOCKS_TO_BAN"]:
-        blocked_user.update_status(constants.DISABLED_ACCOUNT)
+        blocked_user.update_status(constants.DISABLED_USER)
         delete_user_content(blocked_user)
         db.session.commit()
 

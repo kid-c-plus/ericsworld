@@ -111,7 +111,7 @@ def check_heartwizard():
     curr_user = flask_login.current_user
 
     heartwizard = db.session.execute(db.select(User).filter_by(
-            account_status=constants.ACTIVE_ACCOUNT
+            status=constants.ACTIVE_USER
         ).order_by(
             User.heartscore.desc()
         )

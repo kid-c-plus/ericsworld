@@ -40,16 +40,32 @@ class Config:
     LOGLEVEL = logging.DEBUG
 
     # Icecast Server Settings
-    ICECAST_URL = "<ICECAST URL>"
-    ICECAST_PORT = 8000
-    ICECAST_MOUNTPOINT = "/stream"
-    ICECAST_USERNAME = "source"
-    ICECAST_PASSWORD = "<SOURCE PASSWORD>"
 
+    ICECAST_HOST = "127.0.0.1"
+    ICECAST_PORT = 8000
+    ICECAST_MOUNTPOINT = "stream"
+    ICECAST_USERNAME = "source"
+    ICECAST_PASSWORD = "<ICECAST PASSWORD>"
+    ICECAST_FORMAT = "mp3"
+    ICECAST_PROTOCOL = "http"
+    ICECAST_NAME = "Radio Max"
+    ICECAST_GENRE = "Dance"
+    ICECAST_URL = "http://www.ericsworld.net"
+    ICECAST_BITRATE = 128
+    ICECAST_SAMPLERATE = 44100
+    ICECAST_CHANNELS = 2
+
+    # length of crossfade, in milliseconds
+    CROSSFADE_LENGTH = 5000
+    
     # App Behavior Settings
 
-    PROFILE_PATH = os.path.join(basedir, "static", "profiles")
-    GIF_PATH = os.path.join(basedir, "static", "gifs")
+    PROFILE_PATH = os.path.join(basedir, "app", "static", "profiles")
+    GIF_PATH = os.path.join(basedir, "app", "static", "gifs")
+    SONG_PATH = os.path.join(basedir, "app", "static", "songs")
+    ASSET_PATH = os.path.join(basedir, "app", "static", "assets")
+    
+    SKIP_MP3_PATH = os.path.join(ASSET_PATH, "skip.mp3")
 
     # Duration for which a password reset token is valid
     RESET_TOKEN_LIFESPAN = timedelta(hours=24)

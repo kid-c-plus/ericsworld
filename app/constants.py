@@ -3,14 +3,19 @@ App defining global constant values.
 """
 from werkzeug.security import generate_password_hash
 
-# Account status integers
-INVITED_ACCOUNT = 1
-ACTIVE_ACCOUNT = 2
-DISABLED_ACCOUNT = 3
+# User status integers
+INVITED_USER = 1
+ACTIVE_USER = 2
+DISABLED_USER = 3
 
 # Wisp status integers
 LIVE_WISP = 1
 REMEMBRANCE_WISP = 2
+
+# Song status integers
+QUEUED_SONG = 1
+PLAYING_SONG = 2
+PLAYED_SONG = 3
 
 # Test code used when Twilio support is disabled
 TEST_AUTH_CODE = "123456"

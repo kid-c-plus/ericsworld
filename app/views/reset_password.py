@@ -52,7 +52,7 @@ def request_password_reset():
     user = db.session.execute(db.select(User).filter_by(
         phone_number=phone_number
     )).scalar()
-    if user is not None and user.account_status == constants.ACTIVE_ACCOUNT:
+    if user is not None and user.status == constants.ACTIVE_USER:
         new_token = user.generate_password_reset_token()
         if new_token:
             db.session.commit()
@@ -101,7 +101,7 @@ def reset_password():
             f"IP {request.remote_addr} attempted to reset " +
             f"password for nonexistent number {phone_number}."
         )
-    elif user.account_status != constants.ACTIVE_ACCOUNT:
+    elif user.status != constants.ACTIVE_USER:
         error_log_msg = (
             f"IP {request.remote_addr} attempted to reset " +
             f"password for non-active number {phone_number}."

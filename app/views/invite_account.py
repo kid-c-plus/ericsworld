@@ -74,6 +74,12 @@ def invite_account():
         except IntegrityError:
             tries += 1
             if tries >= 3:
+                flaskapp.logger.error(
+                    f"Unable to add user {curr_user.phone_number}. " +
+                    "Had too many uuid conflicts. This is " +
+                    "statistically impossible. If you're reading " +
+                    "this, go buy a lottery ticket"
+                )
                 return {
                     "error": "Unable to invite user."
                 }, 500
