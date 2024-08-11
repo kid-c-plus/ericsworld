@@ -174,7 +174,7 @@ def test_password_reset_bad_auth(db_resource, test_user, req_sess):
         )).scalar().check_password(new_password)
 
 def test_password_reset_inactive_user(db_resource, test_user, req_sess):
-    test_user.account_status = appconstants.DISABLED_ACCOUNT
+    test_user.status = appconstants.DISABLED_USER
     test_user._sa_instance_state.session.commit()
     response = req_sess.post(
         f"{BASE_URL}/request-password-reset",

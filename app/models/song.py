@@ -4,7 +4,7 @@ Python SQLAlchemy file defining Song.
 from sqlalchemy.sql import func 
 from datetime import datetime
 
-from app import db
+from app import db, constants
 
 song_heart_association_table = db.Table(
     "song_heart_association_table",
@@ -38,7 +38,9 @@ class Song(db.Model):
     """
     song_id = db.Column(db.String(32), unique=True, primary_key=True)
     # user who queued song, can be anonymous for Otto-queued songs
-    user = db.relationship("User", back_populates="songs", nullable=True)
+    user_id = db.Column(db.String(32), db.ForeignKey("user.user_id"),
+        nullable=False)
+    user = db.relationship("User", back_populates="songs")
     
     # URI of song in static storage
     uri = db.Column(db.UnicodeText, nullable=False)
@@ -54,13 +56,13 @@ class Song(db.Model):
         "User",
         secondary=song_heart_association_table,
         lazy=True,
-        back_populates="hearted_songs"
+        backref="hearted_songs"
     )
     broken_hearted_users = db.relationship(
         "User",
         secondary=song_broken_heart_association_table,
         lazy=True,
-        back_populates="broken_hearted_songs"
+        backref="broken_hearted_songs"
     )
 
     def remove_hearts(self):

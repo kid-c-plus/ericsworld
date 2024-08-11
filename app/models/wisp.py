@@ -44,7 +44,7 @@ class Wisp(db.Model):
         "User",
         secondary=wisp_heart_association_table,
         lazy=True,
-        back_populates="hearted_wisps"
+        backref="hearted_wisps"
     )
 
     def remove_hearts(self):

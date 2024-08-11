@@ -94,7 +94,7 @@ def test_bad_auth_code(db_resource, req_sess):
 
 def test_add_active_user(db_resource, req_sess):
     user = User(**TEST_NEW_USER)
-    user.account_status = appconstants.ACTIVE_ACCOUNT
+    user.status = appconstants.ACTIVE_USER
     db_resource.session.add(user)
     db_resource.session.commit()
      
@@ -112,7 +112,7 @@ def test_add_active_user(db_resource, req_sess):
 
 def test_add_disabled_user(db_resource, req_sess):
     user = User(**TEST_NEW_USER)
-    user.account_status = appconstants.DISABLED_ACCOUNT
+    user.status = appconstants.DISABLED_USER
     db_resource.session.add(user)
     db_resource.session.commit()
      
@@ -232,7 +232,7 @@ def test_add_user_missing_data(db_resource, req_sess):
 
 def test_add_user_non_unique_name(db_resource, req_sess):
     user = User(**TEST_NEW_USER)
-    user.account_status = appconstants.ACTIVE_ACCOUNT
+    user.status = appconstants.ACTIVE_USER
     user.username = "non-unique username"
     db_resource.session.add(user)
 

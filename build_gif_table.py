@@ -7,6 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from spellchecker import SpellChecker
 import wordninja
+import re
 import requests
 import typing
 import shutil
@@ -58,8 +59,7 @@ class GifFetcher:
             return sha.hexdigest()
         return None
 
-
-class GifCitiesFetcher(GifFetcher):
+class SearchFetcher(GifFetcher):
     """
     Subclass of GifFetcher for web access to GifCities GIFs.
     Gentle scraper, should be used only for small test sets of 
@@ -72,16 +72,18 @@ class GifCitiesFetcher(GifFetcher):
     REQUEST_SLEEP = 0.5
     REQUEST_TIMEOUT = 60
 
-    def __init__(self, search_file: typing.TextIO):
+    def __init__(self, search_file: typing.TextIO, count: int):
         """
         Constuctor for GifCities fetcher.
         :param search_file: file object containing search terms 
             (one per line)
+        :param count: number of results to get per term
         """
         options = webdriver.FirefoxOptions()
         options.add_argument("-headless")
         self.browser = webdriver.Firefox(options)
         self.search_file = search_file
+        self.count = count
      
     def iterate_gifs(self):
         """
@@ -97,14 +99,14 @@ class GifCitiesFetcher(GifFetcher):
                      element.get_attribute("title"))
                     for element in self.browser.find_elements(
                         By.TAG_NAME, "img")][:self.GIFS_PER_PAGE]
-            for gif_uri, term_string in gifs:
-                if (gif_uri and gif_uri.startswith(
+            for gif_url, term_string in gifs:
+                if (gif_url and gif_url.startswith(
                         self.GIF_ARCHIVE_BASE_URL) and term_string
                         and term_string != 
                         "Donate to the Internet Archive"):
                     try:
                         response = requests.get(
-                            gif_uri, stream=True, 
+                            gif_url, stream=True, 
                             timeout=self.REQUEST_TIMEOUT
                         )
                         sha = self.save_image_stream(
@@ -114,6 +116,61 @@ class GifCitiesFetcher(GifFetcher):
                         time.sleep(self.REQUEST_SLEEP)
                     except Exception:
                         continue
+
+class ScrapeFetcher(GifFetcher):
+    """
+    Subclass of GifFetcher for direct scraping from urls
+    """
+    GIF_ARCHIVE_BASE_URL = "https://web.archive.org/web"
+    SCRAPE_SLEEP = 0.1
+    TERMS_REGEX = r"^\d*/http://(?:www.)?geocities.com/([^\s]*)"
+    REJECT_REGEX = r"(?:^\d*$)|(?:^gif$)"
+
+    def __init__(self, url_file: typing.TextIO, count: int):
+        """
+        Constuctor for scrape fetcher.
+        :param url_file: file object containing urls
+            (one per line, everything after first space ignored)
+        :param count: number of results to get
+        """
+        self.url_file = url_file
+        self.count = count
+     
+    def iterate_gifs(self):
+        """
+        Iterator generator to save GIFS and get (image, search terms)
+            pairs.
+        :yield: (search terms string, image SHA256 filename) tuple
+        """
+        i = 0
+        stre = re.compile(self.TERMS_REGEX)
+        rere = re.compile(self.REJECT_REGEX)
+        for url_line in self.url_file.readlines():
+            try:
+                uri = url_line.split(" ")[0]
+                search_terms = stre.findall(uri)[0]
+            except IndexError:
+                continue
+            time.sleep(self.SCRAPE_SLEEP)
+            terms = wordninja.split(search_terms)
+            term_string = " ".join([t for t in terms if
+                not rere.match(t)])
+            gif_url = f"{self.GIF_ARCHIVE_BASE_URL}/{uri}"
+
+            try:
+                response = requests.get(
+                    gif_url, stream=True, 
+                    timeout=self.REQUEST_TIMEOUT
+                )
+                sha = self.save_image_stream(
+                    response.raw
+                )
+                yield (term_string, sha)
+            except Exception:
+                continue
+            i += 1
+            if i >= self.count:
+                break
 
 class ManifestFetcher:
     """
@@ -216,14 +273,45 @@ class DatabaseBuilder:
                 json.dump(manifest, mp)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description=__doc__)
+    parser.add_argument("--mode", "-m", type=str,
+        help="mode in which to run. either 'search' to query the " +
+            "frontend for provided search terms or 'scrape' to " +
+            "directly download from a list of urls provided",
+        choices=["search", "scrape"], default="search")
+    parser.add_argument("--count", "-c", type=int,
+        help="number of results to get (for 'search' mode, number " +
+            "of results per term). use '0' to get all results",
+        defaut=10)
+    parser.add_argument("--manifest", type=str,
+        help="path of manifest jsonm to write",
+        default="gif_fetch/gif_manifest.json")
+    parser.add_argument("--terms", "-t", type=str,
+        help="path of search terms file for 'search' mode",
+        default="gif_fetch/test-gif-set.txt")
+    parser.add_argument("--urls", "-u", type=str,
+        help="list of urls to scrape for 'scrape' mode",
+        default="gif_fetch/gifcities-gifs.txt")
+    args = parser.parse_args()
+
     thread = start_server()
-    with open("test-gif-set.txt") as searchfile:
-        fetcher = GifCitiesFetcher(searchfile)
-        flaskapp.app_context().push()
-        builder = DatabaseBuilder(
-            fetcher, db
-        )
-        builder.build(
-            verbose=True, manifest_path="gif_manifest.json"
-        )
+    if args.mode == "search":
+        with open(args.terms) as searchfile:
+            fetcher = SearchFetcher(searchfile, args.count)
+            flaskapp.app_context().push()
+            builder = DatabaseBuilder(
+                fetcher, db
+            )
+            builder.build(
+                verbose=True, manifest_path=args.manifest)
+    elif args.mode == "scrape":
+        with open(args.urls) as urlfile:
+            fetcher = ScrapeFetcher(urlfile, args.count)
+            flaskapp.app_context().push()
+            builder = DatabaseBuilder(
+                fetcher, db
+            )
+            builder.build(
+                verbose=True, manifest_path=args.manifest)
     stop_server(thread)

@@ -54,7 +54,7 @@ def test_nonexistent_user_login(db_resource, req_sess):
 
 
 def test_non_active_user_login(db_resource, test_user, req_sess):
-    test_user.account_status = appconstants.DISABLED_ACCOUNT
+    test_user.status = appconstants.DISABLED_USER
     test_user._sa_instance_state.session.commit()
     response = req_sess.post(f"{testconstants.BASE_URL}/login", json={
         "phone_number": test_user.phone_number,
@@ -62,11 +62,10 @@ def test_non_active_user_login(db_resource, test_user, req_sess):
     })
     assert response.status_code == 403
 
-    test_user.account_status = appconstants.INVITED_ACCOUNT
+    test_user.status = appconstants.INVITED_USER
     db_resource.session.commit()
     response = req_sess.post(f"{testconstants.BASE_URL}/login", json={
         "phone_number": test_user.phone_number,
         "password": testconstants.TEST_PASSWORD
     })
     assert response.status_code == 403
-

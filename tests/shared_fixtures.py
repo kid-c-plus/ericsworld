@@ -6,7 +6,10 @@ shutil.copy("unit_test_config.py", "test_config.py")
 
 import pytest
 import os
+import sys
 import requests
+
+FILE = "thread_debug.txt"
 
 from sqlalchemy.orm import sessionmaker
 
@@ -40,6 +43,8 @@ def server():
     # Resource (none needed)
     yield None
 
+    with open(FILE, "w") as f:
+        f.write(f"Shutting down server in {__file__}")
     # Teardown
     stop_server(thread)
 

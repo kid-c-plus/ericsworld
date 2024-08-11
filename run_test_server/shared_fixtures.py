@@ -63,7 +63,7 @@ def db_resource():
 
     db.metadata.create_all(db.engine)
     
-    with open("gif_manifest.json") as manifest_file:
+    with open("gif_fetch/gif_manifest.json") as manifest_file:
         fetcher = ManifestFetcher(manifest_file)
         builder = DatabaseBuilder(fetcher, db)
         builder.build()

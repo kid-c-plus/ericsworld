@@ -55,7 +55,7 @@ def test_existing_user_invite(user_sess):
     )
     assert (resp.status_code == 200 and User.query.filter_by(
             phone_number=user_2.phone_number
-        ).first().account_status == appconstants.ACTIVE_ACCOUNT)
+        ).first().status == appconstants.ACTIVE_USER)
 
 def test_max_invites(db_resource, test_user, user_sess):
     for i in range(appconfig["MAX_INVITES"]):

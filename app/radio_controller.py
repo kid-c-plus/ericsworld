@@ -19,6 +19,8 @@ from pydub import AudioSegment
 from app import flaskapp, db, appconfig
 from app.models import Song
 
+FILE = "thread_debug.txt"
+
 class RadioController():
     """
     Object encapsulating radio control functions - "manage" function
@@ -122,11 +124,17 @@ class RadioController():
         """
         Shutdown actions. Stops running threads.
         """
+        with open(FILE, "w") as f:
+            f.write("Shutting down server in \"radio_controller.shutdown\"")
         self.kill_signal.set()
         if self.gen_songs_thread:
             self.gen_songs_thread.join()
+        with open(FILE, "w") as f:
+            f.write("Joined gen_songs thread in \"radio_controller.shutdown\"")
         if self.stream_thread:
             self.stream_thread.join()
+        with open(FILE, "w") as f:
+            f.write("Joined stream thread in \"radio_controller.shutdown\"")
         
         try:
             self.stream_obj.close()
@@ -148,7 +156,7 @@ class RadioController():
             a random song from the songs directory.
         :return: name of file in songs directory
         """
-        # TODO: implement database query
+        # TODO: implement database query (done?)
         with flaskapp.app_context():
             queued_song = db.session.scalars(
                 db.select(Song).filter_by(
@@ -165,23 +173,23 @@ class RadioController():
                 song_added = False
                 tries = 0
                 while not song_added:
-                try:
-                    otto_song = Song(
-                        song_id=uuid.uuid1().hex,
-                        uri=otto_uri
-                    )
-                    db.session.add(otto_song)
-                    db.session.commit()
-                    song_added = True
-                except IntegrityError:
-                    tries += 1
-                    if tries >= 3:
-                        flaskapp.logger.error(
-                            f"Unable to add autoplay song after " +
-                            "too many uuid conflicts. This is " +
-                            "statistically impossible. If you're " +
-                            "reading this, go buy a lottery ticket."
-                       )
+                    try:
+                        otto_song = Song(
+                            song_id=uuid.uuid1().hex,
+                            uri=otto_uri
+                        )
+                        db.session.add(otto_song)
+                        db.session.commit()
+                        song_added = True
+                    except IntegrityError:
+                        tries += 1
+                        if tries >= 3:
+                            flaskapp.logger.error(
+                                f"Unable to add autoplay song after " +
+                                "too many uuid conflicts. This is " +
+                                "statistically impossible. If you're " +
+                                "reading this, go buy a lottery ticket."
+                           )
                 return otto_uri
 
     def iterate_playing_song(self):
@@ -197,7 +205,6 @@ class RadioController():
         ).all()
         for song in playing_songs:
             song.status = constants.PLAYED_SONG
-        )
         next_song = db.session.scalars(
             db.select(Song).filter_by(
                 status=constants.QUEUED_SONG
@@ -316,6 +323,8 @@ class RadioController():
                             pass
                     self.stream_skip_subsignal.set()
                     self.skip_signal.clear()
+            with open(FILE, "w") as f:
+                f.write("Finished \"stream\" thread")
 
         except Exception as err:
             _, _, exc_tb = sys.exc_info()
@@ -330,7 +339,12 @@ class RadioController():
 
         try:
             while not self.kill_signal.is_set():
-                current_seg_fp = open(self.segment_queue.get(), "rb")
+                
+                try:
+                    segment = self.segment_queue.get_nowait()
+                except queue.Empty:
+                    continue
+                current_seg_fp = open(segment, "rb")
                 byte_chunk = current_seg_fp.read(CHUNK_SIZE)
                 while 1:
                     next_byte_chunk = current_seg_fp.read(CHUNK_SIZE)
@@ -346,6 +360,8 @@ class RadioController():
 
                     byte_chunk = next_byte_chunk
                     self.stream_obj.sync()
+            with open(FILE, "w") as f:
+                f.write("Finished \"stream\" thread")
         except Exception as err:
             _, _, exc_tb = sys.exc_info()
             flaskapp.logger.error("Error in stream: " +

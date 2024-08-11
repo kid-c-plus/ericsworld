@@ -45,6 +45,9 @@ loginmanager.unauthorized_handler(
     lambda : ({"error": "No authenticated user."}, 401)
 )
 
+from app.models import *
+from app.views import *
+
 from app.radio_controller import RadioController
 radiocontroller = RadioController()
 
@@ -53,9 +56,6 @@ scheduler = BackgroundScheduler()
 from app import startup, shutdown
 startup.startup()
 atexit.register(shutdown.shutdown)
-
-from app.models import *
-from app.views import *
 
 # Convenience methods for Pytest
 # if "pytest" in sys.modules:
@@ -80,8 +80,10 @@ def stop_server(server_thread: Process):
     Stop function, invoked only in testing. Stops task thread.
     :param server_thread: Server process thread to stop
     """
+    shutdown.shutdown()
     try:
         server_thread.terminate()
         server_thread.join()
     except NameError:
         print("Must be invoked with pytest")
+

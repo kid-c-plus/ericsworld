@@ -62,27 +62,27 @@ def queue_song():
     song_added = False
     tries = 0
     while not song_added:
-    try:
-        song = Song(
-            song_id=uuid.uuid1().hex,
-            user=curr_user
-            uri=song_uri
-        )
-        db.session.add(song)
-        db.session.commit()
-        song_added = True
-    except IntegrityError:
-        tries += 1
-        if tries >= 3:
-            flaskapp.logger.error(
-                f"Unable to add queued song after " +
-                "too many uuid conflicts. This is " +
-                "statistically impossible. If you're " +
-                "reading this, go buy a lottery ticket."
+        try:
+            song = Song(
+                song_id=uuid.uuid1().hex,
+                user=curr_user,
+                uri=song_uri
             )
-            return {
-                "error": "Unable to queue song."
-            }, 500
+            db.session.add(song)
+            db.session.commit()
+            song_added = True
+        except IntegrityError:
+            tries += 1
+            if tries >= 3:
+                flaskapp.logger.error(
+                    f"Unable to add queued song after " +
+                    "too many uuid conflicts. This is " +
+                    "statistically impossible. If you're " +
+                    "reading this, go buy a lottery ticket."
+                )
+                return {
+                    "error": "Unable to queue song."
+                }, 500
     return {"response": "Song queued."}, 201
 
 @flaskapp.route("/get-song-queuer", methods=["GET"])

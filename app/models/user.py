@@ -3,6 +3,7 @@ Python SQLAlchemy file defining User. This is also the UserMixin for
     the Flask-Login module.
 """
 from datetime import datetime
+from sqlalchemy.sql import func
 from werkzeug.security import (generate_password_hash, 
     check_password_hash)
 from flask_login import UserMixin
@@ -10,7 +11,6 @@ from typing import Union
 import secrets
 
 from app import flaskapp, appconfig, db, constants, loginmanager
-from app.models import Wisp, Song
 
 block_association_table = db.Table(
     "block_association_table",
@@ -82,25 +82,6 @@ class User(UserMixin, db.Model):
     wisps = db.relationship("Wisp", back_populates="user", lazy=True)
     songs = db.relationship("Song", back_populates="user", lazy=True)
 
-    hearted_wisps = db.relationship(
-        "Wisp",
-        secondary=wisp_heart_association_table,
-        lazy=True,
-        back_populates="hearted_users"
-    )
-    hearted_songs = db.relationship(
-        "Song",
-        secondary=song_heart_association_table,
-        lazy=True,
-        back_populates="hearted_users"
-    )
-    brokenhearted_songs = db.relationship(
-        "Song",
-        secondary=song_brokenheart_association_table,
-        lazy=True,
-        back_populates="brokenhearted_users"
-    )
-    
     def update_status(self, new_status: int):
         """
         Update status to provided value and set status updated time.
@@ -159,7 +140,7 @@ class User(UserMixin, db.Model):
         else:
             return False
     
-    def heart_wisp(self, wisp: Wisp):
+    def heart_wisp(self, wisp):
         """
         Helper method for Hearting the provided Wisp. Increments
             poster's HeartScore
@@ -170,7 +151,7 @@ class User(UserMixin, db.Model):
             self.hearted_wisps.append(wisp)
             wisp.user.heartscore += 1
 
-    def unheart_wisp(self, wisp: Wisp):
+    def unheart_wisp(self, wisp):
         """
         Helper method for UnHearting the provided Wisp. Decrements 
             poster's HeartScore
@@ -181,7 +162,7 @@ class User(UserMixin, db.Model):
             self.hearted_wisps.remove(wisp)
             wisp.user.heartscore -= 1
 
-    def heart_song(self, song: Song):
+    def heart_song(self, song):
         """
         Helper method for Hearting the provided Song. Can be
             an autoplay song.
@@ -189,13 +170,13 @@ class User(UserMixin, db.Model):
         """
         if (song.user != self and song not in self.hearted_songs
                 and song.status == constants.PLAYING_SONG):
-            if song in self.brokenhearted_songs:
+            if song in self.broken_hearted_songs:
                 self.unbrokenheart_song(song)
             self.hearted_songs.append(song)
             if song.user:
                 song.user.heartscore += 1
 
-    def unheart_song(self, song: Song):
+    def unheart_song(self, song):
         """
         Helper method for UnHearting the provided Song. Can be an
             autplay song. Checks to see if skip threshold reached.
@@ -211,7 +192,7 @@ class User(UserMixin, db.Model):
                     appconfig["BROKENHEARTS_TO_SKIP"]):
                 radiocontroller.skip_song()
     
-    def brokenheart_song(self, song: Song):
+    def brokenheart_song(self, song):
         """
         Helper method for BrokenHearting the provided Song. Can be
             an autoplay song.
@@ -229,7 +210,7 @@ class User(UserMixin, db.Model):
                     appconfig["BROKENHEARTS_TO_SKIP"]):
                 radiocontroller.skip_song()
 
-    def unbrokenheart_song(self, song: Song):
+    def unbrokenheart_song(self, song):
         """
         Helper method for UnBrokenHearting the provided Song. Can be an
             autplay song. Checks to see if skip threshold reached.

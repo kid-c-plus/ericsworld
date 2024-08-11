@@ -61,6 +61,6 @@ def delete_user_content(user: User):
     for wisp in user.wisps:
         wisp.remove_hearts()
         db.session.delete(wisp)
-    for song in blocked_user.songs:
+    for song in user.songs:
         song.remove_hearts()
         db.session.delete(song)

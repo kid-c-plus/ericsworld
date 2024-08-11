@@ -26,7 +26,7 @@ TEST_USER = {
     "phone_number": "+15555550910",
     "recovery_email": "testuser@ericsworld.net",
     "username": "test user",
-    "account_status": appconstants.ACTIVE_ACCOUNT,
+    "status": appconstants.ACTIVE_USER,
     "profile_uri": "default"
 }
 
@@ -36,7 +36,7 @@ TEST_USER_2 = {
     "phone_number": "+15555551112",
     "recovery_email": "testuser2@ericsworld.net",
     "username": "test user 2",
-    "account_status": appconstants.ACTIVE_ACCOUNT,
+    "status": appconstants.ACTIVE_USER,
     "profile_uri": "default"
 }
 
@@ -46,7 +46,7 @@ TEST_USER_3 = {
     "phone_number": "+15555551314",
     "recovery_email": "testuser3@ericsworld.net",
     "username": "test user 3",
-    "account_status": appconstants.ACTIVE_ACCOUNT,
+    "status": appconstants.ACTIVE_USER,
     "profile_uri": "default"
 }
 
