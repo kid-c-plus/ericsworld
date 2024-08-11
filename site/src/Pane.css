@@ -1,0 +1,195 @@
+/* CSS directives for elements inside panes (HeartWizard, 
+ * account/login, about, and post)
+ */
+
+ #PaneContainer {
+    position: fixed;
+    
+    left: calc(var(--hoffset) + var(--pvpratio) * 150);
+    top: calc(var(--voffset) + var(--pvpratio) * 150);
+
+    width: calc(var(--pvpratio) * 700);
+    height: calc(var(--pvpratio) * 700);
+
+    z-index: 4;
+}
+
+.Pane {
+    border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    border-radius: calc(var(--pvpratio) * 50);
+
+    width: calc(var(--pvpratio) * 500);
+    height: calc(var(--pvpratio) * 500);
+
+    background: var(--backgroundcolor);
+
+    position: fixed;
+
+    left: calc(var(--hoffset) + var(--pvpratio) * 250);
+    top: calc(var(--voffset) + var(--pvpratio) * 250);
+
+    animation: PowerOn .25s;
+}
+
+.Deactivated {
+    animation: PowerOff .25s forwards;
+}
+
+#LoginPane {
+    display: grid;
+}
+
+.FormElement {
+    margin: 0 calc(var(--pvpratio) * 50);
+
+    display: flex;
+    align-items: center;
+}
+
+.TextEntry {
+    display: grid;
+    grid-template-columns: calc(var(--pvpratio) * 125)
+        calc(var(--pvpratio) * 275);
+}
+
+.TextEntry .WithSubmit {
+    grid-template-columns: calc(var(--pvpratio)) * 100)
+        calc(var(--pvpratio) * 225) calc(var(--pvpratio) * 75);
+}
+
+.EntryLabel, .TextInput {
+    height: calc(var(--pvpratio) * 75);
+} 
+
+input[type="pwd"] {
+    font-family: var(--fontfamily);
+    font-weight: var(--fontweight);
+    font-size: calc(var(--pvpratio) * 35);
+
+    -webkit-text-security: circle;
+    letter-spacing: calc(var(--pvpratio) * 2);
+}
+
+.TextInput {
+    border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    border-radius: calc(var(--pvpratio) * 10);
+
+    padding: 0 calc(var(--pvpratio) * 25);
+
+    background: calc(var(--backgroundcolor));
+    color: calc(var(--displaycolor));
+
+    outline: none;
+
+    letter-spacing: calc(var(--pvpratio) * 2);
+}
+
+#AuthCodeInput {
+    padding: 0;
+    padding-left: calc(var(--pvpratio) * 25);
+
+    overflow: hidden;
+
+    letter-spacing: calc(var(--pvpratio) * 26);
+    font-size: calc(var(--pvpratio) * 25);
+}
+
+.CheckEntry {
+    display: grid;
+    grid-template-columns: calc(var(--pvpratio) * 325) 
+        calc(var(--pvpratio) * 75);
+}
+
+.CheckInput {
+    appearance: none;
+
+    margin: 0;
+    border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    border-radius: calc(var(--pvpratio) * 10);
+    padding: 0;
+
+    width: calc(var(--pvpratio) * 75);
+    height: calc(var(--pvpratio) * 75);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    font-size: calc(var(--pvpratio) * 50);
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.CheckInput:after {
+    content: "";
+}
+
+.CheckInput:checked:after {
+    content: "✓";
+}
+
+.FormButton {
+    border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    border-radius: calc(var(--pvpratio) * 10);
+    padding: calc(var(--pvpratio) * 25);
+
+    width: calc(var(--pvpratio) * 350);
+
+    text-align: center;
+}
+
+.FormButton:active {
+    color: var(--backgroundcolor);
+    background: var(--displaycolor);
+    box-shadow: calc(var(--pvpratio) * 5) calc(var(--pvpratio) * 5)
+        calc(var(--pvpratio) * 5) var(--backgroundcolor) inset;
+}
+
+.FormElement.Half {
+    margin: calc(var(--pvpratio) * 12);
+}
+
+.FormButton.Fit {
+    border-radius: calc(var(--pvpratio) * 25);
+
+    width: 100%;
+    height: calc(var(--pvpratio) * 90);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.FormButton.Mini {
+    width: calc(var(--pvpratio) * 75);
+}
+
+#AccountUpdatePane {
+    padding: calc(var(--pvpratio) * 12);
+}
+
+.Subpane {
+    width: 100%;
+    height: 100%;
+
+    display: grid;
+}
+
+#UpdateOptionsSubpane {
+    grid-template-columns: repeat(2, 50%);
+    grid-template-rows: repeat(3, 33%);
+}
+
+#UpdateUsernameSubpane {
+    grid-template-columns: 100%;
+    grid-template-rows: auto;
+}
+
+.Status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: calc(var(--pvpratio) * 30);
+}

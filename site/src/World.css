@@ -1,0 +1,183 @@
+:root {
+    /* ratio of real pixels to "virtual pixels" in virtual
+     * 1000x1000 grid
+     */
+    --pvpratio: 1.0px;
+
+    /* vertical and horizontal offset (in real pixels) from which to 
+     * begin virtual grid. One of the two of these will be zero, as 
+     * there is only offset from the longer axis
+     */
+    --hoffset: 0px;
+    --voffset: 0px;
+
+    /* currently set display color and font, set by HeartMax
+     */
+    --fontfamily: "jgs";
+    --fontweight: 10;
+    --deviceuri: url("device.png");
+    --backgroundcolor: #FFD8D8;
+    --displaycolor: #F52424;
+
+
+    /* position of scroll thumb on bar - 0.0 at top, 1.0 at bottom
+     */
+    --scrollthumbpercent: 0.0;
+}
+
+@font-face {
+    font-family: "jgs";
+    src:
+        url("fonts/jgs5.ttf") format("truetype");
+    font-weight: 5;
+}
+
+@font-face {
+    font-family: "jgs";
+    src:
+        url("fonts/jgs7.ttf") format("truetype");
+    font-weight: 7;
+}
+
+@font-face {
+    font-family: "jgs";
+    src:
+        url("fonts/jgs9.ttf") format("truetype");
+    font-weight: 9;
+}
+
+@font-face {
+    font-family: "jgs";
+    src:
+        url("fonts/jgs_Font.ttf") format("truetype");
+    font-weight: 10;
+}
+
+@keyframes PowerOn {
+    from {
+        transform: scale(1, 0);
+    }
+    to {
+        transform: scale(1, 1);
+    }
+}
+
+@keyframes PowerOff {
+    from {
+        transform: scale(1, 1);
+    }
+    to {
+        transform: scale(1, 0);
+    }
+}
+
+html {
+    background: var(--backgroundcolor);
+    color: var(--displaycolor);
+
+    font-family: var(--fontfamily);
+    font-weight: var(--fontweight);
+    font-size: calc(var(--pvpratio) * 30);
+
+    /* prevent highlighting of text
+     */
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#root, #World::before {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+}
+
+#World, #World::before {
+    width: calc(var(--pvpratio) * 1000);
+    height: calc(var(--pvpratio) * 1000);
+    margin: var(--voffset) var(--hoffset);
+}
+
+#World::before {
+    /* For ::before pseudo-elem, render images as foreground element
+     * without capturing any click events
+     */
+    background: var(--deviceuri);
+
+    content: "";
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;    
+
+    pointer-events: none;
+}
+
+.PaneButton {
+    width: calc(var(--pvpratio) * 75);
+    height: calc(var(--pvpratio) * 75);
+    
+    position: fixed;
+
+    top: calc(var(--voffset) + var(--pvpratio) * 37.5);
+}
+
+#HomeButton {
+    width: calc(var(--pvpratio) * 300);
+    
+    left: calc(var(--hoffset) + var(--pvpratio) * 37.5);
+}
+
+#AboutButton {
+    left: calc(var(--hoffset) + var(--pvpratio) * 675);
+}
+
+#AccountButton {
+    left: calc(var(--hoffset) + var(--pvpratio) * 775);
+}
+
+#PostButton {
+    left: calc(var(--hoffset) + var(--pvpratio) * 875);
+}
+
+.ButtonPressImg {
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    z-index: 4;
+}
+
+.BoxShadow {
+    box-shadow: calc(var(--pvpratio) * 5) calc(var(--pvpratio) * 5)
+        calc(var(--pvpratio) * 5) var(--displaycolor);
+}
+
+#ScrollBar {
+    width: calc(var(--pvpratio) * 50);
+    height: calc(var(--pvpratio) * 700);
+
+    position: fixed;
+
+    left: calc(var(--hoffset) + var(--pvpratio) * 900);
+    top: calc(var(--voffset) + var(--pvpratio) * 150);
+
+    /* Should be visible above the device
+     */
+    z-index: 4;
+}
+
+#ScrollThumb {
+    width: calc(var(--pvpratio) * 120);
+    height: calc(var(--pvpratio) * 120);
+
+    position: absolute;
+
+    left: calc(var(--pvpratio) * -38);
+    top: calc(
+        (var(--pvpratio) * -30) + 
+        (var(--pvpratio) * var(--scrollthumbpercent) * 640)
+    );
+}

@@ -1,0 +1,105 @@
+/* CSS directives for WispScreen and Wisps
+ */
+
+#WispScreen, #WispScreen::before {
+    width: calc(var(--pvpratio) * 700);
+    height: calc(var(--pvpratio) * 700);
+}
+
+#WispScreen::before {
+    border-radius: calc(var(--pvpratio) * 50);
+
+    position: fixed;
+
+    top: calc(var(--voffset) + var(--pvpratio) * 150);
+    left: calc(var(--hoffset) + var(--pvpratio) * 150);
+
+    background: url("screen.png");
+
+    content: "";
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;    
+
+    pointer-events: none;
+
+    /* Foreground Glass Screen before Wisps but after Device
+     */
+    z-index: 2;
+    overflow: hidden;
+}
+
+#WispScreen {
+    border-radius: calc(var(--pvpratio) * 50);
+
+    position: fixed;
+
+    top: calc(var(--voffset) + var(--pvpratio) * 150);
+    left: calc(var(--hoffset) + var(--pvpratio) * 150);
+
+    /* Background Wisp Screen behind Wisp Editor, Profile Editor, etc
+     */
+    z-index: 1;
+
+    overflow: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+#WispScreen::-webkit-scrollbar {
+    display: none;
+}
+
+.Wisp {
+    margin: calc(var(--pvpratio) * 15);
+    margin-right: calc(var(--pvpratio) * 20);
+    border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    border-radius: calc(var(--pvpratio) * 30);
+    padding: calc(var(--pvpratio) * 25);
+
+    display: grid;
+    grid-template-columns: 30% 60% 10%;
+
+}
+
+.Wisp:first-child {
+    margin-top: calc(var(--pvpratio) * 25);
+}
+
+.Wisp:last-child {
+    margin-bottom: calc(var(--pvpratio) * 25);
+}
+
+.WispUserBox {
+    width: 80%;
+}
+
+.WispUserProfile {
+    border-radius: calc(var(--pvpratio) * 10);
+
+    aspect-ratio: 1 / 1;
+    overflow: hide;
+}
+
+.WispUserProfileImg {
+    width: 100%;
+    height: 100%;
+    border-radius: calc(var(--pvpratio) * 10);
+}
+
+.WispUserName {
+    font-weight: bold;
+    margin-bottom: calc(var(--pvpratio) * 10);
+}
+
+.WispText {
+    word-break: break-all;
+}
+
+.WispImg {
+    width: calc(var(--pvpratio) * 200);
+
+    margin-top: calc(var(--pvpratio) * 20);;
+} 

@@ -1,0 +1,110 @@
+#WispPostPane {
+    display: grid;
+
+    grid-template-rows: calc(var(--pvpratio) * 375) 
+        calc(var(--pvpratio) 125);
+}
+
+#EditSubpane {
+    margin: calc(var(--pvpratio) * 25);
+    margin-bottom: calc(var(--pvpratio) * 125);
+    height: calc(var(--pvpratio) * 350);
+    width: calc(var(--pvpratio) * 450);
+
+    display: grid;
+    grid-template-rows: 50% 50%;
+    grid-template-columns: calc(var(--pvpratio) * 100)
+        calc(var(--pvpratio) * 350);
+}
+
+#WispTextInputContainer {
+    margin: calc(var(--pvpratio) * 25);
+    width: calc(var(--pvpratio) * 300);
+    height: calc(var(--pvpratio) * 300);
+
+    grid-row-end: span 2;
+
+    line-height: calc(var(--pvpratio) * 40);
+    background: transparent url("assets/underline.png");
+    background-size: calc(var(--pvpratio) * 300)
+        calc(var(--pvpratio) * 40);
+    background-repeat: repeat-y;
+}
+
+#WispTextInput {
+    height: 100%;
+    padding: calc(var(--pvpratio) * 25);
+}
+
+#WispGifButtonContainer {
+    margin-right: calc(var(--pvpratio) * 10);
+}
+
+#WispPostButtonContainer {
+    margin-left: calc(var(--pvpratio) * 10);
+}
+
+.WispEditSelectButton {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-right: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    border-radius: 0;
+}
+
+#TextSelectButton.selected {
+    border: 0;
+    border-bottom: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    box-shadow: 0 calc(var(--pvpratio) * 5)
+        calc(var(--pvpratio) * 5) var(--displaycolor);
+    clip-path: inset(0 0 calc(var(--pvpratio) * -10) 0);
+}
+
+#GifSelectButton.selected {
+    border: 0;
+    border-top: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    box-shadow: 0 calc(var(--pvpratio) * -5)
+        calc(var(--pvpratio) * 5) var(--displaycolor);
+    clip-path: inset(calc(var(--pvpratio) * 10) 0 0 0);
+}
+
+#GIFSearchSubpane {
+    width: 100%;
+    height: 100%;
+
+    display: grid;
+    grid-template-rows: calc(var(--pvpratio) * 100)
+        calc(var(--pvpratio) * 250);
+}
+
+#GIFSearchBar {
+    width: calc(var(--pvpratio) * 300);
+    height: calc(var(--pvpratio) * 50);
+    margin: calc(var(--pvpratio) * 25);
+    margin-bottom: calc(var(--pvpratio) * 275);
+
+    border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    border-radius: calc(var(--pvpratio) * 50);
+
+    display: grid;
+    grid-template-columns: calc(var(--pvpratio) * 225)
+        calc(var(--pvpratio) * 75);
+}
+
+#GIFSearchResultsSubpane {
+    width: 100%;
+    height: 100%;
+    padding: 0 calc(var(--pvpratio) * 25);
+    
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.GIFSearchImg {
+    width: calc(var(--pvpratio) * 83);
+    max-height: calc(var(--pvpratio) * 300);
+    margin: calc(var(--pvpratio) * 25);
+
+    border-radius: calc(var(--pvpratio) * 10);
+}
+
