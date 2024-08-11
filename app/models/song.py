@@ -39,7 +39,7 @@ class Song(db.Model):
     song_id = db.Column(db.String(32), unique=True, primary_key=True)
     # user who queued song, can be anonymous for Otto-queued songs
     user_id = db.Column(db.String(32), db.ForeignKey("user.user_id"),
-        nullable=False)
+        nullable=True)
     user = db.relationship("User", back_populates="songs")
     
     # URI of song in static storage

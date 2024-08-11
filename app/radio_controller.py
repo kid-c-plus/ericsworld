@@ -15,6 +15,7 @@ import threading
 import queue
 from io import BytesIO
 from pydub import AudioSegment
+from sqlalchemy.exc import IntegrityError
 
 from app import flaskapp, db, appconfig, constants
 from app.models import Song
@@ -124,16 +125,16 @@ class RadioController():
         """
         Shutdown actions. Stops running threads.
         """
-        with open(FILE, "w") as f:
+        with open(FILE, "a") as f:
             f.write("Shutting down server in \"radio_controller.shutdown\"")
         self.kill_signal.set()
         if self.gen_songs_thread:
             self.gen_songs_thread.join()
-        with open(FILE, "w") as f:
+        with open(FILE, "a") as f:
             f.write("Joined gen_songs thread in \"radio_controller.shutdown\"")
         if self.stream_thread:
             self.stream_thread.join()
-        with open(FILE, "w") as f:
+        with open(FILE, "a") as f:
             f.write("Joined stream thread in \"radio_controller.shutdown\"")
         
         try:
@@ -213,8 +214,7 @@ class RadioController():
                     Song.status_updated_time.asc()
                 )
             ).first()
-            if next_song:
-                next_song.status = constants.PLAYING_SONG
+            next_song.status = constants.PLAYING_SONG
 
     def gen_songs(self):
         """
@@ -259,8 +259,8 @@ class RadioController():
                     # so no sleep
                     if curr_song_end:
                         time.sleep(appconfig["CROSSSFADE_LENGTH"])
-                    self.iterate_playing_song()
                     next_song_file = self.get_next_song_file()
+                    self.iterate_playing_song()
                     flaskapp.logger.info(f"Generating segment for " +
                                         f"{next_song_file}...")
                     self.stream_obj.set_metadata({
@@ -325,7 +325,7 @@ class RadioController():
                             pass
                     self.stream_skip_subsignal.set()
                     self.skip_signal.clear()
-            with open(FILE, "w") as f:
+            with open(FILE, "a") as f:
                 f.write("Finished \"stream\" thread")
 
         except Exception as err:
@@ -359,9 +359,12 @@ class RadioController():
                         self.stream_skip_subsignal.clear()
                         break
 
+                    if self.kill_signal.is_set():
+                        break
+
                     byte_chunk = next_byte_chunk
                     self.stream_obj.sync()
-            with open(FILE, "w") as f:
+            with open(FILE, "a") as f:
                 f.write("Finished \"stream\" thread")
         except Exception as err:
             _, _, exc_tb = sys.exc_info()
