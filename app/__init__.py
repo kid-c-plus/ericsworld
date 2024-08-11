@@ -48,6 +48,9 @@ loginmanager.unauthorized_handler(
 from app.models import *
 from app.views import *
 
+with flaskapp.app_context():
+    db.metadata.create_all(db.engine)
+
 from app.radio_controller import RadioController
 radiocontroller = RadioController()
 

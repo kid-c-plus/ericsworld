@@ -30,6 +30,14 @@ def promote_or_remove_wisp(wisp: Wisp):
     else:
         db.session.delete(wisp)
 
+def expire_song(song: Song):
+    """
+    Helper method to expire the given song
+    :param song: Song object to expire
+    """
+    song.remove_hearts()
+    db.session.delete(song)
+
 def remove_excess_wisps():
     """
     Helper method to promote or delete as many old Wisps as 

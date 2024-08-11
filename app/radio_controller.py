@@ -16,7 +16,7 @@ import queue
 from io import BytesIO
 from pydub import AudioSegment
 
-from app import flaskapp, db, appconfig
+from app import flaskapp, db, appconfig, constants
 from app.models import Song
 
 FILE = "thread_debug.txt"
@@ -162,7 +162,7 @@ class RadioController():
                 db.select(Song).filter_by(
                     status=constants.QUEUED_SONG
                 ).order_by(
-                    Song.created_time.asc()
+                    Song.status_updated_time.asc()
                 )
             ).first()
             if queued_song:
@@ -198,21 +198,23 @@ class RadioController():
             marked "playing" to "played", then change the oldest 
             queued song status to "playing"
         """
-        playing_songs = db.session.scalars(
-            db.select(Song).filter_by(
-                status=constants.PLAYING_SONG
-            )
-        ).all()
-        for song in playing_songs:
-            song.status = constants.PLAYED_SONG
-        next_song = db.session.scalars(
-            db.select(Song).filter_by(
-                status=constants.QUEUED_SONG
-            ).order_by(
-                Song.created_time.asc()
-            )
-        ).first()
-        next_song.status = constants.PLAYING_SONG
+        with flaskapp.app_context():
+            playing_songs = db.session.scalars(
+                db.select(Song).filter_by(
+                    status=constants.PLAYING_SONG
+                )
+            ).all()
+            for song in playing_songs:
+                song.status = constants.PLAYED_SONG
+            next_song = db.session.scalars(
+                db.select(Song).filter_by(
+                    status=constants.QUEUED_SONG
+                ).order_by(
+                    Song.status_updated_time.asc()
+                )
+            ).first()
+            if next_song:
+                next_song.status = constants.PLAYING_SONG
 
     def gen_songs(self):
         """
@@ -339,7 +341,6 @@ class RadioController():
 
         try:
             while not self.kill_signal.is_set():
-                
                 try:
                     segment = self.segment_queue.get_nowait()
                 except queue.Empty:
