@@ -3,7 +3,7 @@ App views for Hearting and BrokenHearting Songs.
 """
 import flask_login
 
-from app import flaskapp, appconfig, db, constants
+from app import flaskapp, appconfig, db, constants, radiocontroller
 from app.models import Song
 
 def get_current_song() -> Song:
@@ -59,6 +59,11 @@ def brokenheart_song():
 
     curr_user.brokenheart_song(curr_song)
     db.session.commit()
+    if (len(curr_song.broken_hearted_users) -
+            len(curr_song.hearted_users) >=
+            appconfig["BROKENHEARTS_TO_SKIP"]):
+        flaskapp.logger.error("skipping song...")
+        radiocontroller.skip_song()
     return {"response": "Song BrokenHearted."}, 200
 
 @flaskapp.route("/unbrokenheart-song", methods=["POST"])

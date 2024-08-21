@@ -206,10 +206,6 @@ class User(UserMixin, db.Model):
             self.broken_hearted_songs.append(song)
             if song.user:
                 song.user.heartscore -= 1
-            if (len(song.broken_hearted_users) - 
-                    len(song.hearted_users) >=
-                    appconfig["BROKENHEARTS_TO_SKIP"]):
-                radiocontroller.skip_song()
 
     def unbrokenheart_song(self, song):
         """

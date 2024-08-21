@@ -55,10 +55,10 @@ with flaskapp.app_context():
     db.metadata.create_all(db.engine)
     db.create_all()
 
-from app.views import *
-
 from app.radio_controller import RadioController
 radiocontroller = RadioController()
+
+from app.views import *
 
 # Create and start task scheduler
 scheduler = BackgroundScheduler()
