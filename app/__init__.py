@@ -8,6 +8,8 @@ from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
 
+from sqlalchemy_utils import database_exists, create_database
+
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 import sys
@@ -46,10 +48,14 @@ loginmanager.unauthorized_handler(
 )
 
 from app.models import *
-from app.views import *
 
 with flaskapp.app_context():
+    if not database_exists(db.engine.url):
+        create_database(db.engine.url)
     db.metadata.create_all(db.engine)
+    db.create_all()
+
+from app.views import *
 
 from app.radio_controller import RadioController
 radiocontroller = RadioController()

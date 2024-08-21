@@ -20,6 +20,7 @@ def promote_or_remove_wisp(wisp: Wisp):
         key=lambda wisp: len(wisp.hearted_users)
     )
     
+    # doesn't actually change length of 'hearted_users'
     wisp.remove_hearts()
     if (len(remembrances) < appconfig["MAX_REMEMBRANCES"] or
             (len(remembrances) and len(wisp.hearted_users) > 

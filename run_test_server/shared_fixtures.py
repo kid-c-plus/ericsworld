@@ -11,6 +11,8 @@ import sys
 import os
 import requests
 
+FILE = "thread_debug.txt"
+
 try:
     os.remove("test_app.db")
 except Exception:
@@ -67,6 +69,8 @@ def db_resource():
         fetcher = ManifestFetcher(manifest_file)
         builder = DatabaseBuilder(fetcher, db)
         builder.build()
+    with open(FILE, "a") as f:
+        f.write("Built GIF set")
     
     # Resource
     yield db

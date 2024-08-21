@@ -38,6 +38,12 @@ def server():
     Run module-level server instance for testing.
     """
     # Setup
+    flaskapp.app_context().push()
+    assert (db.engine.url.database.split(os.path.sep)[-1] == 
+        "test_app.db"
+    )
+    for tbl in reversed(db.metadata.sorted_tables):
+        db.engine.execute(tbl.delete())
     thread = start_server()
 
     # Resource (none needed)
@@ -56,15 +62,16 @@ def db_resource():
     assert (db.engine.url.database.split(os.path.sep)[-1] == 
         "test_app.db"
     )
-    db.metadata.create_all(db.engine)
-    db.create_all()
-
+    #db.create_all()
+    
     # Resource
     yield db
 
     # Teardown
     db.session.remove()
-    db.drop_all()
+    #db.drop_all()
+    for tbl in reversed(db.metadata.sorted_tables):
+        db.engine.execute(tbl.delete())
 
 @pytest.fixture
 def req_sess(db_resource):

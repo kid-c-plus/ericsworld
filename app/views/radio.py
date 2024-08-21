@@ -2,9 +2,11 @@
 App views for radio controller. Includes queueing, hearting, and 
     broken-hearting song functionality.
 """
+from sqlalchemy import func
 from flask import request
 import flask_login
 from werkzeug.utils import secure_filename
+from sqlalchemy.exc import IntegrityError, OperationalError
 import uuid
 
 from app import flaskapp, appconfig, db, constants
@@ -21,11 +23,14 @@ def check_queue_status():
     """
     curr_user = flask_login.current_user
 
-    total_queued_count = db.session.execute(
-        db.select(Song).filter_by(
-            status=constants.QUEUED_SONG
-        ).count()
+    queue_query = db.select(Song).filter_by(
+        status=constants.QUEUED_SONG
     )
+    count_query = db.select([func.count()]).select_from(
+        queue_query.alias("queue_query"))
+    total_queued_count = db.session.execute(
+        count_query
+    ).scalar()
     return {
         "personal_queue_full": (
             len([song for song in curr_user.songs
@@ -57,6 +62,7 @@ def queue_song():
             "error": "The Eric's World song queue is full."
         }, 403
     song_uri = secure_filename(request.json.get("song_uri", ""))
+    song_uri = song_uri.replace("_", " ")
     if not appconfig["SONG_URI_CHECK"](song_uri):
         return {"error": "Malformed request."}, 400
     song_added = False
@@ -102,7 +108,7 @@ def get_song_queuer():
     ).first()
 
     ret_dict = {
-        "user_queued": curr_song.user != None
+        "user_queued": curr_song and curr_song.user != None
     }
     if ret_dict["user_queued"]:
         ret_dict["queueing_username"] = curr_song.user.username

@@ -187,9 +187,10 @@ class User(UserMixin, db.Model):
             self.hearted_songs.remove(song)
             if song.user:
                 song.user.heartscore -= 1
-            if (len(song.brokenhearted_users) - 
+            if (len(song.broken_hearted_users) - 
                     len(song.hearted_users) >=
                     appconfig["BROKENHEARTS_TO_SKIP"]):
+                flaskapp.logger.error("Skipping song...")
                 radiocontroller.skip_song()
     
     def brokenheart_song(self, song):
@@ -198,14 +199,14 @@ class User(UserMixin, db.Model):
             an autoplay song.
         :param song: Song to BrokenHeart
         """
-        if (song.user != self and song not in self.brokenhearted_songs
+        if (song.user != self and song not in self.broken_hearted_songs
                 and song.status == constants.PLAYING_SONG):
             if song in self.hearted_songs:
                 self.unheart_song(song)
-            self.brokenhearted_songs.append(song)
+            self.broken_hearted_songs.append(song)
             if song.user:
                 song.user.heartscore -= 1
-            if (len(song.brokenhearted_users) - 
+            if (len(song.broken_hearted_users) - 
                     len(song.hearted_users) >=
                     appconfig["BROKENHEARTS_TO_SKIP"]):
                 radiocontroller.skip_song()
@@ -216,9 +217,9 @@ class User(UserMixin, db.Model):
             autplay song. Checks to see if skip threshold reached.
         :param song: Song to UnBrokenHeart
         """
-        if (song.user != self and song in self.brokenhearted_songs
+        if (song.user != self and song in self.broken_hearted_songs
                 and song.status == constants.PLAYING_SONG):
-            self.brokenhearted_songs.remove(song)
+            self.broken_hearted_songs.remove(song)
             if song.user:
                 song.user.heartscore += 1
     
