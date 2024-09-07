@@ -11,6 +11,8 @@ from app import flaskapp, scheduler, db, appconfig
 from app.core import promote_or_remove_wisp, expire_song
 from app.models import *
 
+FILE = "thread_debug.txt"
+
 def schedule():
     """
     Register all configured background tasks in this file.

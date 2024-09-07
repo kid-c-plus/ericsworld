@@ -9,8 +9,6 @@ import os
 import sys
 import requests
 
-FILE = "thread_debug.txt"
-
 from sqlalchemy.orm import sessionmaker
 
 from test_config import Config
@@ -49,8 +47,6 @@ def server():
     # Resource (none needed)
     yield None
 
-    with open(FILE, "w") as f:
-        f.write(f"Shutting down server in {__file__}")
     # Teardown
     stop_server(thread)
 
@@ -62,7 +58,6 @@ def db_resource():
     assert (db.engine.url.database.split(os.path.sep)[-1] == 
         "test_app.db"
     )
-    #db.create_all()
     
     # Resource
     yield db
@@ -214,7 +209,6 @@ def user_3_sess(test_user_3):
     # Setup
     s = requests.Session()
     token = s.get(f"{testconstants.BASE_URL}/hai").json()["csrftoken"]
-    #s.headers["X-CSRFToken"] = s.cookies["csrftoken"]
     s.headers["X-CSRFToken"] = token
 
     response = s.post(f"{testconstants.BASE_URL}/login", json={

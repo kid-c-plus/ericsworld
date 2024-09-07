@@ -89,6 +89,7 @@ def stop_server(server_thread: Process):
     Stop function, invoked only in testing. Stops task thread.
     :param server_thread: Server process thread to stop
     """
+    atexit.unregister(shutdown.shutdown)
     shutdown.shutdown()
     try:
         server_thread.terminate()

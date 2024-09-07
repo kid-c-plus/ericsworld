@@ -16,16 +16,14 @@ import queue
 from io import BytesIO
 from pydub import AudioSegment
 from sqlalchemy.exc import IntegrityError, OperationalError
+from sqlalchemy.orm import Session
 
 from app import flaskapp, db, appconfig, constants
 from app.models import Song
 
-FILE = "thread_debug.txt"
-
 class RadioController():
     """
-    Object encapsulating radio control functions - "manage" function
-        should be scheduled to run about once per second.
+    Object encapsulating radio control functions.
     """
     def __init__(self): 
         """
@@ -115,31 +113,28 @@ class RadioController():
             target=self.gen_songs
         )
         self.gen_songs_thread.start()
-        with open(FILE, "a") as f:
-            f.write("Started gen_songs thread\n")
 
         self.stream_thread = threading.Thread(
             target=self.stream
         )
         self.stream_thread.start()
-        with open(FILE, "a") as f:
-            f.write("Started stream thread\n")
+
+        self.monitor_skip_thread = threading.Thread(
+            target=self.monitor_skip
+        )
+        self.monitor_skip_thread.start()
 
     def shutdown(self):
         """
         Shutdown actions. Stops running threads.
         """
-        with open(FILE, "a") as f:
-            f.write("Shutting down server in \"radio_controller.shutdown\"\n")
         self.kill_signal.set()
         if self.gen_songs_thread:
             self.gen_songs_thread.join()
-        with open(FILE, "a") as f:
-            f.write("Joined gen_songs thread in \"radio_controller.shutdown\"\n")
         if self.stream_thread:
             self.stream_thread.join()
-        with open(FILE, "a") as f:
-            f.write("Joined stream thread in \"radio_controller.shutdown\"\n")
+        if self.monitor_skip_thread:
+            self.monitor_skip_thread.join()
         
         try:
             self.stream_obj.close()
@@ -160,9 +155,9 @@ class RadioController():
             are queued, returns a random song from the songs dir.
         :return: name of file in songs directory
         """
-        with flaskapp.app_context():
+        with flaskapp.app_context(), Session(db.engine) as session:
             try:
-                queued_song = db.session.scalars(
+                queued_song = session.scalars(
                     db.select(Song).filter_by(
                         status=constants.QUEUED_SONG
                     ).order_by(
@@ -185,8 +180,8 @@ class RadioController():
                             song_id=uuid.uuid1().hex,
                             uri=otto_uri
                         )
-                        db.session.add(otto_song)
-                        db.session.commit()
+                        session.add(otto_song)
+                        session.commit()
                         song_added = True
                     except IntegrityError:
                         tries += 1
@@ -206,15 +201,15 @@ class RadioController():
             queued song status to "playing"
         """
         try:
-            with flaskapp.app_context():
-                playing_songs = db.session.scalars(
+            with flaskapp.app_context(), Session(db.engine) as session:
+                playing_songs = session.scalars(
                     db.select(Song).filter_by(
                         status=constants.PLAYING_SONG
                     )
                 ).all()
                 for song in playing_songs:
                     song.status = constants.PLAYED_SONG
-                next_song = db.session.scalars(
+                next_song = session.scalars(
                     db.select(Song).filter_by(
                         status=constants.QUEUED_SONG
                     ).order_by(
@@ -223,11 +218,10 @@ class RadioController():
                 ).first()
                 if next_song:
                     next_song.status = constants.PLAYING_SONG
-                    with open(FILE, "a") as f:
-                        f.write(f"Updating playing song to {next_song.uri}")
-                db.session.commit()
-        except OperationalError:
-            pass
+                session.commit()
+        except OperationalError as e:
+            flaskapp.logger.error(f"OperationalError in " +
+                f"iterate_playing_song: {str(e)}")
 
     def gen_songs(self):
         """
@@ -271,7 +265,8 @@ class RadioController():
                     # if curr_song_end is None, indicates a skip
                     # so no sleep
                     if curr_song_end:
-                        time.sleep(appconfig["CROSSFADE_LENGTH"])
+                        time.sleep(appconfig["CROSSFADE_LENGTH"] / 1000)
+
                     next_song_file = self.get_next_song_file()
                     self.iterate_playing_song()
                     flaskapp.logger.info(f"Generating segment for " +
@@ -338,8 +333,6 @@ class RadioController():
                             pass
                     self.stream_skip_subsignal.set()
                     self.skip_signal.clear()
-            with open(FILE, "a") as f:
-                f.write("Finished \"stream\" thread\n")
 
         except Exception as err:
             _, _, exc_tb = sys.exc_info()
@@ -377,8 +370,6 @@ class RadioController():
 
                     byte_chunk = next_byte_chunk
                     self.stream_obj.sync()
-            with open(FILE, "a") as f:
-                f.write("Finished \"stream\" thread\n")
         except Exception as err:
             _, _, exc_tb = sys.exc_info()
             flaskapp.logger.error("Error in stream: " +
@@ -386,3 +377,18 @@ class RadioController():
                     err.__class__.__name__, 
                     err.__class__.__name__, 
                     str(err), exc_tb.tb_lineno))
+
+    def monitor_skip(self):
+        while not self.kill_signal.is_set():
+            with flaskapp.app_context(), Session(db.engine) as session:
+                playing_song = session.scalars(
+                    db.select(Song).filter_by(
+                        status=constants.PLAYING_SONG
+                    )
+                ).first()
+                if playing_song and (
+                        len(playing_song.broken_hearted_users) -
+                        len(playing_song.hearted_users) >=
+                        appconfig["BROKENHEARTS_TO_SKIP"]):
+                    self.skip_song()
+            time.sleep(appconfig["MONITOR_SKIP_SLEEP"])
