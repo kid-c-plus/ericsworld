@@ -17,11 +17,11 @@ class Wisp extends React.Component {
                 <div className="WispUserBox">
                     <div className="WispUserProfile">
                         <img className="WispUserProfileImg BoxShadow" 
-                        alt="user profile"
-                        src={
-                            (`${Constants.PROFILE_ENDPOINT}/` +
-                            this.props.data["user_profile_uri"])
-                        } />
+                            alt="user profile"
+                            src={
+                                (`${Constants.PROFILE_ENDPOINT}/` +
+                                this.props.data["user_profile_uri"])
+                            } />
                     </div>
                 </div>
                 <div className="WispTextBox">
@@ -34,11 +34,11 @@ class Wisp extends React.Component {
                     { this.props.data["gif_uri"] !== "" ? 
                         <div className="WispGif">
                             <img className="WispImg" 
-                            alt="wisp attachment"
-                            src={
-                                (`${Constants.GIF_ENDPOINT}/` +
-                                this.props.data["gif_uri"])
-                            } />
+                                alt="wisp attachment"
+                                src={
+                                    (`${Constants.GIF_ENDPOINT}/` +
+                                    this.props.data["gif_uri"])
+                                } />
                         </div>
                     : <></> }
                 </div>

@@ -4,7 +4,7 @@ from datetime import datetime as dt
 from run_test_server import constants as testconstants
 
 def test_full_server(user_sess, user_2_sess):
-    while True:
+    for _ in range(5):
         for i in range(10):
             resp = user_sess.post(
                 f"{testconstants.BASE_URL}/post-wisp",
@@ -27,6 +27,10 @@ def test_full_server(user_sess, user_2_sess):
             assert resp.status_code == 201
             time.sleep(5)
         token = user_sess.get(f"{testconstants.BASE_URL}/hai").json()["csrftoken"]
+        assert token
         user_sess.headers["X-CSRFToken"] = token
         token_2 = user_2_sess.get(f"{testconstants.BASE_URL}/hai").json()["csrftoken"]
+        assert token_2
         user_2_sess.headers["X-CSRFToken"] = token_2
+    while True:
+        time.sleep(10)

@@ -381,14 +381,17 @@ class RadioController():
     def monitor_skip(self):
         while not self.kill_signal.is_set():
             with flaskapp.app_context(), Session(db.engine) as session:
-                playing_song = session.scalars(
-                    db.select(Song).filter_by(
-                        status=constants.PLAYING_SONG
-                    )
-                ).first()
-                if playing_song and (
-                        len(playing_song.broken_hearted_users) -
-                        len(playing_song.hearted_users) >=
-                        appconfig["BROKENHEARTS_TO_SKIP"]):
-                    self.skip_song()
-            time.sleep(appconfig["MONITOR_SKIP_SLEEP"])
+                try:
+                    playing_song = session.scalars(
+                        db.select(Song).filter_by(
+                            status=constants.PLAYING_SONG
+                        )
+                    ).first()
+                    if playing_song and (
+                            len(playing_song.broken_hearted_users) -
+                            len(playing_song.hearted_users) >=
+                            appconfig["BROKENHEARTS_TO_SKIP"]):
+                        self.skip_song()
+                except OperationalError:
+                    pass
+                time.sleep(appconfig["MONITOR_SKIP_SLEEP"])

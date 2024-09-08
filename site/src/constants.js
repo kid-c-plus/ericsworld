@@ -40,6 +40,8 @@ class Constants {
 
     static MIN_USERNAME_LENGTH  = 3;
     static MAX_USERNAME_LENGTH  = 12;
+
+    static MAX_WISP_LENGTH      = 140;
 }
 
 export default Constants;

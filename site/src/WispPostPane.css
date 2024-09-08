@@ -35,7 +35,7 @@
     height: 100%;
     padding: calc(var(--pvpratio) * 25);
 }
-
+/*
 #WispGifButtonContainer {
     margin-right: calc(var(--pvpratio) * 10);
 }
@@ -43,7 +43,7 @@
 #WispPostButtonContainer {
     margin-left: calc(var(--pvpratio) * 10);
 }
-
+*/
 .WispEditSelectButton {
     width: 100%;
     height: 100%;
@@ -60,7 +60,7 @@
     clip-path: inset(0 0 calc(var(--pvpratio) * -10) 0);
 }
 
-#GifSelectButton.selected {
+#GIFSelectButton.selected {
     border: 0;
     border-top: calc(var(--pvpratio) * 1) solid var(--displaycolor);
     box-shadow: 0 calc(var(--pvpratio) * -5)
@@ -69,8 +69,10 @@
 }
 
 #GIFSearchSubpane {
-    width: 100%;
-    height: 100%;
+    /*width: 100%;
+    height: 100%;*/
+    width: calc(var(--pvpratio) * 300);
+    height: calc(var(--pvpratio) * 300);
 
     display: grid;
     grid-template-rows: calc(var(--pvpratio) * 100)
@@ -89,6 +91,11 @@
     display: grid;
     grid-template-columns: calc(var(--pvpratio) * 225)
         calc(var(--pvpratio) * 75);
+}
+
+#GIFSearchButton {
+    color: var(--backgroundcolor);
+    background-color: var(--color);
 }
 
 #GIFSearchResultsSubpane {
