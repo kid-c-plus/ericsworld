@@ -31,6 +31,10 @@ class Constants {
         `${Constants.BACKEND_URL}/check-username`);
     
     static GET_WISPS_ENDPOINT   = `${Constants.BACKEND_URL}/get-wisps`;
+    static POST_WISP_ENDPOINT   = `${Constants.BACKEND_URL}/post-wisp`;
+    
+    static GIF_SEARCH_ENDPOINT  = (
+        `${Constants.BACKEND_URL}/gif-search`);
 
     // width and height of virtual grid
     static VGRID_DIMENSION = 1000;
@@ -42,6 +46,10 @@ class Constants {
     static MAX_USERNAME_LENGTH  = 12;
 
     static MAX_WISP_LENGTH      = 140;
+
+    // line height, in vpixels, of wisp edit pane (necessary for 
+    // scroll management
+    static WISP_EDIT_LINE_HEIGHT    = 50;
 }
 
 export default Constants;

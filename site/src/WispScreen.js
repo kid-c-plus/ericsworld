@@ -2,6 +2,8 @@ import React from "react";
 import Constants from "./constants.js";
 import Wisp from "./Wisp.js";
 
+import "./WispScreen.css";
+
 // Root component for Wisp viewing screen
 class WispScreen extends React.Component {
     constructor(props) {
@@ -12,6 +14,9 @@ class WispScreen extends React.Component {
         };
 
         this.domRef = React.createRef();
+
+        // pass "getWisps" back to the parent
+        this.props.registerRefreshCallback(this.getWisps.bind(this));
 
         // set to true immediately after manually updating scrollTop,
         // as opposed to recieving user scroll. Both actions invoke
@@ -35,7 +40,7 @@ class WispScreen extends React.Component {
 
     // Query backend for Wisps and update state object
     getWisps(newestWispId=null, oldestWispId=null) {
-        let params = new URLSearchParams()
+        let params = new URLSearchParams();
         if (newestWispId) {
             params.append("newest_wisp_id", newestWispId);
         } else if (oldestWispId) {

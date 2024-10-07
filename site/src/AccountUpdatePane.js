@@ -187,6 +187,8 @@ class UsernameUpdateSubpane extends React.Component {
             } else {
                 uniqueStatus = "this one's unavailable";
             }
+        } else {
+            uniqueStatus = "enter a new username";
         }
         
         return (

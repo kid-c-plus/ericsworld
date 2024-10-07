@@ -2,14 +2,17 @@
     display: grid;
 
     grid-template-rows: calc(var(--pvpratio) * 375) 
-        calc(var(--pvpratio) 125);
+        calc(var(--pvpratio) * 125);
 }
 
 #EditSubpane {
     margin: calc(var(--pvpratio) * 25);
-    margin-bottom: calc(var(--pvpratio) * 125);
+    margin-bottom: 0;
     height: calc(var(--pvpratio) * 350);
     width: calc(var(--pvpratio) * 450);
+
+    border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    border-radius: calc(var(--pvpratio) * 50);
 
     display: grid;
     grid-template-rows: 50% 50%;
@@ -18,23 +21,40 @@
 }
 
 #WispTextInputContainer {
-    margin: calc(var(--pvpratio) * 25);
     width: calc(var(--pvpratio) * 300);
     height: calc(var(--pvpratio) * 300);
+    margin: calc(var(--pvpratio) * 25);
 
     grid-row-end: span 2;
 
-    line-height: calc(var(--pvpratio) * 40);
-    background: transparent url("assets/underline.png");
+    border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    border-radius: calc(var(--pvpratio) * 50);
+
+    background: var(--underlineuri);
     background-size: calc(var(--pvpratio) * 300)
-        calc(var(--pvpratio) * 40);
-    background-repeat: repeat-y;
+        calc(var(--pvpratio) * 300);
+    background-repeat: none;
 }
 
 #WispTextInput {
-    height: 100%;
+    width: calc(var(--pvpratio) * 250);
+    height: calc(var(--pvpratio) * 230);
+    margin-top: calc(var(--pvpratio) * 15);
     padding: calc(var(--pvpratio) * 25);
+    padding-top: 0;
+
+    border: 0;
+    
+    line-height: calc(var(--pvpratio) * 50);
+    font-size: calc(var(--pvpratio) * 30);
+    
+    font-family: var(--fontfamily);
+    font-weight: var(--fontweight);
+
+    overflow: hidden;
+    resize: none;
 }
+
 /*
 #WispGifButtonContainer {
     margin-right: calc(var(--pvpratio) * 10);
@@ -50,6 +70,7 @@
     border: 0;
     border-right: calc(var(--pvpratio) * 1) solid var(--displaycolor);
     border-radius: 0;
+    cursor: pointer;
 }
 
 #TextSelectButton.selected {
@@ -58,17 +79,19 @@
     box-shadow: 0 calc(var(--pvpratio) * 5)
         calc(var(--pvpratio) * 5) var(--displaycolor);
     clip-path: inset(0 0 calc(var(--pvpratio) * -10) 0);
+    cursor: normal;
 }
 
-#GIFSelectButton.selected {
+#GifSelectButton.selected {
     border: 0;
     border-top: calc(var(--pvpratio) * 1) solid var(--displaycolor);
     box-shadow: 0 calc(var(--pvpratio) * -5)
         calc(var(--pvpratio) * 5) var(--displaycolor);
     clip-path: inset(calc(var(--pvpratio) * 10) 0 0 0);
+    cursor: normal;
 }
 
-#GIFSearchSubpane {
+#GifSearchSubpane {
     /*width: 100%;
     height: 100%;*/
     width: calc(var(--pvpratio) * 300);
@@ -79,7 +102,7 @@
         calc(var(--pvpratio) * 250);
 }
 
-#GIFSearchBar {
+#GifSearchBar {
     width: calc(var(--pvpratio) * 300);
     height: calc(var(--pvpratio) * 50);
     margin: calc(var(--pvpratio) * 25);
@@ -93,12 +116,14 @@
         calc(var(--pvpratio) * 75);
 }
 
-#GIFSearchButton {
+#GifSearchButton {
     color: var(--backgroundcolor);
     background-color: var(--color);
+
+    cursor: pointer;
 }
 
-#GIFSearchResultsSubpane {
+#GifSearchResultsSubpane {
     width: 100%;
     height: 100%;
     padding: 0 calc(var(--pvpratio) * 25);
@@ -107,7 +132,7 @@
     overflow-y: scroll;
 }
 
-.GIFSearchImg {
+.GifSearchImg {
     width: calc(var(--pvpratio) * 83);
     max-height: calc(var(--pvpratio) * 300);
     margin: calc(var(--pvpratio) * 25);
@@ -115,3 +140,12 @@
     border-radius: calc(var(--pvpratio) * 10);
 }
 
+
+#PostWispButton {
+    width: calc(var(--pvpratio) * 450);
+    height: calc(var(--pvpratio) * 35);
+    margin: calc(var(--pvpratio) * 25);
+    text-align: center;
+    vertical-align: middle;
+    padding: calc(var(--pvpratio) * 20) 0;
+}

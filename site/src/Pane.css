@@ -131,8 +131,10 @@ input[type="pwd"] {
 
 .FormButton {
     border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
-    border-radius: calc(var(--pvpratio) * 10);
+    border-radius: calc(var(--pvpratio) * 50);
     padding: calc(var(--pvpratio) * 25);
+    
+    cursor: pointer;
 
     width: calc(var(--pvpratio) * 350);
 

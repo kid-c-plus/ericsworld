@@ -15,7 +15,8 @@
      */
     --fontfamily: "jgs";
     --fontweight: 10;
-    --deviceuri: url("device.png");
+    --deviceuri: url("assets/device.png");
+    --underlineuri: url("assets/underline.png");
     --backgroundcolor: #FFD8D8;
     --displaycolor: #F52424;
 

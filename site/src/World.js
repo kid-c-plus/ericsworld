@@ -4,12 +4,12 @@ import WispScreen from "./WispScreen.js";
 import ScrollBar from "./ScrollBar.js";
 import Button from "./Button.js";
 import AccountPane from "./AccountPane.js";
+import WispPostPane from "./WispPostPane.js";
 
 import Constants from "./constants.js";
 import calculateViewportOffsets from "./onLoad.js";
 
 import "./World.css";
-import "./WispScreen.css";
 import "./Pane.css";
 
 // Root component for Eric's World app. Handles basic window sizing
@@ -27,6 +27,8 @@ class World extends React.Component {
             paneDeactivated: false,
 
             accountInfo: null,
+
+            refreshCallback:    null
         }
         
         calculateViewportOffsets();
@@ -111,6 +113,14 @@ class World extends React.Component {
         }
     }
 
+    // callback for registering WispScreen's own "refreshWisps"
+    // callback as an element of the parent
+    registerRefreshCallback(refreshCallback) {
+        this.setState({
+            refreshCallback: refreshCallback
+        })
+    }
+
     // callback for all pane selection Button children (i.e. About,
     // Account/Login, & Post). Sets state. should be bound with
     // appropriate state string. Can be bound with "home" to provide
@@ -174,11 +184,23 @@ class World extends React.Component {
                         deactivated={this.state.paneDeactivated}
                     />
                 );
+            case "post":
+                return (
+                    <WispPostPane
+                        csrfFetch={this.csrfFetch.bind(this)}
+                        refreshCallback={
+                            this.state.refreshCallback}
+                        deactivateCallback={
+                            this.paneButtonCallback.bind(
+                                this, "home")}
+                        deactivated={this.state.paneDeactivated}
+                    />
+                );
             default:
                 return <> < />;
         }
     }
-
+ 
     render() {
         return (
             <div id="World" className="ImageForeground">
@@ -196,6 +218,9 @@ class World extends React.Component {
                     } scrollCallback={
                         this.scrollCallback.bind(this)
                     } 
+                    registerRefreshCallback={
+                        this.registerRefreshCallback.bind(
+                            this)}
                 />
 
                 {this.renderPane()}
