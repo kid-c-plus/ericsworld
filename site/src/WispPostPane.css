@@ -38,19 +38,16 @@
 
 #WispTextInput {
     width: calc(var(--pvpratio) * 250);
-    height: calc(var(--pvpratio) * 230);
-    margin-top: calc(var(--pvpratio) * 15);
-    padding: calc(var(--pvpratio) * 25);
-    padding-top: 0;
+    height: calc(var(--pvpratio) * 250);
+    margin: calc(var(--pvpratio) * 15) 
+        calc(var(--pvpratio) * 25) 0 calc(var(--pvpratio) * 25);
+    padding: 0;
 
     border: 0;
     
     line-height: calc(var(--pvpratio) * 50);
     font-size: calc(var(--pvpratio) * 30);
     
-    font-family: var(--fontfamily);
-    font-weight: var(--fontweight);
-
     overflow: hidden;
     resize: none;
 }
@@ -70,7 +67,20 @@
     border: 0;
     border-right: calc(var(--pvpratio) * 1) solid var(--displaycolor);
     border-radius: 0;
+
+    display: grid;
+    grid-template-rows: 50% 50%;
+    
+    text-align: center;
+    justify-content: center;
+
     cursor: pointer;
+}
+
+.WispEditSelectButtonImg {
+    height: 50%;
+    margin: auto;
+    margin-bottom: 0;
 }
 
 #TextSelectButton.selected {
@@ -79,7 +89,7 @@
     box-shadow: 0 calc(var(--pvpratio) * 5)
         calc(var(--pvpratio) * 5) var(--displaycolor);
     clip-path: inset(0 0 calc(var(--pvpratio) * -10) 0);
-    cursor: normal;
+    cursor: default;
 }
 
 #GifSelectButton.selected {
@@ -87,8 +97,8 @@
     border-top: calc(var(--pvpratio) * 1) solid var(--displaycolor);
     box-shadow: 0 calc(var(--pvpratio) * -5)
         calc(var(--pvpratio) * 5) var(--displaycolor);
-    clip-path: inset(calc(var(--pvpratio) * 10) 0 0 0);
-    cursor: normal;
+    clip-path: inset(calc(var(--pvpratio) * -10) 0 0 0);
+    cursor: default;
 }
 
 #GifSearchSubpane {
@@ -114,13 +124,37 @@
     display: grid;
     grid-template-columns: calc(var(--pvpratio) * 225)
         calc(var(--pvpratio) * 75);
+    
+    overflow: hidden;
+}
+
+#GifSearchInput {
+    height: 100%;
+    width: 75%;
+    padding: 0 10% 0 15%;
+
+    border: 0;
 }
 
 #GifSearchButton {
+    height: 100%;
+    width: 80%;
+    padding: 0 10%;
     color: var(--backgroundcolor);
-    background-color: var(--color);
+    background-color: var(--displaycolor);
 
     cursor: pointer;
+
+    text-align: center;
+    line-height: calc(var(--pvpratio) * 50);
+}
+
+#GifSearchArrow {
+    height: 100%;
+    width: 100%;
+    clip-path: polygon(15% 40%, 60% 40%, 60% 25%, 85% 50%, 
+        60% 75%, 60% 60%, 15% 60%);
+    background-color: var(--backgroundcolor);
 }
 
 #GifSearchResultsSubpane {
@@ -140,12 +174,11 @@
     border-radius: calc(var(--pvpratio) * 10);
 }
 
-
 #PostWispButton {
     width: calc(var(--pvpratio) * 450);
     height: calc(var(--pvpratio) * 35);
     margin: calc(var(--pvpratio) * 25);
+
     text-align: center;
-    vertical-align: middle;
     padding: calc(var(--pvpratio) * 20) 0;
 }

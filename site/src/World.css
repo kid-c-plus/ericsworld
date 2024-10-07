@@ -72,7 +72,7 @@
     }
 }
 
-html {
+html, input, textarea {
     background: var(--backgroundcolor);
     color: var(--displaycolor);
 
@@ -154,6 +154,10 @@ html {
 .BoxShadow {
     box-shadow: calc(var(--pvpratio) * 5) calc(var(--pvpratio) * 5)
         calc(var(--pvpratio) * 5) var(--displaycolor);
+}
+
+.DoubleSpacedText { 
+    letter-spacing: calc(var(--pvpratio) * 2);
 }
 
 #ScrollBar {

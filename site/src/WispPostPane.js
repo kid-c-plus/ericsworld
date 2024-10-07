@@ -79,18 +79,12 @@ class WispPostPane extends React.Component {
             // to determine scroll direction
             if (remainder !== 0) {
                 if (currScrollTop > this.lastScrollTop) {
-                    // set to the minimum of floor(current) + lineHght,
-                    // scrollHeight - scrollHight % lineHeight, where
+                    // set to floor(current) + lineHeight, where
                     // floor is modulo lineHeight
-                    let scrollPortion = (
-                        this.textAreaRef.current.scrollHeight - 
-                        this.textAreaRef.current.offsetHeight);
-                    this.textAreaRef.current.scrollTop = Math.min((
-                        currScrollTop - remainder + this.lineHeight),
-                        scrollPortion - (
-                            scrollPortion % this.lineHeight));
+                    this.textAreaRef.current.scrollTop = (
+                        currScrollTop - remainder + this.lineHeight);
                 } else {
-                    // set to the floor(current)
+                    // set to floor(current)
                     this.textAreaRef.current.scrollTop = 
                         currScrollTop - remainder;
                 }
@@ -108,7 +102,8 @@ class WispPostPane extends React.Component {
                     <textarea id="WispTextInput"
                         ref={this.textAreaRef}
                         onKeyUp={this.checkTextScroll.bind(this)}
-                        onKeyDown={this.checkTextScroll.bind(this)}
+                        onKeyDown={() => setTimeout(
+                            this.checkTextScroll.bind(this), 10)}
                         autoComplete="off" autoCorrect="off" 
                         autoCapitalize="off" spellCheck="false"
                         name="WispTextInput" className="TextInput"
@@ -141,7 +136,10 @@ class WispPostPane extends React.Component {
                             onClick={domEvent => this.setState({
                                 focus: "text"
                             })} >
-                        text
+                        <img alt="wisp text editor" 
+                            className="WispEditSelectButtonImg"
+                            src="assets/wisp_text_edit.gif" />
+                        <span>text</span>
                     </div>
                     {editFocusElem}
                     <div id="GifSelectButton"
@@ -151,7 +149,10 @@ class WispPostPane extends React.Component {
                             onClick={domEvent => this.setState({
                                 focus: "gif"
                             })} >
-                        gif
+                        <img alt="wisp gif editor" 
+                            className="WispEditSelectButtonImg"
+                            src="assets/wisp_gif_edit.gif" />
+                        <span>pics</span>
                     </div>
                 </div>
                     <div id="PostWispButton" 
@@ -206,7 +207,8 @@ class GifSearchSubpane extends React.Component {
                     />
                     <div id="GifSearchButton" onClick={
                             this.searchGifs.bind(this)}>
-                        search
+                        <div id="GifSearchArrow" onClick={
+                            this.searchGifs.bind(this)} />
                     </div>
                 </div>
                 <div id="GifSearchResultsSubpane">

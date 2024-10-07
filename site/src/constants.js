@@ -8,8 +8,9 @@ class Constants {
         `${Constants.BACKEND_URL}/static/profiles`);
     static GIF_ENDPOINT     = (
         `${Constants.BACKEND_URL}/static/gifs`);
-        
-    
+    static ASSET_ENDPOINT     = (
+        `${Constants.BACKEND_URL}/static/assets`);
+
     static LOGIN_ENDPOINT           = `${Constants.BACKEND_URL}/login`;
     static LOGOUT_ENDPOINT          = (
         `${Constants.BACKEND_URL}/logout`);
