@@ -16,7 +16,16 @@ class WispPostPane extends React.Component {
             text:       "",
             gifUri:     "",
 
-            errorMsg:   ""
+            gifSearch:  "",
+            gifUris:    [],
+            statusMsg:  "search for a beautiful gif...",
+            gifScroll:  0,
+
+            errorMsg:   "",
+            
+            // track whether enter is being held
+            // so as to shade the button
+            enterHeld:  false
         }
 
         this.textAreaRef = React.createRef();
@@ -50,7 +59,7 @@ class WispPostPane extends React.Component {
                 this.props.deactivateCallback();
                 setTimeout(
                     () => this.props.refreshCallback(),
-                    500
+                    1000
                 );
             }
             return response.json()
@@ -64,11 +73,9 @@ class WispPostPane extends React.Component {
         })
     }
 
-    updateText(changeEvent) {
-        this.setState({
-            text: changeEvent.target.value});
-    }
-
+    
+    // check the state of the Wisp text box and, if needed,
+    // set it to be in line with the underlines
     checkTextScroll() {
         if (this.textAreaRef.current && 
                 this.textAreaRef.current.scrollTop !== 
@@ -93,36 +100,121 @@ class WispPostPane extends React.Component {
         }
     }
 
+    // query the backend for the gif search string set in state
+    // updates the "gifUris" state obj
+    searchGifs(domEvent) {
+        if (this.state.gifSearch) {
+            let params = new URLSearchParams();
+            params.append("term_string", this.state.gifSearch);
+            if (domEvent === null || domEvent._reactName === "onClick" ||
+                    domEvent.keyCode === 13) {
+                fetch(`${Constants.GIF_SEARCH_ENDPOINT}?${params}`, {
+                    credentials: "include"
+                }).then(response => response.json())
+                .then(gifResp => {
+                    if ("gifs" in gifResp) {
+                        this.setState({
+                            gifUris:    gifResp["gifs"],
+                            statusMsg: (
+                                gifResp["gifs"].length > 0 ? 
+                                "" : "no pics found :~(")
+                        })
+                    } else if ("error" in gifResp) {
+                        this.setState(
+                            {statusMsg: gifResp["error"]});
+                    }
+                }).catch(error => {
+                    console.log(
+                        `Error searching Gifs: ${error.message}`);
+                })
+            }
+        }
+    }
+
+    // keyUp event handler for text - submits on Enter press, else
+    // rechecks scroll level
+    textKeyUp(keyEvent) {
+        console.log(keyEvent.keyCode);
+        if (keyEvent.keyCode === 13) {
+            this.post();
+        }
+        this.checkTextScroll();
+    }
+
+    // keyDown event handler for text - sets EnterHeld and rechecks 
+    // text Scroll after 5 ms timeout
+    textKeyDown(keyEvent) {
+        if (keyEvent.keyCode === 13) {
+            this.setState({
+                enterHeld : true
+            });
+        }
+        setTimeout(this.checkTextScroll.bind(this), 5);
+    }
+
     render() {
         this.checkTextScroll();
-        let editFocusElem = <></>;
-        if (this.state.focus === "text") {
-            editFocusElem = (
-                <div id="WispTextInputContainer"> 
-                    <textarea id="WispTextInput"
-                        ref={this.textAreaRef}
-                        onKeyUp={this.checkTextScroll.bind(this)}
-                        onKeyDown={() => setTimeout(
-                            this.checkTextScroll.bind(this), 10)}
-                        autoComplete="off" autoCorrect="off" 
-                        autoCapitalize="off" spellCheck="false"
-                        name="WispTextInput" className="TextInput"
-                        maxLength={`${Constants.MAX_WISP_LENGTH}`}
-                        value={this.state.text}
-                        onChange={changeEvent => this.setState({
-                            text: changeEvent.target.value.replace(
-                            "\n", "")})}
-                    />
-                </div>
-            );
-        } else if (this.state.focus === "gif") {
-            editFocusElem = <GifSearchSubpane selectGif={
-                gifUri => this.setState({
-                    gifUri: gifUri,
-                    focus:  "text"
-                })}
-            />;
+        let gifSearchResults = null;
+        if (this.state.gifUris.length > 0) { 
+            gifSearchResults = this.state.gifUris.map(gifUri => (
+                <img alt="gif search result"
+                    key={`search-${gifUri}`}
+                    src={`${Constants.GIF_ENDPOINT}/${gifUri}`}
+                    className={gifUri === this.state.gifUri ? 
+                        "GifSearchImg Selected" : "GifSearchImg" }
+                    onClick={domEvent => this.setState({
+                        "gifUri": gifUri
+                    })} />
+            ));
+            console.log(gifSearchResults);
+        } else {
+            gifSearchResults = (<div id="GifSearchStatus">
+                {this.state.statusMsg}
+            </div>);
         }
+
+        let editFocusElems = (<>
+            <div id="WispTextInputContainer" style={
+                    this.state.focus === "text" ?
+                    {} : {display: "none"}}>
+                <textarea id="WispTextInput" 
+                    ref={this.textAreaRef}
+                    onKeyUp={this.textKeyUp.bind(this)}
+                    onKeyDown={this.textKeyDown.bind(this)}
+                    autoComplete="off" autoCorrect="off" 
+                    autoCapitalize="off" spellCheck="false"
+                    name="WispTextInput" className="TextInput"
+                    maxLength={`${Constants.MAX_WISP_LENGTH}`}
+                    value={this.state.text}
+                    onChange={changeEvent => this.setState({
+                        text: changeEvent.target.value.replace(
+                        "\n", "")})}
+                />
+            </div>
+            <div id="GifSearchContainer" style={
+                    this.state.focus === "gif" ?
+                    {} : {display: "none"}}>
+                <div id="GifSearchBar">
+                    <input type="text" id="GifSearchInput"
+                        name="GifSearchInput"
+                        className="TextInput"
+                        value={this.state.gifSearch}
+                        onChange={changeEvent => this.setState({
+                            gifSearch: changeEvent.target.value})}
+                        onKeyUp={this.searchGifs.bind(this)}
+                    />
+                    <div id="GifSearchButton" onClick={
+                            this.searchGifs.bind(this)}>
+                        <div id="GifSearchArrow" onClick={
+                            this.searchGifs.bind(this)} />
+                    </div>
+                </div>
+                <div id="GifSearchResultsContainer">
+                    {gifSearchResults}
+                </div>
+            </div>
+        </>);
+
         return (
             <div id="WispPostPane" className={
                     `Pane BoxShadow ${this.props.deactivated ?
@@ -141,7 +233,7 @@ class WispPostPane extends React.Component {
                             src="assets/wisp_text_edit.gif" />
                         <span>text</span>
                     </div>
-                    {editFocusElem}
+                    {editFocusElems}
                     <div id="GifSelectButton"
                             className={"WispEditSelectButton" +
                             (this.state.focus === "gif" ? 
@@ -156,64 +248,12 @@ class WispPostPane extends React.Component {
                     </div>
                 </div>
                     <div id="PostWispButton" 
-                            className="FormButton BoxShadow" 
+                            className={`FormButton BoxShadow ${
+                                this.state.enterHeld ? "Pressed" : ""
+                                }`} 
                             onClick={this.post.bind(this)}>
                         send wisp 
                     </div>
-            </div>
-        );
-    }
-};
-
-class GifSearchSubpane extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            gifSearch:  "",
-            gifUris:    []
-        }
-    }
-
-    searchGifs(domEvent) {
-        if (this.state.gifSearch) {
-            let params = new URLSearchParams();
-            if (domEvent === null || domEvent._reactName === "onClick" ||
-                    domEvent.keyCode === 13) {
-                fetch(`${Constants.GIF_SEARCH_ENDPOINT}?${params}`, {
-                    credentials: "include"
-                })
-            }
-        }
-    }
-
-    render() {
-        let gifImgs = this.state.gifUris.map(gifUri => (
-            <img className="GifSearchImg" alt="gif search result"
-                key={this.state.gifUri}
-                src={`${Constants.Gif_ENDPOINT}/${gifUri}`}
-                onClick={this.props.selectGif.bind(this)} />
-        ));
-        return (
-            <div id="GifSearchSubpane">
-                <div id="GifSearchBar">
-                    <input type="text" id="GifSearchInput"
-                        name="GifSearchInput"
-                        className="TextInput"
-                        value={this.state.gifSearch}
-                        onChange={changeEvent => this.setState({
-                            gifSearch: changeEvent.target.value})}
-                        onKeyUp={this.searchGifs.bind(this)}
-                    />
-                    <div id="GifSearchButton" onClick={
-                            this.searchGifs.bind(this)}>
-                        <div id="GifSearchArrow" onClick={
-                            this.searchGifs.bind(this)} />
-                    </div>
-                </div>
-                <div id="GifSearchResultsSubpane">
-                    {gifImgs}
-                </div>
             </div>
         );
     }

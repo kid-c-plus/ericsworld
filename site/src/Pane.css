@@ -141,7 +141,7 @@ input[type="pwd"] {
     text-align: center;
 }
 
-.FormButton:active {
+.FormButton:active, .FormButton.Pressed {
     color: var(--backgroundcolor);
     background: var(--displaycolor);
     box-shadow: calc(var(--pvpratio) * 5) calc(var(--pvpratio) * 5)

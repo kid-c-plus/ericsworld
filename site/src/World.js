@@ -39,6 +39,24 @@ class World extends React.Component {
     componentDidMount() {
         this.getCSRFToken();
         this.getAccountInfo();
+
+        setTimeout(
+            () => {
+                let body = {
+                    phone_number:   "+11234567890",
+                    password:       "hai"
+                };
+                this.csrfFetch(Constants.LOGIN_ENDPOINT,
+                {
+                    method:         "POST",
+                    credentials:    "include",
+                    body:           JSON.stringify(body)
+                }).then(resp => console.log(resp));
+                setTimeout(
+                    () => this.getAccountInfo(),
+                    1000);
+            }, 1000
+        );
     }
 
     // Gets CSRF token from "/hai" endpoint and saves to "csrfToken"

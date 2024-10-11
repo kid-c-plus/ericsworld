@@ -101,9 +101,7 @@
     cursor: default;
 }
 
-#GifSearchSubpane {
-    /*width: 100%;
-    height: 100%;*/
+#GifSearchContainer {
     width: calc(var(--pvpratio) * 300);
     height: calc(var(--pvpratio) * 300);
 
@@ -157,7 +155,7 @@
     background-color: var(--backgroundcolor);
 }
 
-#GifSearchResultsSubpane {
+#GifSearchResultsContainer {
     width: 100%;
     height: 100%;
     padding: 0 calc(var(--pvpratio) * 25);
@@ -170,8 +168,21 @@
     width: calc(var(--pvpratio) * 83);
     max-height: calc(var(--pvpratio) * 300);
     margin: calc(var(--pvpratio) * 25);
+    padding: calc(var(--pvpratio) * 3);
 
+    border: calc(var(--pvpratio) * 2) solid var(--backgroundcolor);
     border-radius: calc(var(--pvpratio) * 10);
+}
+
+.GifSearchImg.Selected {
+    border: calc(var(--pvpratio) * 2) dotted var(--displaycolor);
+}
+
+#GifSearchStatus {
+    width: calc(var(--pvpratio) * 300);
+    height: calc(var(--pvpratio) * 50);
+
+    text-align: center;
 }
 
 #PostWispButton {
