@@ -33,7 +33,6 @@ class WispPostPane extends React.Component {
         this.lineHeight = parseFloat(getComputedStyle(document.body)
             .getPropertyValue("--pvpratio"))
             * Constants.WISP_EDIT_LINE_HEIGHT;
-        console.log(this.lineHeight);
 
         // track last scrollTop for textArea, to determine scroll
         // direction
@@ -67,7 +66,6 @@ class WispPostPane extends React.Component {
             if ("error" in errorResp) {
                 this.setState({errorMsg: errorResp["error"]});
             }
-            console.log(errorResp);
         }).catch(error => {
             console.log(`Error posting Wisp: ${error.message}`);
         })
@@ -134,7 +132,6 @@ class WispPostPane extends React.Component {
     // keyUp event handler for text - submits on Enter press, else
     // rechecks scroll level
     textKeyUp(keyEvent) {
-        console.log(keyEvent.keyCode);
         if (keyEvent.keyCode === 13) {
             this.post();
         }
@@ -166,7 +163,6 @@ class WispPostPane extends React.Component {
                         "gifUri": gifUri
                     })} />
             ));
-            console.log(gifSearchResults);
         } else {
             gifSearchResults = (<div id="GifSearchStatus">
                 {this.state.statusMsg}

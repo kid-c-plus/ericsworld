@@ -40,7 +40,12 @@ class WispScreen extends React.Component {
 
     // Query backend for Wisps and update state object
     getWisps(newestWispId=null, oldestWispId=null) {
+        console.log("getting wisps...");
         let params = new URLSearchParams();
+        if (newestWispId === null && oldestWispId === null &&
+                this.state.wisps.length > 0) {
+            newestWispId = this.state.wisps[0]["wisp_id"];
+        }
         if (newestWispId) {
             params.append("newest_wisp_id", newestWispId);
         } else if (oldestWispId) {
@@ -51,13 +56,27 @@ class WispScreen extends React.Component {
         .then(response => response.json())
         .then(wispResp => {
             let wisps = wispResp["wisps"];
+            console.log(wisps);
             if (newestWispId) {
                 this.setState({
                     wisps: wisps.concat(this.state.wisps)
                 });
-            } else {
+            } else if (oldestWispId) {
                 this.setState({
                     wisps: this.state.wisps.concat(wisps)
+                });
+            } else {
+                wisps = wisps.filter(wisp => {
+                    for (var existing_wisp in this.state.wisps) {
+                        if (wisp["wisp_id"] === 
+                                existing_wisp["wisp_id"]) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+                this.setState({
+                    wisps: wisps.concat(this.state.wisps)
                 });
             }
             // update scroll value
@@ -102,6 +121,7 @@ class WispScreen extends React.Component {
         let wispComponents = this.state.wisps.map(wisp => (
             <Wisp data={wisp} key={wisp["wisp_id"]} />
         ));
+        console.log(this.state.wisps);
         if (this.domRef.current) {
             this.scrollTopUpdated = true;
             this.domRef.current.scrollTop = (

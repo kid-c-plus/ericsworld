@@ -25,9 +25,9 @@ TEST_USER = {
     "login_id": uuid.uuid1().hex,
     "phone_number": "+11234567890",
     "recovery_email": "testuser@ericsworld.net",
-    "username": "test user",
+    "username": "rick",
     "status": appconstants.ACTIVE_USER,
-    "profile_uri": "BUILDNGS/MARBARCH.GIF"
+    "profile_uri": "RICKSPICKS/airline-to-heaven.jpeg"
 }
 
 TEST_USER_2 = {
@@ -35,9 +35,9 @@ TEST_USER_2 = {
     "login_id": uuid.uuid1().hex,
     "phone_number": "+15555551112",
     "recovery_email": "testuser2@ericsworld.net",
-    "username": "test user 2",
+    "username": "thinker",
     "status": appconstants.ACTIVE_USER,
-    "profile_uri": "CATS/BINKY.GIF"
+    "profile_uri": "RICKSPICKS/cubes.jpeg"
 }
 
 TEST_USER_3 = {
@@ -45,9 +45,9 @@ TEST_USER_3 = {
     "login_id": uuid.uuid1().hex,
     "phone_number": "+15555551314",
     "recovery_email": "testuser3@ericsworld.net",
-    "username": "test user 3",
+    "username": "xXx_cOWBoy_xXx",
     "status": appconstants.ACTIVE_USER,
-    "profile_uri": "ABSTRACT/ALIENSEA.GIF"
+    "profile_uri": "RICKSPICKS/cowboy.png"
 }
 
 
