@@ -19,15 +19,16 @@ except Exception:
     pass
 
 from sqlalchemy.orm import sessionmaker
-
 from test_config import Config
-from run_test_server import constants as testconstants
 
 # delete all previous content from testing Logfile
 if os.path.exists(Config.LOGFILE):
      f = open(Config.LOGFILE, "w")
      f.seek(0)
      f.truncate()
+
+from run_test_server import constants as testconstants
+
 
 from app import *
 from build_gif_table import *

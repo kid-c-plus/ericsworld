@@ -74,10 +74,10 @@ class RadioController():
         Startup actions. Connects shout object and starts stream 
             thread.
         """
-        flaskapp.logger.info("Starting up the logger...")
-
+        flaskapp.logger.info("Starting radio controller thread")
         stream_opened = False
         stream_connected = False
+        self.gen_songs_thread = self.stream_thread = self.monitor_skip_thread = None
         tries = 0
         while not stream_connected:
             try:

@@ -1,9 +1,7 @@
-#WispPostPane {
-    display: grid;
+/* CSS directives for new Wisp edit/post Pane
+ */
 
-    grid-template-rows: calc(var(--pvpratio) * 375) 
-        calc(var(--pvpratio) * 125);
-}
+/* SINGLETON ELEMENTS */
 
 #EditSubpane {
     margin: calc(var(--pvpratio) * 25);
@@ -52,35 +50,20 @@
     resize: none;
 }
 
-/*
-#WispGifButtonContainer {
-    margin-right: calc(var(--pvpratio) * 10);
-}
+#GifSearchStatus {
+    width: calc(var(--pvpratio) * 300);
+    height: calc(var(--pvpratio) * 50);
 
-#WispPostButtonContainer {
-    margin-left: calc(var(--pvpratio) * 10);
-}
-*/
-.WispEditSelectButton {
-    width: 100%;
-    height: 100%;
-    border: 0;
-    border-right: calc(var(--pvpratio) * 1) solid var(--displaycolor);
-    border-radius: 0;
-
-    display: grid;
-    grid-template-rows: 50% 50%;
-    
     text-align: center;
-    justify-content: center;
-
-    cursor: pointer;
 }
 
-.WispEditSelectButtonImg {
-    height: 50%;
-    margin: auto;
-    margin-bottom: 0;
+#PostWispButton {
+    width: calc(var(--pvpratio) * 450);
+    height: calc(var(--pvpratio) * 35);
+    margin: calc(var(--pvpratio) * 25);
+
+    text-align: center;
+    padding: calc(var(--pvpratio) * 20) 0;
 }
 
 #TextSelectButton.selected {
@@ -156,12 +139,42 @@
 }
 
 #GifSearchResultsContainer {
+    width: calc(100% - (var(--pvpratio) * 50));
+    padding: 0 calc(var(--pvpratio) * 25);
+}
+
+/*
+#WispGifButtonContainer {
+    margin-right: calc(var(--pvpratio) * 10);
+}
+
+#WispPostButtonContainer {
+    margin-left: calc(var(--pvpratio) * 10);
+}
+*/
+
+/* CLASSES */
+
+.WispEditSelectButton {
     width: 100%;
     height: 100%;
-    padding: 0 calc(var(--pvpratio) * 25);
+    border: 0;
+    border-right: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    border-radius: 0;
+
+    display: grid;
+    grid-template-rows: 50% 50%;
     
-    overflow-x: hidden;
-    overflow-y: scroll;
+    text-align: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+.WispEditSelectButtonImg {
+    height: 50%;
+    margin: auto;
+    margin-bottom: 0;
 }
 
 .GifSearchImg {
@@ -178,18 +191,3 @@
     border: calc(var(--pvpratio) * 2) dotted var(--displaycolor);
 }
 
-#GifSearchStatus {
-    width: calc(var(--pvpratio) * 300);
-    height: calc(var(--pvpratio) * 50);
-
-    text-align: center;
-}
-
-#PostWispButton {
-    width: calc(var(--pvpratio) * 450);
-    height: calc(var(--pvpratio) * 35);
-    margin: calc(var(--pvpratio) * 25);
-
-    text-align: center;
-    padding: calc(var(--pvpratio) * 20) 0;
-}

@@ -1,8 +1,7 @@
 import React from "react";
+
 import Constants from "./constants.js";
 import Wisp from "./Wisp.js";
-
-import "./WispScreen.css";
 
 // Root component for Wisp viewing screen
 class WispScreen extends React.Component {

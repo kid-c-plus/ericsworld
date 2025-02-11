@@ -1,3 +1,9 @@
+/* Base-level CSS directives for Device, viewport, p-vp ratio
+ * and layout for Device interactive elements
+ */
+
+/* VARIABLES */
+
 :root {
     /* ratio of real pixels to "virtual pixels" in virtual
      * 1000x1000 grid
@@ -14,9 +20,9 @@
     /* currently set display color and font, set by HeartMax
      */
     --fontfamily: "jgs";
-    --fontweight: 10;
-    --deviceuri: url("assets/device.png");
-    --underlineuri: url("assets/underline.png");
+    --fontweight: 9;
+    --deviceuri: url("../assets/device.png");
+    --underlineuri: url("../assets/underline.png");
     --backgroundcolor: #FFD8D8;
     --displaycolor: #F52424;
 
@@ -26,53 +32,40 @@
     --scrollthumbpercent: 0.0;
 }
 
+/* FONTS */
+
 @font-face {
     font-family: "jgs";
     src:
-        url("fonts/jgs5.ttf") format("truetype");
+        url("../fonts/jgs5.ttf") format("truetype");
     font-weight: 5;
 }
 
 @font-face {
     font-family: "jgs";
     src:
-        url("fonts/jgs7.ttf") format("truetype");
+        url("../fonts/jgs7.ttf") format("truetype");
     font-weight: 7;
 }
 
 @font-face {
     font-family: "jgs";
     src:
-        url("fonts/jgs9.ttf") format("truetype");
+        url("../fonts/jgs9.ttf") format("truetype");
     font-weight: 9;
 }
 
 @font-face {
     font-family: "jgs";
     src:
-        url("fonts/jgs_Font.ttf") format("truetype");
+        url("../fonts/jgs_Font.ttf") format("truetype");
     font-weight: 10;
 }
 
-@keyframes PowerOn {
-    from {
-        transform: scale(1, 0);
-    }
-    to {
-        transform: scale(1, 1);
-    }
-}
-
-@keyframes PowerOff {
-    from {
-        transform: scale(1, 1);
-    }
-    to {
-        transform: scale(1, 0);
-    }
-}
+/* Basic Directives */
 
 html, input, textarea {
+    /* Apply variables */
     background: var(--backgroundcolor);
     color: var(--displaycolor);
 
@@ -95,6 +88,7 @@ html, input, textarea {
 }
 
 #World, #World::before {
+    /* Set height and width to 1000 vpixels */
     width: calc(var(--pvpratio) * 1000);
     height: calc(var(--pvpratio) * 1000);
     margin: var(--voffset) var(--hoffset);
@@ -116,6 +110,8 @@ html, input, textarea {
     pointer-events: none;
 }
 
+/* DEVICE BUTTON ELEMENTS */
+
 .PaneButton {
     width: calc(var(--pvpratio) * 75);
     height: calc(var(--pvpratio) * 75);
@@ -123,6 +119,14 @@ html, input, textarea {
     position: fixed;
 
     top: calc(var(--voffset) + var(--pvpratio) * 37.5);
+}
+
+.ButtonPressImg {
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    z-index: 4;
 }
 
 #HomeButton {
@@ -141,23 +145,6 @@ html, input, textarea {
 
 #PostButton {
     left: calc(var(--hoffset) + var(--pvpratio) * 875);
-}
-
-.ButtonPressImg {
-    width: 100%;
-    height: 100%;
-
-    position: absolute;
-    z-index: 4;
-}
-
-.BoxShadow {
-    box-shadow: calc(var(--pvpratio) * 5) calc(var(--pvpratio) * 5)
-        calc(var(--pvpratio) * 5) var(--displaycolor);
-}
-
-.DoubleSpacedText { 
-    letter-spacing: calc(var(--pvpratio) * 2);
 }
 
 #ScrollBar {

@@ -1,0 +1,48 @@
+/* Definitions for common element classes - buttons, containers
+ */
+
+/* CONTAINER CLASSES */
+
+/* Simple Grid containers laying out all children in equally spaced
+ * rows (VerticalContainer) or columns (HorizontalContainer)
+ */
+.VerticalContainer, .HorizontalContainer {
+    width: 100%;
+    display: grid;
+}
+
+.VerticalContainer {
+    grid-auto-rows: minmax(0, 1fr);
+    grid-auto-flow: row;
+}
+
+.HorizontalContainer {
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+}
+
+/* Standard Content/Bottom Button layout */
+.ContentButtonContainer {
+    display: grid;
+    grid-template-rows: 75% 25%;
+}
+
+/* Vertically scrolling regularly laid-out items */
+.GridItemContainer {
+    width: 100%;
+    height: 100%;
+    
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+/* MISCELLANEOUS */
+
+.BoxShadow {
+    box-shadow: calc(var(--pvpratio) * 5) calc(var(--pvpratio) * 5)
+        calc(var(--pvpratio) * 5) var(--displaycolor);
+}
+
+.DoubleSpacedText { 
+    letter-spacing: calc(var(--pvpratio) * 2);
+}

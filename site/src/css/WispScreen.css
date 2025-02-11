@@ -14,7 +14,7 @@
     top: calc(var(--voffset) + var(--pvpratio) * 150);
     left: calc(var(--hoffset) + var(--pvpratio) * 150);
 
-    background: url("screen.png");
+    background: url("../assets/screen.png");
 
     content: "";
 
@@ -90,7 +90,7 @@
 }
 
 .WispUserName {
-    font-weight: bold;
+    font-weight: 5;
     margin-bottom: calc(var(--pvpratio) * 10);
 }
 

@@ -1,0 +1,42 @@
+/* CSS directives for Account Update Pane
+ */
+
+/* SINGLETON ELEMENTS */
+
+/* Root Pane to hold all context Subpanes */
+#AccountUpdatePane {
+    padding: calc(var(--pvpratio) * 12);
+}
+
+/* Subpane containing buttons for specific edits */
+#UpdateOptionsSubpane {
+    grid-template-columns: repeat(2, 50%);
+    grid-template-rows: repeat(3, 33%);
+}
+
+#UsernameUpdateSubpane {
+/*    grid-template-columns: 100%;
+    grid-template-rows: auto; */
+}
+
+#ProfileUpdateSubpane {
+}
+
+#ProfileFolderContainer {
+}
+
+/* CLASSES */
+
+/* Folder Icon/Caption pair */
+.ProfileFolder {
+    width: calc(var(--pvpratio) * 116);
+    height: calc(var(--pvpratio) * 146);
+    grid-template-rows: 
+        calc(var(--pvpratio) * 116) calc(var(--pvpratio) * 30);
+}
+
+.FolderImg {
+    width: calc(var(--pvpratio) * 116);
+    height: calc(var(--pvpratio) * 116);
+}
+

@@ -3,7 +3,7 @@ Scheduled database maintenance tasks, such as the removal of
     expired Wisps. Uses BackgroundScheduler instance defined 
     in __init__.py.
 """
-from datetime import datetime
+import datetime as dt
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 
@@ -38,7 +38,7 @@ def purge_wisps():
     """
     try:
         with flaskapp.app_context():
-            expiry = datetime.utcnow() - appconfig["WISP_LIFESPAN"]
+            expiry = dt.datetime.now(dt.UTC) - appconfig["WISP_LIFESPAN"]
             expired_wisps = db.session.scalars(
                 db.select(Wisp).filter_by(
                     status=constants.LIVE_WISP
@@ -61,7 +61,7 @@ def purge_songs():
     """
     try:
         with flaskapp.app_context():
-            expiry = datetime.utcnow() - appconfig["SONG_LIFESPAN"]
+            expiry = dt.datetime.now(dt.UTC) - appconfig["SONG_LIFESPAN"]
             expired_songs = db.session.scalars(
                 db.select(Song).filter_by(
                     status=constants.PLAYED_SONG

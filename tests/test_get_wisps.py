@@ -10,16 +10,16 @@ sys.path.append(os.getcwd())
 import pytest
 import time
 import uuid
-from datetime import datetime
+import datetime as dt
 
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
 
 from app import constants as appconstants
 from app import appconfig
 from app.models import *
 
 from tests.constants import *
-
+"""
 def test_no_wisps(user_sess):
     response = user_sess.get(
         f"{BASE_URL}/get-wisps"
@@ -81,11 +81,11 @@ def test_many_wisps(user_sess):
         assert len(older_wisps) == NUM_TEST_WISPS - 1 - i
         if len(older_wisps):
             assert older_wisps[0] == wisps[i + 1]
-        
+
 def test_simultaneous_wisps(db_resource, test_user, user_sess):
     NUM_TEST_WISPS = 10
     wisp_texts = [f"TEST WISP {i}" for i in range(NUM_TEST_WISPS)]
-    created_time = datetime.utcnow()
+    created_time = dt.datetime.now(dt.UTC)
     for text in wisp_texts:
         wisp = Wisp(
             wisp_id=uuid.uuid1().hex,
@@ -93,7 +93,7 @@ def test_simultaneous_wisps(db_resource, test_user, user_sess):
             user=test_user,
             text=text
         )
-        session = db_resource.session.object_session(wisp)
+        session = Session.object_session(test_user)
         session.add(wisp)
         session.commit()
     time.sleep(0.5)

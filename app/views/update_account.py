@@ -181,22 +181,25 @@ def update_profile():
 def get_profiles():
     """
     GET endpoint for providing URIs for the profile GIFs in the
-        provided category, or the list of profile categories if none
+        provided folder, or the list of profile categories if none
         is provided.
-    :queryparam category: category for which to return GIF URIs
-    :return: 200 and {"gifs"} dict, where "gifs" is a list of
-        filenames, or 400 if category not found
+    :queryparam folder: folder for which to return GIF URIs
+    :return: 200 and {"folders", "profiles"} dict, where "folders"
+        is a list of folders and "profiles" a list of profile URIs,
+        or 400 if folder not found
     """
-    category = secure_filename(
-        request.params.get("category", ""))
+    folder = secure_filename(
+        request.args.get("folder", ""))
 
-    if category:
-        category_path = os.path.join(
-            appconfig["PROFILE_DIR"], category
+    if folder:
+        folder_path = os.path.join(
+            appconfig["PROFILE_PATH"], folder
         )
-        if os.path.exists(category_path):
-            return {"gifs": os.listdir(category_path)}, 200
+        if os.path.exists(folder_path):
+            return {"profiles": [
+                os.path.join(folder, profile) 
+                for profile in os.listdir(folder_path)]}, 200
         else:
             return {"error": "Malformed request."}, 400
     else:
-        return {"gifs": os.listdir(appconfig["PROFILE_DIR"])}
+        return {"folders": os.listdir(appconfig["PROFILE_PATH"])}

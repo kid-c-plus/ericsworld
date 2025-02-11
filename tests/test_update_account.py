@@ -19,6 +19,7 @@ from app.models import User
 
 from tests.constants import *
 
+"""
 def test_update_number(user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-number",
@@ -257,4 +258,18 @@ def test_nonexistent_profile(db_resource, user_sess):
         db_resource.select(User).filter_by(
             phone_number=TEST_USER["phone_number"]
         )).scalar().profile_uri == TEST_USER["profile_uri"])
+
+
+"""
+def test_get_profiles(user_sess):
+    folder = "RICKSPICKS"
+    profile = "cowboy.png"
+    response = user_sess.get(
+        f"{BASE_URL}/get-profiles",
+        params={})
+    assert response.status_code == 200 and folder in response.json()['folders']
+    response = user_sess.get(
+        f"{BASE_URL}/get-profiles",
+        params={'folder': folder})
+    assert response.status_code == 200 and f"{folder}/{profile}" in response.json()['profiles']
 

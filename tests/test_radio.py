@@ -48,8 +48,8 @@ def test_queue_many_songs(user_sess, user_2_sess):
         f"{BASE_URL}/queue-song",
         json={'song_uri': SONG_2})
     assert response.status_code == 201
-    time.sleep(SNIPPET_LENGTH)
-    for _ in range(SNIPPET_LENGTH * 3):
+    # time.sleep(SNIPPET_LENGTH)
+    for _ in range(SNIPPET_LENGTH * 4):
         queuer = user_sess.get(
             f"{BASE_URL}/get-song-queuer")
         assert queuer.status_code == 200
@@ -59,8 +59,8 @@ def test_queue_many_songs(user_sess, user_2_sess):
     else:
         # user song not queued
         assert False
-    time.sleep(SNIPPET_LENGTH)
-    for _ in range(SNIPPET_LENGTH * 3):
+    # time.sleep(SNIPPET_LENGTH)
+    for _ in range(SNIPPET_LENGTH * 4):
         queuer = user_sess.get(
             f"{BASE_URL}/get-song-queuer")
         assert queuer.status_code == 200

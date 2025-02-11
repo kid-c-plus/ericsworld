@@ -1,8 +1,6 @@
 import React from "react";
 import Constants from "./constants.js";
 
-import "./WispPostPane.css";
-
 // Root component for Wisp creation pane
 class WispPostPane extends React.Component {
     constructor(props) {
@@ -205,7 +203,8 @@ class WispPostPane extends React.Component {
                             this.searchGifs.bind(this)} />
                     </div>
                 </div>
-                <div id="GifSearchResultsContainer">
+                <div id="GifSearchResultsContainer"
+                    className="GridItemContainer">
                     {gifSearchResults}
                 </div>
             </div>
@@ -213,7 +212,8 @@ class WispPostPane extends React.Component {
 
         return (
             <div id="WispPostPane" className={
-                    `Pane BoxShadow ${this.props.deactivated ?
+                    `Pane ContentButtonContainer BoxShadow 
+                    ${this.props.deactivated ?
                         "Deactivated" : ""
                      }`}>
                 <div id="EditSubpane">

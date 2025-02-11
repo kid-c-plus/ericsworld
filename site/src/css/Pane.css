@@ -1,8 +1,32 @@
-/* CSS directives for elements inside panes (HeartWizard, 
- * account/login, about, and post)
+/* CSS directives for default display elements specific to Panes
  */
 
- #PaneContainer {
+/* ANIMATIONS */
+
+/* KeyFrames for pane activation and deactivation
+ */
+@keyframes PowerOn {
+    from {
+        transform: scale(1, 0);
+    }
+    to {
+        transform: scale(1, 1);
+    }
+}
+
+@keyframes PowerOff {
+    from {
+        transform: scale(1, 1);
+    }
+    to {
+        transform: scale(1, 0);
+    }
+}
+
+/* SINGLETON ELEMENTS */
+
+/* Root container for all Panes, when a Pane is selected */
+#PaneContainer {
     position: fixed;
     
     left: calc(var(--hoffset) + var(--pvpratio) * 150);
@@ -13,6 +37,8 @@
 
     z-index: 4;
 }
+
+/* PANE CLASSES */
 
 .Pane {
     border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
@@ -25,19 +51,26 @@
 
     position: fixed;
 
+    display: grid;
+
     left: calc(var(--hoffset) + var(--pvpratio) * 250);
     top: calc(var(--voffset) + var(--pvpratio) * 250);
 
     animation: PowerOn .25s;
 }
 
+.Subpane {
+    width: calc(var(--pvpratio) * 500);
+    height: calc(var(--pvpratio) * 500);
+
+    display: grid;
+}
+
 .Deactivated {
     animation: PowerOff .25s forwards;
 }
 
-#LoginPane {
-    display: grid;
-}
+/* ENTRY FORM ELEMENTS */
 
 .FormElement {
     margin: 0 calc(var(--pvpratio) * 50);
@@ -61,15 +94,6 @@
     height: calc(var(--pvpratio) * 75);
 } 
 
-input[type="pwd"] {
-    font-family: var(--fontfamily);
-    font-weight: var(--fontweight);
-    font-size: calc(var(--pvpratio) * 35);
-
-    -webkit-text-security: circle;
-    letter-spacing: calc(var(--pvpratio) * 2);
-}
-
 .TextInput {
     border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
     border-radius: calc(var(--pvpratio) * 10);
@@ -84,7 +108,16 @@ input[type="pwd"] {
     letter-spacing: calc(var(--pvpratio) * 2);
 }
 
-#AuthCodeInput {
+input[type="pwd"] {
+    font-family: var(--fontfamily);
+    font-weight: var(--fontweight);
+    font-size: calc(var(--pvpratio) * 35);
+
+    -webkit-text-security: circle;
+    letter-spacing: calc(var(--pvpratio) * 2);
+}
+
+.AuthCodeInput {
     padding: 0;
     padding-left: calc(var(--pvpratio) * 25);
 
@@ -167,28 +200,9 @@ input[type="pwd"] {
     width: calc(var(--pvpratio) * 75);
 }
 
-#AccountUpdatePane {
-    padding: calc(var(--pvpratio) * 12);
-}
-
-.Subpane {
-    width: 100%;
-    height: 100%;
-
-    display: grid;
-}
-
-#UpdateOptionsSubpane {
-    grid-template-columns: repeat(2, 50%);
-    grid-template-rows: repeat(3, 33%);
-}
-
-#UpdateUsernameSubpane {
-    grid-template-columns: 100%;
-    grid-template-rows: auto;
-}
-
-.Status {
+/* Simple text container for things like username uniqueness status 
+ */
+.StatusReadout {
     display: flex;
     align-items: center;
     justify-content: center;

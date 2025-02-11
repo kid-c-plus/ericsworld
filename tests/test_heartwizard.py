@@ -48,7 +48,7 @@ def test_check_heartwizard(test_wisp, user_sess, user_2_sess):
     assert (response.status_code == 200 and 
         not response.json()["heartwizard"])
    
-    time.sleep(appconfig["WISP_LIFESPAN"].seconds)
+    time.sleep(appconfig["WISP_LIFESPAN"].seconds * 1.5)
     response = user_sess.get(
         f"{BASE_URL}/check-heartwizard"
     )

@@ -9,8 +9,7 @@ import WispPostPane from "./WispPostPane.js";
 import Constants from "./constants.js";
 import calculateViewportOffsets from "./onLoad.js";
 
-import "./World.css";
-import "./Pane.css";
+import "../css/all.css";
 
 // Root component for Eric's World app. Handles basic window sizing
 // actions and polls backend
@@ -23,7 +22,8 @@ class World extends React.Component {
 
             thumbPercent: 0.0,
 
-            selectedPane: "home",
+            /* selectedPane: "home", */
+            selectedPane: "account",
             paneDeactivated: false,
 
             accountInfo: null,

@@ -3,7 +3,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import World from './js/World.js';
+import World from './World.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

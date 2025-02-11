@@ -4,21 +4,23 @@ Fixtures shared between multiple test suites.
 import shutil
 shutil.copy("unit_test_config.py", "test_config.py")
 
-import pytest
+from test_config import Config
+
 import os
 import sys
 import requests
 
 from sqlalchemy.orm import sessionmaker
 
-from test_config import Config
-from tests import constants as testconstants
-
 # delete all previous content from testing Logfile
 if os.path.exists(Config.LOGFILE):
-     f = open(Config.LOGFILE, "w")
-     f.seek(0)
-     f.truncate()
+     with open(Config.LOGFILE, "w") as f:
+         f.seek(0)
+         f.truncate()
+
+import pytest
+from test_config import Config
+from tests import constants as testconstants
 
 from app import *
 
@@ -40,8 +42,12 @@ def server():
     assert (db.engine.url.database.split(os.path.sep)[-1] == 
         "test_app.db"
     )
+    session = sessionmaker(
+            bind=db.engine,
+            expire_on_commit=True)()
     for tbl in reversed(db.metadata.sorted_tables):
-        db.engine.execute(tbl.delete())
+        session.execute(tbl.delete())
+    session.commit()
     thread = start_server()
 
     # Resource (none needed)
@@ -65,8 +71,14 @@ def db_resource():
     # Teardown
     db.session.remove()
     #db.drop_all()
+    session = sessionmaker(
+            bind=db.engine,
+            expire_on_commit=True)()
     for tbl in reversed(db.metadata.sorted_tables):
-        db.engine.execute(tbl.delete())
+        session.execute(tbl.delete())
+    session.commit()
+    thread = start_server()
+
 
 @pytest.fixture
 def req_sess(db_resource):

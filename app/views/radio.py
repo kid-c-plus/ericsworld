@@ -26,7 +26,7 @@ def check_queue_status():
     queue_query = db.select(Song).filter_by(
         status=constants.QUEUED_SONG
     )
-    count_query = db.select([func.count()]).select_from(
+    count_query = func.count().select().select_from(
         queue_query.alias("queue_query"))
     total_queued_count = db.session.execute(
         count_query

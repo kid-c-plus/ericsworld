@@ -17,16 +17,18 @@ class Constants {
     static ACCOUNT_INFO_ENDPOINT    = (
         `${Constants.BACKEND_URL}/get-account-info`);
 
-    static UPDATE_NUMBER_ENDPOINT          = (
+    static UPDATE_NUMBER_ENDPOINT           = (
         `${Constants.BACKEND_URL}/update-number`);
-    static UPDATE_RECOVERY_EMAIL_ENDPOINT  = (
+    static UPDATE_RECOVERY_EMAIL_ENDPOINT   = (
         `${Constants.BACKEND_URL}/update-recovery-email`);
-    static UPDATE_PASSWORD_ENDPOINT        = (
+    static UPDATE_PASSWORD_ENDPOINT         = (
         `${Constants.BACKEND_URL}/update-password`);
-    static UPDATE_USERNAME_ENDPOINT        = (
+    static UPDATE_USERNAME_ENDPOINT         = (
         `${Constants.BACKEND_URL}/update-username`);
-    static UPDATE_PROFILE_ENDPOINT         = (
+    static UPDATE_PROFILE_ENDPOINT          = (
         `${Constants.BACKEND_URL}/update-profile`);
+    static GET_PROFILES_ENDPOINT            = (
+        `${Constants.BACKEND_URL}/get-profiles`);
 
     static CHECK_USERNAME_ENDPOINT  = (
         `${Constants.BACKEND_URL}/check-username`);

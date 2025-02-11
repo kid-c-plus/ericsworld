@@ -1,6 +1,6 @@
 import React from "react";
 import PhoneInput from 'react-phone-input-2';
-import "./PhoneInput.css";
+
 import Constants from "./constants.js";
 
 // React component for "login" pane
@@ -85,8 +85,8 @@ class LoginPane extends React.Component {
             form = (<>
                 <div className="FormElement TextEntry">
                     <span className="EntryLabel">Secret Code:</span>
-                    <input type="text" id="AuthCodeInput"
-                        name="AuthCodeInput" className="TextInput"
+                    <input type="text" name="AuthCodeInput" 
+                        className="TextInput AuthCodeInput"
                         maxLength={`${Constants.AUTH_CODE_LENGTH}`}
                         value={this.state.authCode}
                         ref={this.authCodeRef}

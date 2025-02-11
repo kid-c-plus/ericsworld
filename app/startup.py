@@ -24,6 +24,8 @@ def startup():
     file_handler = logging.FileHandler(flaskapp.config["LOGFILE"])
     flaskapp.logger.addHandler(file_handler)
 
+    flaskapp.logger.info("Starting server")
+
     scheduled_tasks.schedule()
 
     radiocontroller.startup()
