@@ -154,7 +154,7 @@ class World extends React.Component {
             setTimeout(() => this.setState({
                     selectedPane:       paneName,
                     paneDeactivated:    false
-                }), 500
+                }), Constants.DEACTIVATION_DURATION
             );
         }
     }
@@ -203,17 +203,36 @@ class World extends React.Component {
                     />
                 );
             case "post":
-                return (
-                    <WispPostPane
-                        csrfFetch={this.csrfFetch.bind(this)}
-                        refreshCallback={
-                            this.state.refreshCallback}
-                        deactivateCallback={
-                            this.paneButtonCallback.bind(
-                                this, "home")}
-                        deactivated={this.state.paneDeactivated}
-                    />
-                );
+                if (this.state.accountInfo) {
+                    return (
+                        <WispPostPane
+                            csrfFetch={this.csrfFetch.bind(this)}
+                            refreshCallback={
+                                this.state.refreshCallback}
+                            deactivateCallback={
+                                this.paneButtonCallback.bind(
+                                    this, "home")}
+                            deactivated={this.state.paneDeactivated}
+                        />
+                    );
+                } else {
+                    return (
+                        <AccountPane 
+                            csrfFetch={this.csrfFetch.bind(this)}
+                            accountInfo={
+                                this.state.accountInfo}
+                            accountUpdateCallback={
+                                this.getAccountInfo.bind(this)}
+                            profileEditorCallback={
+                                this.paneButtonCallback.bind(
+                                    this, "profile")}
+                            deactivateCallback={
+                                this.paneButtonCallback.bind(
+                                    this, "home")}
+                            deactivated={this.state.paneDeactivated}
+                        />
+                    );
+                }
             default:
                 return <> < />;
         }

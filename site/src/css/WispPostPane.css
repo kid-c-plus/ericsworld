@@ -58,12 +58,12 @@
 }
 
 #PostWispButton {
-    width: calc(var(--pvpratio) * 450);
+    /*width: calc(var(--pvpratio) * 450);
     height: calc(var(--pvpratio) * 35);
     margin: calc(var(--pvpratio) * 25);
 
     text-align: center;
-    padding: calc(var(--pvpratio) * 20) 0;
+    padding: calc(var(--pvpratio) * 20) 0;*/
 }
 
 #TextSelectButton.selected {

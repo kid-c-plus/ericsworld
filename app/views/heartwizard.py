@@ -57,7 +57,7 @@ def set_ui(overriding_config=None):
         # pass login check requirement on to check_heartwizard
         if (check_heartwizard()[1] == 401 or 
                 not check_heartwizard()[0]["heartwizard"]):
-            return {"error": "You are not the HeartWizard."}, 403
+            return {"error": "you are not the heartwizard"}, 403
 
         font, device, color_palette = (
             request.json.get(key) for key in (
@@ -69,7 +69,7 @@ def set_ui(overriding_config=None):
             device and device in appconfig["DEVICES"] and
             color_palette and 
             color_palette in appconfig["COLOR_PALETTES"]):
-        return {"error": "Malformed request."}, 404
+        return {"error": "malformed request"}, 404
 
     curr_config = db.session.execute(
         db.select(UIConfig)
@@ -98,7 +98,7 @@ def set_ui(overriding_config=None):
                     "error": "Unable to update config."
                 }, 500
 
-    return {"response": "UI updated."}, 200
+    return {"response": "ui updated"}, 200
 
 @flaskapp.route("/check-heartwizard", methods=["GET"])
 @flask_login.login_required
@@ -123,4 +123,4 @@ def check_heartwizard():
             "heartwizard": curr_user.heartscore == heartwizard.heartscore
         }, 200
     else:
-        return {"error": "No users found."}, 404
+        return {"error": "no users found"}, 404

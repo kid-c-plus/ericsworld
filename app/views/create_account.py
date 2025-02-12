@@ -34,7 +34,7 @@ def create_account():
         400 if request is bad.
     """
     if flask_login.current_user.is_authenticated:
-        return {"error": "User already authenticated."}, 400
+        return {"error": "user already authenticated"}, 400
 
     (phone_number, recovery_email, username, password, 
         profile_uri, auth_code) = (
@@ -55,7 +55,7 @@ def create_account():
             check_username(username)[0].get("unique") and
             appconfig["PASSWORD_CHECK"](password) and
             appconfig["PROFILE_URI_CHECK"](profile_uri)):
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
 
     user = db.session.execute(db.select(User).filter_by(
         phone_number=phone_number
@@ -71,7 +71,7 @@ def create_account():
                 f"IP {request.remote_addr} attempted to recreate " +
                 f"user: {user}"
             )
-        return {"error": "Number is not valid."}, 403
+        return {"error": "number is not valid"}, 403
 
     if auth_code:
         if twilio_client:
@@ -92,16 +92,14 @@ def create_account():
             db.session.commit()
 
             flaskapp.logger.info(f"User created: {user}")
-            return {
-                "response": "User created."
-            }, 201
+            return {"response": "user created"}, 201
         else:
             flaskapp.logger.info(
                 f"IP {request.remote_addr} submitted " +
                 "invalid auth code for account creation for " +
                 f"number {phone_number}."
             )
-            return {"error": "Invalid auth code."}, 403
+            return {"error": "invalid auth code"}, 403
     else:
         if twilio_client:
             twilio_client.verify.v2.services(
@@ -110,7 +108,7 @@ def create_account():
                 to=phone_number,
                 channel="sms"
             )
-        return {"response": "Auth code sent."}, 204
+        return {"response": "auth code sent"}, 204
 
 @flaskapp.route("/check-username", methods=["GET"])
 def check_username(username: str = None):
@@ -129,4 +127,4 @@ def check_username(username: str = None):
         )).scalar()
         return {"unique": user is None}, 200
     else:
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400

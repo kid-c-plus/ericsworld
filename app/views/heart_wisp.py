@@ -24,15 +24,15 @@ def heart_wisp():
 
     wisp_id = request.json.get("wisp_id")
     if not wisp_id:
-        return {"error": "Wisp ID not provided."}, 400
+        return {"error": "wisp id not provided"}, 400
 
     wisp = get_wisps_for_user(user, wisp_id=wisp_id).one()
     if not wisp:
-        return {"error": "Wisp not found."}, 404
+        return {"error": "wisp not found"}, 404
 
     curr_user.heart_wisp(wisp)
     db.session.commit()
-    return {"response": "Wisp Hearted."}, 200
+    return {"response": "wisp hearted"}, 200
 
 @flaskapp.route("/unheart-wisp", methods=["POST"])
 @flask_login.login_required
@@ -49,15 +49,15 @@ def unheart_wisp():
 
     wisp_id = request.json.get("wisp_id")
     if not wisp_id:
-        return {"error": "Wisp ID not provided."}, 400
+        return {"error": "wisp id not provided"}, 400
 
     wisp = get_wisps_for_user(curr_user, wisp_id=wisp_id).one()
     if not wisp:
-        return {"error": "Wisp not found."}, 404
+        return {"error": "wisp not found"}, 404
 
     curr_user.unheart_wisp(wisp)
     db.session.commit()
-    return {"response": "Wisp UnHearted."}, 200
+    return {"response": "wisp unhearted"}, 200
 
 @flaskapp.route("/hearted-wisps", methods=["GET"])
 @flask_login.login_required

@@ -15,4 +15,4 @@ def logout():
     :return: 200 if user logged out
     """
     flask_login.logout_user()
-    return {"response": "Logged out."}, 200
+    return {"response": "logged out"}, 200

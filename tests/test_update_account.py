@@ -19,7 +19,6 @@ from app.models import User
 
 from tests.constants import *
 
-"""
 def test_update_number(user_sess):
     response = user_sess.post(
             f"{BASE_URL}/update-number",
@@ -224,7 +223,7 @@ def test_non_unique_username(db_resource, user_sess, test_user_2):
         )).scalar().username == TEST_USER["username"])
 
 def test_update_profile(db_resource, user_sess):
-    new_profile = "default2"
+    new_profile = "RICKSPICKS/default2"
     response = user_sess.post(
             f"{BASE_URL}/update-profile",
             json={
@@ -260,7 +259,6 @@ def test_nonexistent_profile(db_resource, user_sess):
         )).scalar().profile_uri == TEST_USER["profile_uri"])
 
 
-"""
 def test_get_profiles(user_sess):
     folder = "RICKSPICKS"
     profile = "cowboy.png"

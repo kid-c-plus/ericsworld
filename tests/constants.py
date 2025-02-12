@@ -27,7 +27,7 @@ TEST_USER = {
     "recovery_email": "testuser@ericsworld.net",
     "username": "test user",
     "status": appconstants.ACTIVE_USER,
-    "profile_uri": "default"
+    "profile_uri": "RICKSPICKS/default"
 }
 
 TEST_USER_2 = {
@@ -37,7 +37,7 @@ TEST_USER_2 = {
     "recovery_email": "testuser2@ericsworld.net",
     "username": "test user 2",
     "status": appconstants.ACTIVE_USER,
-    "profile_uri": "default"
+    "profile_uri": "RICKSPICKS/default"
 }
 
 TEST_USER_3 = {
@@ -47,7 +47,7 @@ TEST_USER_3 = {
     "recovery_email": "testuser3@ericsworld.net",
     "username": "test user 3",
     "status": appconstants.ACTIVE_USER,
-    "profile_uri": "default"
+    "profile_uri": "RICKSPICKS/default"
 }
 
 

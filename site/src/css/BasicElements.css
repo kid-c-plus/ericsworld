@@ -7,7 +7,6 @@
  * rows (VerticalContainer) or columns (HorizontalContainer)
  */
 .VerticalContainer, .HorizontalContainer {
-    width: 100%;
     display: grid;
 }
 
@@ -29,14 +28,25 @@
 
 /* Vertically scrolling regularly laid-out items */
 .GridItemContainer {
-    width: 100%;
-    height: 100%;
-    
     overflow-x: hidden;
     overflow-y: scroll;
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    display: grid;
 }
 
 /* MISCELLANEOUS */
+
+.Border {
+    border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+}
+
+.RoundedBorder {
+    border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
+    border-radius: calc(var(--pvpratio) * 50);
+}
 
 .BoxShadow {
     box-shadow: calc(var(--pvpratio) * 5) calc(var(--pvpratio) * 5)

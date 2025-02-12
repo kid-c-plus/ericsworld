@@ -39,10 +39,10 @@ def update_number():
             db.session.execute(db.select(User).filter_by(
                 phone_number=new_number
             )).scalar() == None):
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
 
     if not curr_user.check_password(password):
-        return {"error": "Invalid password."}, 403
+        return {"error": "invalid password"}, 403
 
     if auth_code:
         if twilio_client:
@@ -62,9 +62,9 @@ def update_number():
 
             curr_user.phone_number = new_number
             db.session.commit()
-            return {"response": "Number updated."}, 200
+            return {"response": "number updated"}, 200
         else:
-            return {"error": "Invalid auth code."}, 403
+            return {"error": "invalid auth code"}, 403
     else:
         if twilio_client:
             twilio_client.verify.v2.services(
@@ -73,7 +73,7 @@ def update_number():
                 to=new_number,
                 channel="sms"
             )
-        return {"response": "Auth code sent."}, 204
+        return {"response": "auth code sent"}, 204
 
 @flaskapp.route("/update-recovery-email", methods=["POST"])
 @flask_login.login_required
@@ -94,14 +94,14 @@ def update_recovery_email():
         )
     )
     if not appconfig["EMAIL_CHECK"](new_email):
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
     
     if not curr_user.check_password(password):
-        return {"error": "Invalid password."}, 403
+        return {"error": "invalid password"}, 403
     
     curr_user.recovery_email = new_email
     db.session.commit()
-    return {"response": "Recovery email updated."}, 200
+    return {"response": "recovery email updated"}, 200
 
 @flaskapp.route("/update-password", methods=["POST"])
 @flask_login.login_required
@@ -122,14 +122,14 @@ def update_password():
         )
     )
     if not appconfig["PASSWORD_CHECK"](new_password):
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
 
     if not curr_user.check_password(current_password):
-        return {"error": "Invalid password."}, 403
+        return {"error": "invalid password"}, 403
 
     curr_user.set_password(new_password)
     db.session.commit()
-    return {"response": "Password updated."}, 200
+    return {"response": "password updated"}, 200
 
 @flaskapp.route("/update-username", methods=["POST"])
 @flask_login.login_required
@@ -148,11 +148,11 @@ def update_username():
     ).strip()
     if not (appconfig["USERNAME_CHECK"](new_username) and
             check_username(new_username)[0]["unique"]):
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
     
     curr_user.username = new_username
     db.session.commit()
-    return {"response": "Username changed."}, 200
+    return {"response": "username updated"}, 200
     
 @flaskapp.route("/update-profile", methods=["POST"])
 @flask_login.login_required
@@ -165,16 +165,30 @@ def update_profile():
         invalid
     """
     curr_user = flask_login.current_user
-    
-    new_profile = secure_filename(
-        request.json.get("new_profile", "")
-    )
-    if not appconfig["PROFILE_URI_CHECK"](new_profile):
-        return {"error": "Malformed request."}, 400
+   
+    unsanitized_profile = request.json.get("new_profile", "")
+
+    try:
+        folder, file = unsanitized_profile.split("/", 1)
+        new_profile = os.path.join(
+            secure_filename(folder), secure_filename(file))
+
+        if not appconfig["PROFILE_URI_CHECK"](new_profile):
+            flaskapp.logger.info(
+                "User attempted to set profile to invalid" +
+                f"path: {new_profile}"
+            )
+            return {"error": "malformed request"}, 400
+    except ValueError:
+        flaskapp.logger.info(
+            "User attempted to set profile to invalid" +
+            f"path: {new_profile}"
+        )
+        return {"error": "malformed request"}, 400
     
     curr_user.profile_uri = new_profile
     db.session.commit()
-    return {"response": "Profile changed."}, 200
+    return {"response": "profile updated"}, 200
 
 @flaskapp.route("/get-profiles", methods=["GET"])
 @flask_login.login_required
@@ -200,6 +214,6 @@ def get_profiles():
                 os.path.join(folder, profile) 
                 for profile in os.listdir(folder_path)]}, 200
         else:
-            return {"error": "Malformed request."}, 400
+            return {"error": "malformed request"}, 400
     else:
         return {"folders": os.listdir(appconfig["PROFILE_PATH"])}

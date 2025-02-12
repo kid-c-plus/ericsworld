@@ -41,11 +41,13 @@
 /* PANE CLASSES */
 
 .Pane {
+    width: calc(var(--pvpratio) * 500);
+    height: calc(var(--pvpratio) * 500);
+
     border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
     border-radius: calc(var(--pvpratio) * 50);
 
-    width: calc(var(--pvpratio) * 500);
-    height: calc(var(--pvpratio) * 500);
+    padding: calc(var(--pvpratio) * 12);
 
     background: var(--backgroundcolor);
 
@@ -64,6 +66,38 @@
     height: calc(var(--pvpratio) * 500);
 
     display: grid;
+}
+
+/* quick, flashing messages */
+.Notification {
+    width: calc(var(--pvpratio) * 300);
+    height: calc(var(--pvpratio) * 100);
+
+    border: calc(var(--pvpratio) * 1) solid var(--backgroundcolor);
+    border-radius: calc(var(--pvpratio) * 50);
+
+    position: fixed;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    left: calc(var(--hoffset) + var(--pvpratio) * 350);
+    top: calc(var(--voffset) + var(--pvpratio) * 450);
+
+    color: var(--backgroundcolor);
+    background-color: var(--displaycolor);
+
+    animation: PowerOn .25s;
+
+    z-index: 5;
+}
+
+/* sorta virtual divs capturing content inside subpanes,
+ * always with same margin
+ */
+.Container {
+    margin: calc(var(--pvpratio) * 25);
 }
 
 .Deactivated {

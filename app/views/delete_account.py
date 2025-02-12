@@ -25,13 +25,13 @@ def delete_account():
 
     password = request.json.get("password")
     if not password:
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
 
     if not curr_user.check_password(password):
-        return {"error": "Invalid password."}, 403
+        return {"error": "invalid password"}, 403
 
     delete_user_content(curr_user)
     db.session.delete(curr_user)
     db.session.commit()
 
-    return {"response": "User deleted."}, 200
+    return {"response": "user deleted"}, 200

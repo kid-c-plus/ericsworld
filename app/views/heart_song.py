@@ -33,7 +33,7 @@ def heart_song():
 
     curr_user.heart_song(curr_song)
     db.session.commit()
-    return {"response": "Song Hearted."}, 200
+    return {"response": "song hearted"}, 200
 
 @flaskapp.route("/unheart-song", methods=["POST"])
 @flask_login.login_required
@@ -47,7 +47,7 @@ def unheart_song():
 
     curr_user.unheart_song(curr_song)
     db.session.commit()
-    return {"response": "Song UnHearted."}, 200
+    return {"response": "song unhearted"}, 200
 
 @flaskapp.route("/brokenheart-song", methods=["POST"])
 @flask_login.login_required
@@ -61,7 +61,7 @@ def brokenheart_song():
 
     curr_user.brokenheart_song(curr_song)
     db.session.commit()
-    return {"response": "Song BrokenHearted."}, 200
+    return {"response": "song brokenhearted"}, 200
 
 @flaskapp.route("/unbrokenheart-song", methods=["POST"])
 @flask_login.login_required
@@ -75,4 +75,4 @@ def unbrokenheart_song():
 
     curr_user.unbrokenheart_song(curr_song)
     db.session.commit()
-    return {"response": "Song UnBrokenHearted."}, 200
+    return {"response": "song unbrokenhearted"}, 200

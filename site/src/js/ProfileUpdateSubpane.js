@@ -1,5 +1,4 @@
 import React from "react";
-import PhoneInput from 'react-phone-input-2';
 
 import Constants from "./constants.js";
 
@@ -65,7 +64,7 @@ class ProfileUpdateSubpane extends React.Component {
                 folders = this.state.folders.map(folder => (
                     <div className="ProfileFolder"
                         key={`profile-folder-${folder}`}
-                        onClick={domEvent => this.selectFolder.bind(
+                        onClick={this.selectFolder.bind(
                             this, folder)}>
                         <img alt={`${folder} folder`}
                             src="assets/folder.png"
@@ -84,7 +83,8 @@ class ProfileUpdateSubpane extends React.Component {
             }
             content = (
                 <div id="ProfileFolderContainer"
-                    className="GridItemContainer">
+                    className={"Container GridItemContainer" +
+                        " RoundedBorder"}>
                     {folders}
                 </div>
             );
@@ -93,11 +93,17 @@ class ProfileUpdateSubpane extends React.Component {
             if (this.state.profiles.length > 0) {
                 profiles = this.state.profiles.map(
                     profileUri => (
-                        <img alt="profile option"
+                        <img alt={`profile option ${profileUri}`}
                             key={`profile-option-${profileUri}`}
-                            className="ProfileImg"
+                            src={
+                                (`${Constants.PROFILE_ENDPOINT}/` +
+                                profileUri)
+                            }
+                            className="WispUserProfileImg BoxShadow"
                             onClick={this.props.updateProfile.bind(
-                                this, profileUri)} />
+                                this, {"new_profile": profileUri}, 
+                                null
+                            )} />
                 ));
             } else {
                 profiles = (
@@ -108,7 +114,9 @@ class ProfileUpdateSubpane extends React.Component {
             }
 
             content = (
-                <div id="ProfileImgContainer">
+                <div id="ProfileImgContainer"
+                    className={"Container GridItemContainer" +
+                        " RoundedBorder"}>
                     {profiles}
                 </div>
             );

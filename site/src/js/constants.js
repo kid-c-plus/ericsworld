@@ -53,6 +53,13 @@ class Constants {
     // line height, in vpixels, of wisp edit pane (necessary for 
     // scroll management
     static WISP_EDIT_LINE_HEIGHT    = 50;
+
+    // duration for displaying notifications
+    static NOTIFICATION_DURATION    = 1500;
+
+    // time to allow Deactivated animation to play before
+    // removing div
+    static DEACTIVATION_DURATION    = 500;
 }
 
 export default Constants;

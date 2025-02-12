@@ -65,6 +65,9 @@ class LoginPane extends React.Component {
         }
     }
 
+    // onChange callback for auth code entry fields - 
+    // ensures only numbers are entered, maintains proper scroll 
+    // and auto-deselects on completion
     authCodeChanged(changeEvent) {
         let newCode = changeEvent.target.value.replace(
             /[^0-9]/g, "").substring(
@@ -82,7 +85,7 @@ class LoginPane extends React.Component {
     render() {
         let form = <>< />;
         if (this.state.enteringAuthCode) {
-            form = (<>
+            form = (<div className="VerticalContainer">
                 <div className="FormElement TextEntry">
                     <span className="EntryLabel">Secret Code:</span>
                     <input type="text" name="AuthCodeInput" 
@@ -114,9 +117,9 @@ class LoginPane extends React.Component {
                         login
                     </div>
                 </div>
-            < />);
+            </div>);
         } else {
-            form = (<>
+            form = (<div className="VerticalContainer">
                 <div className="FormElement TextEntry">
                     <span className="EntryLabel">Phone Number:</span>
                     <PhoneInput id="PhoneNumberInput" country={'us'} 
@@ -141,20 +144,22 @@ class LoginPane extends React.Component {
                         onKeyUp={this.login.bind(this)}
                     />
                 </div>
-                <div className="FormElement">
-                    <div className="FormButton BoxShadow" onClick={
-                            this.login.bind(this)}>
-                        get secret code
-                    </div>
-                </div>
-            < />);
+            </div>);
         }
         return (
             <div id="LoginPane" className={
-                    `Pane BoxShadow ${this.props.deactivated ?
+                    `Pane BoxShadow ContentButtonContainer 
+                    ${this.props.deactivated ?
                         "Deactivated" : ""
                      }`}>
                 {form}
+                <div className="FormElement">
+                    <div className="FormButton BoxShadow" onClick={
+                            this.login.bind(this)}>
+                        {this.state.enteringAuthCode ? 
+                        "login" : "get secret code"}
+                    </div>
+                </div>
             </div>
         );
     }

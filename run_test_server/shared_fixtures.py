@@ -6,6 +6,7 @@ shutil.copy("run_test_config.py", "test_config.py")
 
 import signal
 
+import time
 import pytest
 import sys
 import os
@@ -29,7 +30,6 @@ if os.path.exists(Config.LOGFILE):
 
 from run_test_server import constants as testconstants
 
-
 from app import *
 from build_gif_table import *
 
@@ -48,6 +48,7 @@ def server():
     """
     # Setup
     thread = start_server()
+    time.sleep(30)
     
     # Resource (none needed)
     yield None

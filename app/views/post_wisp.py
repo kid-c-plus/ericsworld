@@ -38,7 +38,7 @@ def post_wisp():
     if (not appconfig["WISP_TEXT_CHECK"](text) or 
             (gif_uri and not 
             appconfig["GIF_URI_CHECK"](gif_uri))):
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
 
     # Theoretically, two wisps added at the exact same epoch time 
     # could have duplicate uuids, so I'll keep trying on collision
@@ -70,7 +70,7 @@ def post_wisp():
                     "error": "Unable to create wisp."
                 }, 500
 
-    return {"response":  "Wisp posted."}, 201
+    return {"response": "wisp posted"}, 201
 
 @flaskapp.route("/gif-search", methods=["GET"])
 @flask_login.login_required
@@ -87,7 +87,7 @@ def gif_search():
 
     term_string = request.args.get("term_string")
     if not term_string:
-        return {"error": "Search terms not provided."}, 400
+        return {"error": "search terms not provided"}, 400
     gifs = {}
     terms = term_string.split()
     for value in terms:

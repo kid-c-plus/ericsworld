@@ -1,5 +1,4 @@
 import React from "react";
-import PhoneInput from 'react-phone-input-2';
 
 import Constants from "./constants.js";
 import UsernameUpdateSubpane from "./UsernameUpdateSubpane.js";
@@ -17,8 +16,15 @@ class AccountUpdatePane extends React.Component {
             // whether the server sent out an auth code
             enteringAuthCode:   false,
 
+            // any response message returned by the server
+            responseMsg:    null,
+
             // any error message returned by the server
-            errorMsg:   null
+            errorMsg:   null,
+
+            // both the above will be displayed as notifications
+            // this allows
+            notificationDeactivated: false
         });
     }
 
@@ -43,10 +49,26 @@ class AccountUpdatePane extends React.Component {
                     this.setState({enteringAuthCode: true});
                 }
                 return response.json();
-            }).then(errorResp => {
-                if ("error" in errorResp) {
-                    this.setState({errorMsg: errorResp["error"]});
+            }).then(response => {
+                // display messages in Notification pane, then
+                // set to Deactivate and then disappear
+                if ("error" in response) {
+                    this.setState({errorMsg: response["error"]});
+                } else if ("response" in response) {
+                    this.setState({
+                        responseMsg: response["response"]
+                    })
                 }
+                setTimeout(() => this.setState({
+                        notificationDeactivated: true
+                    }), Constants.NOTIFICATION_DURATION);
+                setTimeout(() => this.setState({
+                        errorMsg:           null,
+                        responseMsg:        null,
+                        notificationDeactivated:    false
+                    }), Constants.NOTIFICATION_DURATION +
+                    Constants.DEACTIVATION_DURATION
+                );
             }).catch(error => {
                 console.log(`Error updating account: ${error.message}`);
             })
@@ -141,6 +163,19 @@ class AccountUpdatePane extends React.Component {
                         "Deactivated" : ""
                      }`}>
                  {this.renderSelectedSubpane()}
+                 {(this.state.responseMsg !== null ||
+                    this.state.errorMsg !== null) ? 
+                    <div className={
+                        `Notification ${
+                            this.state.notificationDeactivated ?
+                            "Deactivated" : ""
+                        }`}>
+                        {
+                            this.state.errorMsg !== null ?
+                            this.state.errorMsg :
+                            this.state.responseMsg
+                        }
+                    </div> : <> < /> }
             </div>
         );
     }

@@ -64,7 +64,7 @@ def queue_song():
     song_uri = secure_filename(request.json.get("song_uri", ""))
     song_uri = song_uri.replace("_", " ")
     if not appconfig["SONG_URI_CHECK"](song_uri):
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
     song_added = False
     tries = 0
     while not song_added:
@@ -89,7 +89,7 @@ def queue_song():
                 return {
                     "error": "Unable to queue song."
                 }, 500
-    return {"response": "Song queued."}, 201
+    return {"response": "song queued"}, 201
 
 @flaskapp.route("/get-song-queuer", methods=["GET"])
 def get_song_queuer():

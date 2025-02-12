@@ -29,7 +29,7 @@ def block_account():
 
     wisp_id = request.json.get("wisp_id")
     if not wisp_id:
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
 
     wisp = db.session.get(Wisp, wisp_id)
     if not wisp:
@@ -38,11 +38,11 @@ def block_account():
             f"{request.remote_addr}attempted block with " +
             f"nonexistent Wisp ID {wisp_id}"
         )
-        return {"error": "Wisp not found."}, 404
+        return {"error": "wisp not found"}, 404
 
     blocked_user = wisp.user
     if blocked_user == curr_user:
-        return {"error": "Users cannot block themselves."}, 400
+        return {"error": "users cannot block themselves"}, 400
     
     # UnHeart wisps reciprocally between blocker and blocked
     blocker_hearted_wisps = [
@@ -86,5 +86,5 @@ def block_account():
                     )
     else:
         db.session.commit()
-    return {"response": "User blocked."}, 200
+    return {"response": "user blocked"}, 200
 

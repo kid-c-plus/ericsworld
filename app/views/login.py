@@ -28,10 +28,10 @@ def login():
     )
     if not (appconfig["PHONE_NUMBER_CHECK"](phone_number) and 
             password):
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
 
     if flask_login.current_user.is_authenticated:
-        return {"error": "User already authenticated."}, 400
+        return {"error": "user already authenticated"}, 400
     user = db.session.execute(db.select(User).filter_by(
         phone_number=phone_number
     )).scalar() 
@@ -54,7 +54,7 @@ def login():
             f"IP {request.remote_addr}. Reason: " +
             f"{fail_reason}."
         )
-        return {"error": "Invalid login."}, 403
+        return {"error": "invalid login"}, 403
 
     if user.two_factor_auth:
         if auth_code:
@@ -76,7 +76,7 @@ def login():
                 flaskapp.logger.info(
                     f"Logged in user {user.username}."
                 )
-                return {"response": "Logged in."}, 200
+                return {"response": "logged in"}, 200
             else:
                 # This data is used to configure Fail2Ban
                 flaskapp.logger.info(
@@ -85,7 +85,7 @@ def login():
                     f"IP {request.remote_addr}." +
                     "Reason: 2FA Failed."
                 )
-                return {"error": "Invalid login."}, 403
+                return {"error": "invalid login"}, 403
         else:
             if twilio_client:        
                 twilio_client.verify.v2.services(
@@ -94,10 +94,10 @@ def login():
                     to=phone_number,
                     channel="sms"
                 )
-            return {"response": "Auth code sent."}, 204
+            return {"response": "auth code sent"}, 204
     else:
         flask_login.login_user(user, remember=remember)
         flaskapp.logger.info(
             f"Logged in user {user.username}."
         )
-        return {"response": "Logged in."}, 200
+        return {"response": "logged in"}, 200

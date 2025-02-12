@@ -101,7 +101,7 @@ def get_wisps():
     if wisp_id:
         wisp = get_wisps_for_user(user, wisp_id=wisp_id).one()
         if not wisp:
-            return {"error": "Wisp not found."}, 404
+            return {"error": "wisp not found"}, 404
 
         # I have to do something fairly complex here, where I want to
         # query all Wisps made at the exact timestamp of the 
@@ -191,4 +191,4 @@ def check_newest_wisp():
     if first_wisp:
         return {"newest": first_wisp.wisp_id == wisp_id}, 200
     else:
-        return {"error": "No Wisps found."}, 404
+        return {"error": "no wisps found"}, 404

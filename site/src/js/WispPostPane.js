@@ -243,12 +243,14 @@ class WispPostPane extends React.Component {
                         <span>pics</span>
                     </div>
                 </div>
-                    <div id="PostWispButton" 
-                            className={`FormButton BoxShadow ${
-                                this.state.enterHeld ? "Pressed" : ""
-                                }`} 
-                            onClick={this.post.bind(this)}>
-                        send wisp 
+                    <div className="FormElement">
+                        <div id="PostWispButton" 
+                                className={`FormButton BoxShadow ${
+                                    this.state.enterHeld ? "Pressed" : ""
+                                    }`} 
+                                onClick={this.post.bind(this)}>
+                            send wisp 
+                        </div>
                     </div>
             </div>
         );

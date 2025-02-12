@@ -5,7 +5,6 @@
 
 /* Root Pane to hold all context Subpanes */
 #AccountUpdatePane {
-    padding: calc(var(--pvpratio) * 12);
 }
 
 /* Subpane containing buttons for specific edits */
@@ -22,7 +21,29 @@
 #ProfileUpdateSubpane {
 }
 
+#ProfileFolderContainer, #ProfileImgContainer {
+    width: calc(var(--pvpratio) * 400);
+
+    padding: calc(var(--pvpratio) * 25);
+
+    grid-template-columns: 
+        repeat(3, calc(var(--pvpratio) * 116));
+    column-gap: calc(var(--pvpratio) * 25);
+    row-gap: calc(var(--pvpratio) * 25);
+}
+
+/* I have to set this height separately because I did some
+ * sneaky margin stuff for the folder PNGs and they extend 25px
+ * past their size
+ */ 
 #ProfileFolderContainer {
+    height: calc(var(--pvpratio) * 275);
+
+    padding-bottom: calc(var(--pvpratio) * 50);
+}
+
+#ProfileImgContainer {
+    height: calc(var(--pvpratio) * 300);
 }
 
 /* CLASSES */
@@ -30,13 +51,20 @@
 /* Folder Icon/Caption pair */
 .ProfileFolder {
     width: calc(var(--pvpratio) * 116);
-    height: calc(var(--pvpratio) * 146);
+    height: calc(var(--pvpratio) * 91);
+    display: grid;
     grid-template-rows: 
-        calc(var(--pvpratio) * 116) calc(var(--pvpratio) * 30);
+        calc(var(--pvpratio) * 91) calc(var(--pvpratio) * 25);
+
+    text-align: center;
+    font-size: 0.75em;
 }
 
 .FolderImg {
     width: calc(var(--pvpratio) * 116);
-    height: calc(var(--pvpratio) * 116);
 }
-
+/*
+.FolderImg:hover {
+    content:url("../assets/folder-pressed.png");
+}
+*/

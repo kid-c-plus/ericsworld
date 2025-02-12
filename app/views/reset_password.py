@@ -43,11 +43,11 @@ def request_password_reset():
         (important to avoid user base enumeration attacks).
     """
     if flask_login.current_user.is_authenticated:
-        return {"error": "User already authenticated."}, 400
+        return {"error": "user already authenticated"}, 400
 
     phone_number = request.json.get("phone_number")
     if not appconfig["PHONE_NUMBER_CHECK"](phone_number):
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
 
     user = db.session.execute(db.select(User).filter_by(
         phone_number=phone_number
@@ -57,7 +57,7 @@ def request_password_reset():
         if new_token:
             db.session.commit()
             send_password_reset_email(user, new_token)
-    return {"response": "Request recieved."}, 202
+    return {"response": "request recieved"}, 202
 
 @flaskapp.route("/reset-password", methods=["POST"])
 def reset_password():
@@ -79,7 +79,7 @@ def reset_password():
         etc), 400 for malformed request
     """
     if flask_login.current_user.is_authenticated:
-        return {"error": "User already authenticated."}, 400
+        return {"error": "user already authenticated"}, 400
     
     phone_number, reset_token, auth_code, new_password = (
         request.json.get(key) for key in (
@@ -89,7 +89,7 @@ def reset_password():
     if (not appconfig["PHONE_NUMBER_CHECK"](phone_number) or
             not appconfig["PASSWORD_CHECK"](new_password) or 
             not reset_token):
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
     
     user = db.session.execute(db.select(User).filter_by(
         phone_number=phone_number
@@ -113,7 +113,7 @@ def reset_password():
         )
     if error_log_msg:
         flaskapp.logger.info(error_log_msg)
-        return {"error": "Number is not valid."}, 403
+        return {"error": "number is not valid"}, 403
     
     if auth_code:
         if twilio_client:
@@ -133,14 +133,14 @@ def reset_password():
                 f"IP {request.remote_addr} reset password for  "+
                 f"{phone_number}."
             )
-            return {"response": "Password reset."}, 200
+            return {"response": "password reset"}, 200
         else:
             flaskapp.logger.info(
                 f"IP {request.remote_addr} submitted " +
                 "invalid auth code for password reset for " +
                 f"number {phone_number}."
             )
-            return {"error": "Invalid auth code."}, 403
+            return {"error": "invalid auth code"}, 403
     else:
         if twilio_client:
             twilio_client.verify.v2.services(
@@ -149,4 +149,4 @@ def reset_password():
                 to=phone_number,
                 channel="sms"
             )
-        return {"response": "Auth code sent."}, 204
+        return {"response": "auth code sent"}, 204

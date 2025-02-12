@@ -19,7 +19,7 @@ from app import appconfig
 from app.models import *
 
 from tests.constants import *
-"""
+
 def test_no_wisps(user_sess):
     response = user_sess.get(
         f"{BASE_URL}/get-wisps"

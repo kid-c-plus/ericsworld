@@ -26,7 +26,7 @@ def invite_account():
     curr_user = flask_login.current_user
 
     if len(curr_user.invited_users) >= appconfig["MAX_INVITES"]:
-        return {"error": "Maximum invites used."}, 403
+        return {"error": "maximum invites used"}, 403
 
     invited_number = request.json.get("invited_number")
     invited_user = db.session.execute(db.select(User).filter_by(
@@ -35,10 +35,10 @@ def invite_account():
 
     if invited_user:
         # return 200 to prevent against user enumeration
-        return {"response": "User invited."}, 200
+        return {"response": "user invited"}, 200
         
     if not appconfig["PHONE_NUMBER_CHECK"](invited_number):
-        return {"error": "Malformed request."}, 400
+        return {"error": "malformed request"}, 400
 
     if twilio_client:
         try:
@@ -54,7 +54,7 @@ def invite_account():
                 "attempted to invite unreachable number " +
                 f"{invited_number}."
             )
-            return {"error": "Number unreachable."}, 400
+            return {"error": "number unreachable"}, 400
 
     # Theoretically, two users invited at the exact same epoch time 
     # could  have duplicate uuids, so I'll keep trying on collision
@@ -84,4 +84,4 @@ def invite_account():
                     "error": "Unable to invite user."
                 }, 500
 
-    return {"response": "User invited."}, 200
+    return {"response": "user invited"}, 200
