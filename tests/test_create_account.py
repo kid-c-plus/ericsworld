@@ -32,7 +32,7 @@ def test_add_invited_user(db_resource, req_sess):
             "profile_uri": "default"
         }
     )
-    assert response.status_code == 204
+    assert response.status_code == 202
 
     response = req_sess.post(
         f"{BASE_URL}/create-account",
@@ -77,7 +77,7 @@ def test_bad_auth_code(db_resource, req_sess):
             "profile_uri": "default"
         }
     )
-    assert response.status_code == 204
+    assert response.status_code == 202
 
     response = req_sess.post(
         f"{BASE_URL}/create-account",

@@ -27,7 +27,7 @@ def test_update_number(user_sess):
                 "password": TEST_PASSWORD
             }
     )
-    assert response.status_code == 204
+    assert response.status_code == 202
 
     response = user_sess.post(
             f"{BASE_URL}/update-number",
@@ -74,7 +74,7 @@ def test_number_bad_auth(user_sess):
                 "password": TEST_PASSWORD
             }
     )
-    assert response.status_code == 204
+    assert response.status_code == 202
 
     response = user_sess.post(
             f"{BASE_URL}/update-number",

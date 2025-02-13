@@ -19,7 +19,8 @@ def get_account_info():
     return {
         "username": curr_user.username,
         "profile_uri": curr_user.profile_uri,
-        "heartscore": curr_user.heartscore
+        "heartscore": curr_user.heartscore,
+        "recovery_email": curr_user.recovery_email
     }, 200
 
 @flaskapp.route("/get-heartscore", methods=["GET"])

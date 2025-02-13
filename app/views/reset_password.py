@@ -74,7 +74,7 @@ def reset_password():
         Will be generated if not provided
     :jsonparam new_password: newly set password. Must pass 
         PASSWORD_CHECK
-    :return: 200 if password reset, 204 if auth code sent, 
+    :return: 200 if password reset, 202 if auth code sent, 
         403 for invalid request (non-active number, bad reset token, 
         etc), 400 for malformed request
     """
@@ -149,4 +149,4 @@ def reset_password():
                 to=phone_number,
                 channel="sms"
             )
-        return {"response": "auth code sent"}, 204
+        return {"response": "auth code sent"}, 202

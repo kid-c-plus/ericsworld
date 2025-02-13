@@ -18,7 +18,7 @@ def login():
     :jsonparam remember: whether to persist login on machine.
     :jsonparam auth_code: Twilio auth code for users with 2FA 
         enabled. Is generated if login is valid and 2FA is enabled
-    :return: 200 if successful, 204 if auth code generated,
+    :return: 200 if successful, 202 if auth code generated,
         403 if unsuccessful, 400 if lacking required fields
     """
     phone_number, password, remember, auth_code = (
@@ -94,7 +94,7 @@ def login():
                     to=phone_number,
                     channel="sms"
                 )
-            return {"response": "auth code sent"}, 204
+            return {"response": "auth code sent"}, 202
     else:
         flask_login.login_user(user, remember=remember)
         flaskapp.logger.info(

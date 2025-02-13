@@ -17,7 +17,7 @@ class Constants {
     static ACCOUNT_INFO_ENDPOINT    = (
         `${Constants.BACKEND_URL}/get-account-info`);
 
-    static UPDATE_NUMBER_ENDPOINT           = (
+    static UPDATE_PHONE_NUMBER_ENDPOINT     = (
         `${Constants.BACKEND_URL}/update-number`);
     static UPDATE_RECOVERY_EMAIL_ENDPOINT   = (
         `${Constants.BACKEND_URL}/update-recovery-email`);
@@ -48,6 +48,8 @@ class Constants {
     static MIN_USERNAME_LENGTH  = 3;
     static MAX_USERNAME_LENGTH  = 12;
 
+    static MAX_EMAIL_LENGTH  = 320;
+
     static MAX_WISP_LENGTH      = 140;
 
     // line height, in vpixels, of wisp edit pane (necessary for 
@@ -55,11 +57,15 @@ class Constants {
     static WISP_EDIT_LINE_HEIGHT    = 50;
 
     // duration for displaying notifications
-    static NOTIFICATION_DURATION    = 1500;
+    static NOTIFICATION_DURATION    = 1000;
 
     // time to allow Deactivated animation to play before
     // removing div
     static DEACTIVATION_DURATION    = 500;
+
+    // Keycodes
+    static ENTER_KEY    = 13;
+    static ESCAPE_KEY   = 27;
 }
 
 export default Constants;

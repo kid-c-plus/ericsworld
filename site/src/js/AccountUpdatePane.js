@@ -3,6 +3,10 @@ import React from "react";
 import Constants from "./constants.js";
 import UsernameUpdateSubpane from "./UsernameUpdateSubpane.js";
 import ProfileUpdateSubpane from "./ProfileUpdateSubpane.js";
+import PhoneNumberUpdateSubpane from "./PhoneNumberUpdateSubpane.js";
+import PasswordUpdateSubpane from "./PasswordUpdateSubpane.js";
+import RecoveryEmailUpdateSubpane from 
+    "./RecoveryEmailUpdateSubpane.js";
 
 // React component for changing account items (i.e. username, profile)
 class AccountUpdatePane extends React.Component {
@@ -11,7 +15,7 @@ class AccountUpdatePane extends React.Component {
 
         this.state = ({
             // the element currently being changed
-            selectedSubpane:    "profile pic",
+            selectedSubpane:    null,
 
             // whether the server sent out an auth code
             enteringAuthCode:   false,
@@ -34,6 +38,7 @@ class AccountUpdatePane extends React.Component {
         // on clicks and Enter keypress
         if (domEvent === null || domEvent._reactName === "onClick" || 
                 domEvent.keyCode === 13) {
+            this.setState({responseMsg: "loading..."});
             this.props.csrfFetch(
                 endpoint,
                 {
@@ -45,7 +50,7 @@ class AccountUpdatePane extends React.Component {
                 if (response.status === 200) {
                     this.stopChangeCallback();
                     this.props.updateCallback();
-                } else if (response.statusCode === 204) {
+                } else if (response.status === 202) {
                     this.setState({enteringAuthCode: true});
                 }
                 return response.json();
@@ -111,7 +116,7 @@ class AccountUpdatePane extends React.Component {
                             this, Constants.UPDATE_USERNAME_ENDPOINT)}
                         cancel={() =>
                             this.setState({
-                                selectedSubpane: null
+                                selectedSubpane: null,
                             })}
                     /> 
                 );
@@ -126,6 +131,50 @@ class AccountUpdatePane extends React.Component {
                                 selectedSubpane: null
                             })}
                     />
+                );
+            case "phone number":
+                return (
+                    <PhoneNumberUpdateSubpane
+                        updatePhoneNumber={
+                            this.updateElement.bind(this, 
+                            Constants.UPDATE_PHONE_NUMBER_ENDPOINT)}
+                        csrfFetch={this.state.csrfFetch}
+                        enteringAuthCode={
+                            this.state.enteringAuthCode}
+                        cancel={() =>
+                            this.setState({
+                                selectedSubpane: null,
+                                enteringAuthCode: false
+                            })}
+                    />
+                );
+            case "password":
+                return (
+                    <PasswordUpdateSubpane
+                        updatePassword={
+                            this.updateElement.bind(this,
+                            Constants.UPDATE_PASSWORD_ENDPOINT
+                            )}
+                        cancel={() => 
+                            this.setState({
+                                selectedSubpane: null
+                            })}
+                     />
+                );
+            case "recovery email":
+                return (
+                    <RecoveryEmailUpdateSubpane
+                        updateRecoveryEmail={
+                            this.updateElement.bind(this,
+                            Constants.UPDATE_RECOVERY_EMAIL_ENDPOINT
+                            )}
+                        recoveryEmail={
+                            this.props.accountInfo.recovery_email}
+                        cancel={() => 
+                            this.setState({
+                                selectedSubpane: null
+                            })}
+                     />
                 );
             default:
                 let buttons = ["username", "profile pic", 
@@ -163,7 +212,8 @@ class AccountUpdatePane extends React.Component {
                         "Deactivated" : ""
                      }`}>
                  {this.renderSelectedSubpane()}
-                 {(this.state.responseMsg !== null ||
+                 {((this.state.responseMsg !== null && 
+                    this.state.selectedSubpane == null)||
                     this.state.errorMsg !== null) ? 
                     <div className={
                         `Notification ${

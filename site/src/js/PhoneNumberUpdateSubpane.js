@@ -12,10 +12,13 @@ class PhoneNumberUpdateSubpane extends React.Component {
             phoneNumber:    "",
             password:       "",
             authCode:       "",
-            
-            enteringAuthCode:   false
 
-            errorMsg:   null
+            errorMsg:   null,
+
+            // true while enter is pressed, for rendering button
+            enterPressed:   false,
+            // likewise with escape, for cancel button
+            escapePressed:  false
         };
 
         this.authCodeRef = React.createRef();
@@ -23,43 +26,47 @@ class PhoneNumberUpdateSubpane extends React.Component {
 
     // bound function to submit entered information and either
     // change number or prompt for 2FA auth on new device
-    update(domEvent) {
+    update(authCode, domEvent) {
         // on clicks and Enter keypress
+        this.setState({
+            enterPressed:   false,
+            escapePressed:  false
+        });
         if (domEvent === null || domEvent._reactName === "onClick" || 
-                domEvent.keyCode === 13) {
+                domEvent.keyCode === Constants.ENTER_KEY) {
             let body = {
-                phone_number:   `+${this.state.phoneNumber}`,
+                new_number:   `+${this.state.phoneNumber}`,
                 password:       this.state.password
             };
-            if (this.state.enteringAuthCode) {
-                body["auth_code"] = this.state.authCode;
-                this.props.updatePhoneNumber(
-                    body, null);
-            } else {
-                this.props.csrfFetch(
-                    Constants.UPDATE_NUMBER_ENDPOINT,
-                    {
-                        method:         "POST",
-                        credentials:    "include",
-                        body:           JSON.stringify(body)
-                    })
-                .then(response => {
-                    if (response.status === 204) {
-                        this.setState({enteringAuthCode: true});
-                    }
-                    return response.json()
-                }).then(errorResp => {
-                    if ("error" in errorResp) {
-                        this.setState(
-                            {errorMsg: errorResp["error"]}
-                        );
-                    }
-                });
+            if (this.props.enteringAuthCode) {
+                if (authCode !== null) {
+                    body["auth_code"] = authCode;
+                } else {
+                    body["auth_code"] = this.state.authCode;
+                }
             }
+
+            this.props.updatePhoneNumber(
+                body, domEvent);
+        } else if (domEvent.keyCode === Constants.ESCAPE_KEY) {
+            this.cancel(null);
         }
     }
 
-    // 
+    // bound function to cancel - either clears set phone number
+    // or returns to parent, depending on state
+    cancel(domEvent) {
+        if (this.props.enteringAuthCode) {
+            this.setState({
+                phoneNumber:        "",
+                password:           "",
+                authCode:           "",
+                enteringAuthCode:   false
+            });
+        } else {
+            this.props.cancel();
+        }
+    }
 
     // onChange callback for auth code entry fields - 
     // ensures only numbers are entered, maintains proper scroll 
@@ -75,73 +82,114 @@ class PhoneNumberUpdateSubpane extends React.Component {
                 Constants.AUTH_CODE_LENGTH) {
             document.activeElement.blur();
             this.authCodeRef.current.scrollLeft = 0;
+            this.update(newCode, null);
         }
     }
     
     render() {
         let form = <>< />;   
-        if (this.state.enteringAuthCode) {
-            form = (<div className="FormElement TextEntry">
-                <span className="EntryLabel">Secret Code:</span>
-                <input type="text" name="AuthCodeInput" 
-                    className="TextInput AuthCodeInput"
-                    maxLength={`${Constants.AUTH_CODE_LENGTH}`}
-                    value={this.state.authCode}
-                    ref={this.authCodeRef}
-                    onFocus={() => this.setState({
-                        authCode: ""})}
-                    onChange={this.authCodeChanged.bind(this)}
-                    onKeyUp={this.update.bind(this)}
-                />
-            </div>);
+        if (this.props.enteringAuthCode) {
+            form = (<>
+                <div className="FormElement TextEntry">
+                    <span className="EntryLabel">Secret Code:</span>
+                    <input type="text" name="AuthCodeInput" 
+                        className="TextInput AuthCodeInput"
+                        maxLength={`${Constants.AUTH_CODE_LENGTH}`}
+                        value={this.state.authCode}
+                        ref={this.authCodeRef}
+                        onFocus={() => this.setState({
+                            authCode: ""})}
+                        onChange={this.authCodeChanged.bind(this)}
+                        onKeyDown={domEvent =>
+                            this.setState({
+                                enterPressed: 
+                                    domEvent.keyCode === 
+                                    Constants.ENTER_KEY,
+                                escapePressed: 
+                                    domEvent.keyCode === 
+                                    Constants.ESCAPE_KEY
+                            })} 
+                        onKeyUp={this.update.bind(this, null)}
+                    />
+                </div>
+                <div className="HorizontalContainer">
+                    <div className="FormElement">
+                        <div className={`FormButton BoxShadow ${
+                                this.state.escapePressed ?
+                                "Pressed" : ""}`}
+                            onClick={this.props.cancel}>
+                            cancel
+                        </div>
+                    </div>
+                </div>
+            </ >);
         } else {
-            form = (<div className="VerticalContainer">
-                <div className="FormElement TextEntry">
-                    <span className="EntryLabel">Phone Number:</span>
-                    <PhoneInput id="PhoneNumberInput" country={'us'} 
-                        value={this.state.phoneNumber} 
-                        onChange={
-                            phoneNumber => this.setState({
-                                phoneNumber
-                            })
-                        }
-                        containerClass="" 
-                        inputClass=""
-                    />
+            form = (<>
+                <div className="VerticalContainer">
+                    <div className="FormElement TextEntry">
+                        <span className="EntryLabel">
+                            New Number:
+                        </span>
+                        <PhoneInput id="PhoneNumberInput" 
+                            country={'us'} 
+                            value={this.state.phoneNumber} 
+                            onChange={
+                                phoneNumber => this.setState({
+                                    phoneNumber
+                                })
+                            }
+                            containerClass="" 
+                            inputClass=""
+                        />
+                    </div>
+                    <div className="FormElement TextEntry">
+                        <span className="EntryLabel">Pass Word:</span>
+                        <input type="pwd" id="PasswordInput"
+                            name="PasswordInput" className="TextInput"
+                            value={this.state.password}
+                            onChange={changeEvent => this.setState({
+                                password: changeEvent.target.value
+                            })}
+                            onKeyDown={domEvent =>
+                                this.setState({
+                                    enterPressed: 
+                                        domEvent.keyCode === 
+                                        Constants.ENTER_KEY,
+                                    escapePressed: 
+                                        domEvent.keyCode === 
+                                        Constants.ESCAPE_KEY
+                                })}
+                            onKeyUp={this.update.bind(this, null)}
+                        />
+                    </div>
                 </div>
-                <div className="FormElement TextEntry">
-                    <span className="EntryLabel">Pass Word:</span>
-                    <input type="pwd" id="PasswordInput"
-                        name="PasswordInput" className="TextInput"
-                        value={this.state.password}
-                        onChange={changeEvent => this.setState({
-                            password: changeEvent.target.value
-                        })}
-                        onKeyUp={this.login.bind(this)}
-                    />
+                <div className="HorizontalContainer">
+                    <div className="FormElement Half">
+                        <div className={`FormButton BoxShadow ${
+                                this.state.escapePressed ?
+                                "Pressed" : ""}`}
+                            onClick={this.props.cancel}>
+                            cancel
+                        </div>
+                    </div>
+                    <div className="FormElement Half">
+                        <div className={`FormButton BoxShadow ${
+                                this.state.enterPressed ?
+                                "Pressed" : ""}`}
+                            onClick={this.update.bind(this, null)}>
+                            get code
+                        </div>
+                    </div>
                 </div>
-            </div>);
+            </ >);
         }
         return (
             <div id="PhoneNumberUpdateSubpane"
                 className="Subpane ContentButtonContainer">
                 {form}
-                <div className="HorizontalContainer">
-                    <div className="FormElement Half">
-                        <div className="FormButton BoxShadow"
-                            onClick={this.cancel.bind(this)}>
-                            cancel
-                        </div>
-                    </div>
-                    <div className="FormElement Half">
-                        <div className="FormButton BoxShadow"
-                            onClick={this.update.bind(this)}>
-                            {this.state.enteringAuthCode ?
-                            "get secret code" : "update"}
-                        </div>
-                    </div>
-                </div>
-            </div
+                
+            </div>
+        );
     }
 }
 

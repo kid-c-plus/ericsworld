@@ -46,7 +46,7 @@ class User(UserMixin, db.Model):
         db.String(14), unique=True, nullable=False
     )
     password_hash = db.Column(db.String(77))
-    two_factor_auth = db.Column(db.Boolean, default=False)
+    two_factor_auth = db.Column(db.Boolean, default=True)
 
     # Email address to be used only for password reset, in order to 
     # maintain true 2-Factor Auth (phone AND email)

@@ -23,6 +23,21 @@
     }
 }
 
+@keyframes Shake {
+    0% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(calc(var(--pvpratio) * 10));
+    }
+    75% {
+        transform: translateX(calc(var(--pvpratio) * -10));
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
 /* SINGLETON ELEMENTS */
 
 /* Root container for all Panes, when a Pane is selected */
@@ -104,6 +119,10 @@
     animation: PowerOff .25s forwards;
 }
 
+.InvalidInput {
+    animation: Shake .25s forwards;
+}
+
 /* ENTRY FORM ELEMENTS */
 
 .FormElement {
@@ -153,11 +172,11 @@ input[type="pwd"] {
 
 .AuthCodeInput {
     padding: 0;
-    padding-left: calc(var(--pvpratio) * 25);
+    padding-left: calc(var(--pvpratio) * 28);
 
     overflow: hidden;
 
-    letter-spacing: calc(var(--pvpratio) * 26);
+    letter-spacing: calc(var(--pvpratio) * 28);
     font-size: calc(var(--pvpratio) * 25);
 }
 

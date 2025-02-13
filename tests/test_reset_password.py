@@ -40,7 +40,7 @@ def test_password_reset(db_resource, test_user, req_sess):
             "new_password": new_password
         }
     )
-    assert response.status_code == 204
+    assert response.status_code == 202
     
     response = req_sess.post(
         f"{BASE_URL}/reset-password",
@@ -120,7 +120,7 @@ def test_password_reset_bad_password(db_resource, test_user, req_sess):
             "new_password": new_password
         }
     )
-    assert response.status_code == 204
+    assert response.status_code == 202
     
     response = req_sess.post(
         f"{BASE_URL}/reset-password",
@@ -157,7 +157,7 @@ def test_password_reset_bad_auth(db_resource, test_user, req_sess):
             "new_password": new_password
         }
     )
-    assert response.status_code == 204
+    assert response.status_code == 202
     
     response = req_sess.post(
         f"{BASE_URL}/reset-password",

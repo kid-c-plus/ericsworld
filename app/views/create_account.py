@@ -29,7 +29,7 @@ def create_account():
         PASSWORD_CHECK.
     :jsonparam auth_code: Twilio auth code for new account. Is 
         generated if new account is valid and auth_code not present.
-    :return: 201 if account has been created, 204 if Twilio auth has 
+    :return: 201 if account has been created, 202 if Twilio auth has 
         been sent, 403 if number not invited/disabled/bad auth code,
         400 if request is bad.
     """
@@ -108,7 +108,7 @@ def create_account():
                 to=phone_number,
                 channel="sms"
             )
-        return {"response": "auth code sent"}, 204
+        return {"response": "auth code sent"}, 202
 
 @flaskapp.route("/check-username", methods=["GET"])
 def check_username(username: str = None):

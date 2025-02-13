@@ -2,13 +2,19 @@ import React from "react";
 
 import Constants from "./constants.js";
 
+// React component for updating username of current account
 class UsernameUpdateSubpane extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
             username:   this.props.username,
-            unique:     true
+            unique:     true,
+
+            // true while enter is pressed, for rendering button
+            enterPressed:   false,
+            // likewise with escape, for cancel button
+            escapePressed:  false
         }
     }
 
@@ -34,11 +40,18 @@ class UsernameUpdateSubpane extends React.Component {
     // keyup and click handler for username update field
     // submits on button click and enter keypress
     submit(domEvent) {
+        this.setState({
+            enterPressed:   false,
+            escapePressed:  false
+        });
         if ((domEvent === null || domEvent._reactName === "onClick" || 
-                domEvent.keyCode === 13) && this.state.unique) {
+                domEvent.keyCode === Constants.ENTER_KEY)
+                && this.state.unique) {
             this.props.updateUsername(
                 {"new_username": this.state.username}, null
             );
+        } else if (domEvent.keyCode === Constants.ESCAPE_KEY) {
+            this.props.cancel(null);
         } 
     }
 
@@ -75,6 +88,15 @@ class UsernameUpdateSubpane extends React.Component {
                             maxLength={`${Constants.MAX_USERNAME_LENGTH}`}
                             value={this.state.username}
                             onChange={this.usernameChanged.bind(this)}
+                            onKeyDown={domEvent =>
+                                this.setState({
+                                    enterPressed: 
+                                        domEvent.keyCode === 
+                                        Constants.ENTER_KEY,
+                                    escapePressed: 
+                                        domEvent.keyCode === 
+                                        Constants.ESCAPE_KEY
+                                })}
                             onKeyUp={this.submit.bind(this)}
                         />
                     </div>
@@ -84,13 +106,17 @@ class UsernameUpdateSubpane extends React.Component {
                 </div>
                 <div className="HorizontalContainer">
                     <div className="FormElement Half">
-                        <div className="FormButton BoxShadow"
+                        <div className={`FormButton BoxShadow ${
+                                this.state.escapePressed ?
+                                "Pressed" : ""}`}
                             onClick={this.props.cancel.bind(this)}>
                             cancel
                         </div>
                     </div>
                     <div className="FormElement Half">
-                        <div className="FormButton BoxShadow"
+                        <div className={`FormButton BoxShadow ${
+                                this.state.enterPressed ?
+                                "Pressed" : ""}`}
                             onClick={this.submit.bind(this)}>
                             update
                         </div>

@@ -24,7 +24,7 @@ def update_number():
     :jsonparam password: password for verification.
     :jsonparam auth_code: Twilio 2-factor authentication code
         for new number. Will be generated if not provided
-    :return: 200 if number has been changed, 204 if Twilio auth
+    :return: 200 if number has been changed, 202 if Twilio auth
         has been sent, 403 if bad password/auth, 400 if bad request.
     """
     curr_user = flask_login.current_user
@@ -73,7 +73,7 @@ def update_number():
                 to=new_number,
                 channel="sms"
             )
-        return {"response": "auth code sent"}, 204
+        return {"response": "auth code sent"}, 202
 
 @flaskapp.route("/update-recovery-email", methods=["POST"])
 @flask_login.login_required
