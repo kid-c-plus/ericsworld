@@ -39,10 +39,10 @@ def update_number():
             db.session.execute(db.select(User).filter_by(
                 phone_number=new_number
             )).scalar() == None):
-        return {"error": "malformed request"}, 400
+        return {"error": "bad request"}, 400
 
     if not curr_user.check_password(password):
-        return {"error": "invalid password"}, 403
+        return {"error": "bad password"}, 403
 
     if auth_code:
         if twilio_client:
@@ -94,14 +94,14 @@ def update_recovery_email():
         )
     )
     if not appconfig["EMAIL_CHECK"](new_email):
-        return {"error": "malformed request"}, 400
+        return {"error": "bad request"}, 400
     
     if not curr_user.check_password(password):
-        return {"error": "invalid password"}, 403
+        return {"error": "bad password"}, 403
     
     curr_user.recovery_email = new_email
     db.session.commit()
-    return {"response": "recovery email updated"}, 200
+    return {"response": "email updated"}, 200
 
 @flaskapp.route("/update-password", methods=["POST"])
 @flask_login.login_required
@@ -112,7 +112,7 @@ def update_password():
     :jsonparam current_password: user's current password
     :jsonparam new_password: new password to change to
     :return: 200 if password changed, 403 if current password is
-        invalid, 400 if new password is malformed
+        invalid, 400 if new password is bad
     """
     curr_user = flask_login.current_user
     
@@ -122,10 +122,10 @@ def update_password():
         )
     )
     if not appconfig["PASSWORD_CHECK"](new_password):
-        return {"error": "malformed request"}, 400
+        return {"error": "bad request"}, 400
 
     if not curr_user.check_password(current_password):
-        return {"error": "invalid password"}, 403
+        return {"error": "bad password"}, 403
 
     curr_user.set_password(new_password)
     db.session.commit()
@@ -148,7 +148,7 @@ def update_username():
     ).strip()
     if not (appconfig["USERNAME_CHECK"](new_username) and
             check_username(new_username)[0]["unique"]):
-        return {"error": "malformed request"}, 400
+        return {"error": "bad request"}, 400
     
     curr_user.username = new_username
     db.session.commit()
@@ -178,13 +178,13 @@ def update_profile():
                 "User attempted to set profile to invalid" +
                 f"path: {new_profile}"
             )
-            return {"error": "malformed request"}, 400
+            return {"error": "bad request"}, 400
     except ValueError:
         flaskapp.logger.info(
             "User attempted to set profile to invalid" +
-            f"path: {new_profile}"
+            f"path: {unsanitized_profile}"
         )
-        return {"error": "malformed request"}, 400
+        return {"error": "bad request"}, 400
     
     curr_user.profile_uri = new_profile
     db.session.commit()
@@ -214,6 +214,6 @@ def get_profiles():
                 os.path.join(folder, profile) 
                 for profile in os.listdir(folder_path)]}, 200
         else:
-            return {"error": "malformed request"}, 400
+            return {"error": "bad request"}, 400
     else:
         return {"folders": os.listdir(appconfig["PROFILE_PATH"])}

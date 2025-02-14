@@ -33,9 +33,17 @@ class Constants {
     static CHECK_USERNAME_ENDPOINT  = (
         `${Constants.BACKEND_URL}/check-username`);
     
-    static GET_WISPS_ENDPOINT   = `${Constants.BACKEND_URL}/get-wisps`;
-    static POST_WISP_ENDPOINT   = `${Constants.BACKEND_URL}/post-wisp`;
-    
+    static GET_WISPS_ENDPOINT           = (
+        `${Constants.BACKEND_URL}/get-wisps`);
+    static POST_WISP_ENDPOINT           = (
+        `${Constants.BACKEND_URL}/post-wisp`);
+    static HEART_WISP_ENDPOINT          = (
+        `${Constants.BACKEND_URL}/heart-wisp`);
+    static UNHEART_WISP_ENDPOINT        = (
+        `${Constants.BACKEND_URL}/unheart-wisp`);
+    static GET_HEARTED_WISPS_ENDPONT    = (
+        `${Constants.BACKEND_URL}/hearted-wisps`);
+
     static GIF_SEARCH_ENDPOINT  = (
         `${Constants.BACKEND_URL}/gif-search`);
 

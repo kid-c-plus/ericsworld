@@ -120,7 +120,8 @@ def user_sess(test_user):
 
     response = s.post(f"{testconstants.BASE_URL}/login", json={
         "phone_number": test_user.phone_number,
-        "password": testconstants.TEST_PASSWORD
+        "password": testconstants.TEST_PASSWORD,
+        "auth_code": testconstants.TEST_AUTH_CODE
     })
     assert response.status_code == 200
     
@@ -173,7 +174,8 @@ def user_2_sess(test_user_2):
 
     response = s.post(f"{testconstants.BASE_URL}/login", json={
         "phone_number": test_user_2.phone_number,
-        "password": testconstants.TEST_PASSWORD
+        "password": testconstants.TEST_PASSWORD,
+        "auth_code": testconstants.TEST_AUTH_CODE
     })
     assert response.status_code == 200
     
@@ -225,7 +227,8 @@ def user_3_sess(test_user_3):
 
     response = s.post(f"{testconstants.BASE_URL}/login", json={
         "phone_number": test_user_3.phone_number,
-        "password": testconstants.TEST_PASSWORD
+        "password": testconstants.TEST_PASSWORD,
+        "auth_code": testconstants.TEST_AUTH_CODE
     })
     assert response.status_code == 200
     

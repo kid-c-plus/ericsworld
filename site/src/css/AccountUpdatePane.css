@@ -54,10 +54,10 @@
     height: calc(var(--pvpratio) * 91);
     display: grid;
     grid-template-rows: 
-        calc(var(--pvpratio) * 91) calc(var(--pvpratio) * 25);
+        calc(var(--pvpratio) * 86) calc(var(--pvpratio) * 30);
 
     text-align: center;
-    font-size: 0.75em;
+    font-size: calc(var(--pvpratio) * 25);
 }
 
 .FolderImg {

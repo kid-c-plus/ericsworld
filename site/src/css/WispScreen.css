@@ -61,7 +61,6 @@
 
     display: grid;
     grid-template-columns: 30% 60% 10%;
-
 }
 
 .Wisp:first-child {
@@ -95,7 +94,7 @@
 }
 
 .WispText {
-    word-break: break-all;
+    /*word-break: break-all;*/
 }
 
 .WispImg {
@@ -103,3 +102,7 @@
 
     margin-top: calc(var(--pvpratio) * 20);;
 } 
+
+.WispHeartImg {
+    width: 100%;
+}

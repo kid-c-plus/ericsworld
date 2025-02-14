@@ -147,6 +147,16 @@
     height: calc(var(--pvpratio) * 75);
 } 
 
+.EntryLabel {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Smaller text for longer labels */
+.SmallLabel {
+    font-size: calc(var(--pvpratio) * 25);
+}
+
 .TextInput {
     border: calc(var(--pvpratio) * 1) solid var(--displaycolor);
     border-radius: calc(var(--pvpratio) * 10);

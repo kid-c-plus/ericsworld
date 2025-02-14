@@ -89,7 +89,7 @@ def test_self_block(user_sess, test_wisp):
         json={"wisp_id": test_wisp["wisp_id"]}
     )
     assert (response.status_code == 400 and 
-        response.json()["error"] == "Users cannot block themselves.")
+        response.json()["error"] == "users cannot block themselves")
 
 def test_unauthenticated_block(req_sess, test_wisp):
     response = req_sess.post(

@@ -45,13 +45,11 @@ class WispPostPane extends React.Component {
            gif_uri: this.state.gifUri
         }
         this.props.csrfFetch(
-            Constants.POST_WISP_ENDPOINT,
-            {
+            Constants.POST_WISP_ENDPOINT, {
                 method:         "POST",
                 credentials:    "include",
                 body:           JSON.stringify(body)
-            })
-        .then(response => {
+        }).then(response => {
             if (response.status === 201) {
                 this.props.deactivateCallback();
                 setTimeout(

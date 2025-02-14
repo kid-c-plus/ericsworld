@@ -44,7 +44,7 @@ class PasswordUpdateSubpane extends React.Component {
                 className="Subpane ContentButtonContainer">
                 <div className="VerticalContainer">
                     <div className="FormElement TextEntry">
-                        <span className="EntryLabel">
+                        <span className="EntryLabel SmallLabel">
                             Old Pass Word:
                         </span>
                         <input type="pwd" id="CurrentPasswordInput"
@@ -67,7 +67,7 @@ class PasswordUpdateSubpane extends React.Component {
                         />
                     </div>
                     <div className="FormElement TextEntry">
-                        <span className="EntryLabel">
+                        <span className="EntryLabel SmallLabel">
                             New Pass Word:
                         </span>
                         <input type="pwd" id="NewPasswordInput"

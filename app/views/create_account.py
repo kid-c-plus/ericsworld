@@ -1,6 +1,7 @@
 """
 App views for account creation.
 """
+import os
 from flask import request
 import flask_login
 from werkzeug.utils import secure_filename
@@ -37,7 +38,7 @@ def create_account():
         return {"error": "user already authenticated"}, 400
 
     (phone_number, recovery_email, username, password, 
-        profile_uri, auth_code) = (
+        unsanitized_profile, auth_code) = (
         request.json.get(key) for key in (
             "phone_number", "recovery_email", "username", 
             "password", "profile_uri", "auth_code"
@@ -46,8 +47,18 @@ def create_account():
     # Input file sanitization
     if username:
         username = bleach.clean(username).strip()
-    if profile_uri:
-        profile_uri = secure_filename(profile_uri)
+    if unsanitized_profile:
+        try:
+            folder, file = unsanitized_profile.split("/", 1)
+            profile_uri = os.path.join(
+                secure_filename(folder), secure_filename(file))
+        except ValueError:
+            flaskapp.logger.info(
+                "User attempted to set profile to invalid" +
+                f"path: {unsanitized_profile}"
+            )
+            return {"error": "bad request"}, 400
+        
 
     if not (appconfig["PHONE_NUMBER_CHECK"](phone_number) and
             appconfig["EMAIL_CHECK"](recovery_email) and

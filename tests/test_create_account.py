@@ -29,7 +29,7 @@ def test_add_invited_user(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": TEST_PASSWORD,
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
         }
     )
     assert response.status_code == 202
@@ -41,7 +41,7 @@ def test_add_invited_user(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": TEST_PASSWORD,
-            "profile_uri": "default",
+            "profile_uri": "RICKSPICKS/default",
             "auth_code": appconstants.TEST_AUTH_CODE
        }
     )
@@ -57,7 +57,7 @@ def test_add_uninvited_user(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": TEST_PASSWORD,
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
         }
     )
     assert response.status_code == 403
@@ -74,7 +74,7 @@ def test_bad_auth_code(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": TEST_PASSWORD,
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
         }
     )
     assert response.status_code == 202
@@ -86,7 +86,7 @@ def test_bad_auth_code(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": TEST_PASSWORD,
-            "profile_uri": "default",
+            "profile_uri": "RICKSPICKS/default",
             "auth_code": "654321"
        }
     )
@@ -105,7 +105,7 @@ def test_add_active_user(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": TEST_PASSWORD,
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
         }
     )
     assert response.status_code == 403
@@ -123,7 +123,7 @@ def test_add_disabled_user(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": TEST_PASSWORD,
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
         }
     )
 
@@ -142,7 +142,7 @@ def test_add_user_bad_phone_number(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": TEST_PASSWORD,
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
         }
     )
     assert response.status_code == 400
@@ -159,7 +159,7 @@ def test_add_user_short_phone_number(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": TEST_PASSWORD,
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
        }
     )
     assert response.status_code == 400
@@ -175,7 +175,7 @@ def test_add_user_short_username(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "hi",
             "password": TEST_PASSWORD,
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
        }
     )
     assert response.status_code == 400
@@ -191,7 +191,7 @@ def test_add_user_long_username(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "long_username" * 4,
             "password": TEST_PASSWORD,
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
        }
     )
     assert response.status_code == 400
@@ -209,7 +209,7 @@ def test_add_user_bad_email(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": TEST_PASSWORD,
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
         }
     )
     assert response.status_code == 400
@@ -225,7 +225,7 @@ def test_add_user_missing_data(db_resource, req_sess):
             "phone_number": user.phone_number,
             "recovery_email": user.recovery_email,
             "username": "test user",
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
        }
     )
     assert response.status_code == 400
@@ -247,7 +247,7 @@ def test_add_user_non_unique_name(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "non-unique username",
             "password": TEST_PASSWORD,
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
        }
     )
     assert response.status_code == 400
@@ -264,7 +264,7 @@ def test_weak_passwords(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": "pa$$word",
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
        }
     )
     assert response.status_code == 400
@@ -276,7 +276,7 @@ def test_weak_passwords(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": "A$$word",
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
        }
     )
     assert response.status_code == 400
@@ -288,7 +288,7 @@ def test_weak_passwords(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": "Password",
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
        }
     )
     assert response.status_code == 400
@@ -300,7 +300,7 @@ def test_weak_passwords(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": "Pa$$word★",
-            "profile_uri": "default"
+            "profile_uri": "RICKSPICKS/default"
        }
     )
     assert response.status_code == 400
@@ -329,7 +329,7 @@ def test_add_bad_profile(db_resource, req_sess):
             "recovery_email": user.recovery_email,
             "username": "test user",
             "password": TEST_PASSWORD,
-            "profile_uri": "default/../../passwd"
+            "profile_uri": "RICKSPICKS/default/../../passwd"
         }
     )
     assert response.status_code == 400

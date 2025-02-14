@@ -23,6 +23,12 @@ def test_successful_login(test_user, req_sess):
         "phone_number": test_user.phone_number,
         "password": testconstants.TEST_PASSWORD
     })
+    assert response.status_code == 202
+    response = req_sess.post(f"{testconstants.BASE_URL}/login", json={
+        "phone_number": test_user.phone_number,
+        "password": testconstants.TEST_PASSWORD,
+        "auth_code": testconstants.TEST_AUTHCODE
+    })
     assert response.status_code == 200
 
 def test_tokenless_login(test_user):

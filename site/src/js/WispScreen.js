@@ -9,7 +9,11 @@ class WispScreen extends React.Component {
         super(props);
 
         this.state = {
-            wisps: [],
+            // list of all rendered Wisps
+            wisps:      [],
+
+            // list of Wisp IDs Hearted by current user
+            heartedWisps: []
         };
 
         this.domRef = React.createRef();
@@ -39,7 +43,6 @@ class WispScreen extends React.Component {
 
     // Query backend for Wisps and update state object
     getWisps(newestWispId=null, oldestWispId=null) {
-        console.log("getting wisps...");
         let params = new URLSearchParams();
         if (newestWispId === null && oldestWispId === null &&
                 this.state.wisps.length > 0) {
@@ -51,11 +54,22 @@ class WispScreen extends React.Component {
             params.append("oldest_wisp_id", oldestWispId);
         }
 
+        if (this.props.accountInfo !== null) {
+            fetch(Constants.GET_HEARTED_WISPS_ENDPONT, {
+                credentials: "include"
+            }).then(response => response.json())
+            .then(wispIDResp => {
+                if ("wisp_ids" in wispIDResp) {
+                    this.setState({
+                        heartedWisps: wispIDResp["wisp_ids"]
+                    });
+                }
+            });
+        }
         fetch(`${Constants.GET_WISPS_ENDPOINT}?${params}`)
         .then(response => response.json())
         .then(wispResp => {
             let wisps = wispResp["wisps"];
-            console.log(wisps);
             if (newestWispId) {
                 this.setState({
                     wisps: wisps.concat(this.state.wisps)
@@ -118,9 +132,14 @@ class WispScreen extends React.Component {
 
     render() {
         let wispComponents = this.state.wisps.map(wisp => (
-            <Wisp data={wisp} key={wisp["wisp_id"]} />
+            <Wisp data={wisp} 
+                csrfFetch={this.props.csrfFetch}
+                heartable={this.props.accountInfo !== null}
+                hearted={
+                     this.state.heartedWisps.includes(
+                        wisp["wisp_id"])} 
+                key={wisp["wisp_id"]} />
         ));
-        console.log(this.state.wisps);
         if (this.domRef.current) {
             this.scrollTopUpdated = true;
             this.domRef.current.scrollTop = (

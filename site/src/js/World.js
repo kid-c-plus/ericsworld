@@ -22,8 +22,7 @@ class World extends React.Component {
 
             thumbPercent: 0.0,
 
-            /* selectedPane: "home", */
-            selectedPane: "account",
+            selectedPane: "home",
             paneDeactivated: false,
 
             accountInfo: null,
@@ -44,7 +43,8 @@ class World extends React.Component {
             () => {
                 let body = {
                     phone_number:   "+11234567890",
-                    password:       "hai"
+                    password:       "hai",
+                    auth_code:      "123456"
                 };
                 this.csrfFetch(Constants.LOGIN_ENDPOINT,
                 {
@@ -64,8 +64,7 @@ class World extends React.Component {
     getCSRFToken() {
         fetch(Constants.CSRF_ENDPOINT, {
             credentials: "include"
-        })
-        .then(response => response.json())
+        }).then(response => response.json())
         .then(csrfResp =>
             this.setState({
                 csrfToken: csrfResp["csrftoken"]
@@ -101,14 +100,14 @@ class World extends React.Component {
     getAccountInfo() {
         fetch(Constants.ACCOUNT_INFO_ENDPOINT, {
             credentials: "include"
-        })
-        .then(response => response.json())
+        }).then(response => response.json())
         .then(accountInfoResp => {
             if ("error" in accountInfoResp) {
                 this.setState({
                     accountInfo: null
                 });
             } else {
+                this.state.refreshCallback();
                 this.setState({
                     accountInfo: accountInfoResp
                 });
@@ -252,12 +251,15 @@ class World extends React.Component {
 
                 <WispScreen thumbPercent={
                         this.state.thumbPercent
-                    } scrollCallback={
+                    } 
+                    scrollCallback={
                         this.scrollCallback.bind(this)
                     } 
+                    accountInfo={this.state.accountInfo}
                     registerRefreshCallback={
                         this.registerRefreshCallback.bind(
                             this)}
+                    csrfFetch={this.csrfFetch.bind(this)}
                 />
 
                 {this.renderPane()}

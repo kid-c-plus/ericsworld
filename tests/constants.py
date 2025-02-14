@@ -55,6 +55,8 @@ TEST_PASSWORD = "Pa$$word1234"
 TEST_PASSWORD_2 = "password5678"
 TEST_PASSWORD_3 = "passW0RD9101"
 
+TEST_AUTH_CODE = "123456"
+
 TEST_WISP = {
     "text": "haiii :3",
     "gif_uri": "01309eb8d523ea5ac65fc888400e631a" + 

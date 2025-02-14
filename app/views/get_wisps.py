@@ -48,6 +48,12 @@ def get_wisps_for_user(user: flask_login.UserMixin,
             Wisp.created_time.desc()
         )
     )
+    _ = """wisp_dicts = []
+    for wisp in wisps:
+        wisp_dict = wisp.to_dict()
+        wisp_dict["hearted"] = user in wisp.hearted_users
+        wisp_dicts.append(wisp_dict)
+    return wisp_dicts"""
 
 def get_wisp_position(user: flask_login.UserMixin, 
                       wisp: Wisp) -> 0:
